@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Alisa.Model;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -10,14 +11,12 @@ namespace Alisa.ViewModel
 {
     class RuntimeDB
     {
-        float[] val = { 0, 0, 0, 0 };
-        float[] val2 = { 0, 0, 0, 0 };
-        String tags = "'K4_Qg','K5_Qg','OK_AI1102','OK_AI1105'";
+        List<Single> tagValue = new List<float>();
 
-        public float[] DataRead(String tags2)
+        public List<Single> DataRead(String tags, DBConnect dbc)
         {
-            String connStr = @"server=192.168.1.20;uid=sa;
-                        pwd=sa;database=Runtime";
+            String connStr = @"server=" + dbc.server + @";uid=" + dbc.login + @";
+                        pwd=" + dbc.password + @";database=" + dbc.database + @"";
 
             SqlConnection conn = new SqlConnection(connStr);
 
@@ -27,8 +26,7 @@ namespace Alisa.ViewModel
             }
             catch (SqlException se)
             {
-                //hd.tagName.Add("");
-                return val;
+                return tagValue;
             }
 
             String command = "";
@@ -44,10 +42,11 @@ namespace Alisa.ViewModel
 
             int i = 0;
 
+            tagValue.Clear();
+
             foreach (DbDataRecord record in reader)
             {
-
-                val[i] = Convert.ToSingle(record["Value"]);
+                tagValue.Add(Convert.ToSingle(record["Value"]));
                 i++;
 
             }
@@ -55,7 +54,7 @@ namespace Alisa.ViewModel
             reader.Close();
             conn.Close();
 
-            return val;
+            return tagValue;
         }
     }
 }

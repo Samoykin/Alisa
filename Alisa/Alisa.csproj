@@ -67,6 +67,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DBConnect.cs" />
+    <Compile Include="Utils\ReadTextFile.cs" />
+    <Compile Include="Utils\XMLConfig.cs" />
     <Compile Include="ViewModel\RuntimeDB.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\TEPMail.cs" />
