@@ -46,7 +46,15 @@ namespace Alisa.ViewModel
 
             foreach (DbDataRecord record in reader)
             {
-                tagValue.Add(Convert.ToSingle(record["Value"]));
+                String aa = record["Value"].ToString();
+                if (aa == "NULL")
+                {
+                    tagValue.Add(0);
+                }
+                else
+                {
+                    tagValue.Add(Convert.ToSingle(aa));
+                }
                 i++;
 
             }
