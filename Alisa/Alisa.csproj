@@ -67,6 +67,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\CoeffModel.cs" />
     <Compile Include="Model\DBConnect.cs" />
     <Compile Include="Model\LiveTEP.cs" />
     <Compile Include="Model\RuntimeModel.cs" />

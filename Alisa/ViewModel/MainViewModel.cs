@@ -32,6 +32,8 @@ namespace Alisa.ViewModel
         DispatcherTimer t1 = new DispatcherTimer();
 
         private ObservableCollection<RuntimeModel> _RtModel;
+        private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
+        String tagPathCoeff = @"Coeff.txt";
         LogFile logFile = new LogFile();
 
         #endregion
@@ -67,6 +69,10 @@ namespace Alisa.ViewModel
             //вычитывание списка тегов из файла
             tags = rf.readFile(tagPath);
 
+            //Коэффициенты            
+            _coeffModel = rf.readCoeff(tagPathCoeff);
+
+
             t1.Interval = new TimeSpan(0, 0, 6);
             t1.Tick += new EventHandler(timer_Tick);
             t1.Start();
@@ -75,7 +81,7 @@ namespace Alisa.ViewModel
             liveTEP = new LiveTEP { };
             tdd = new Test1 {  };
 
-            
+            tdd.connect = _coeffModel[0].Value.ToString();
             
         }
 
@@ -109,24 +115,27 @@ namespace Alisa.ViewModel
                 });
 
                 CalculateTEP clcTEP = new CalculateTEP();
+
+                liveTEP = clcTEP.Calculate(liveTEP, _RtModel, _coeffModel);
+
+
+
+                //Int32 indx = IndexCalc("K4_Qg");
+
+                //liveTEP.SQLw_Data1 = clcTEP.CalculateTEP_1(indx, liveTEP.SQLw_Data1,_RtModel);
+
+                //indx = IndexCalc("K5_Qg");
+                //liveTEP.SQLw_Data2 = clcTEP.CalculateTEP_2(indx, liveTEP.SQLw_Data2, _RtModel);
+
+                //indx = IndexCalc("K1_V10040");
+                //liveTEP.SQLw_Data3 = clcTEP.CalculateTEP_3(indx, liveTEP.SQLw_Data3, _RtModel);
+
+                //indx = IndexCalc("K1_Fsv");
+                //liveTEP.SQLw_Data4 = clcTEP.CalculateTEP_4(indx, liveTEP.SQLw_Data4, _RtModel);
+
                 
 
-                Int32 indx = IndexCalc("K4_Qg");
-
-                liveTEP.SQLw_Data1 = clcTEP.CalculateTEP_1(indx, liveTEP.SQLw_Data1,_RtModel);
-
-                indx = IndexCalc("K5_Qg");
-                liveTEP.SQLw_Data2 = clcTEP.CalculateTEP_2(indx, liveTEP.SQLw_Data2, _RtModel);
-
-                indx = IndexCalc("K1_V10040");
-                liveTEP.SQLw_Data3 = clcTEP.CalculateTEP_3(indx, liveTEP.SQLw_Data3, _RtModel);
-
-                indx = IndexCalc("K1_Fsv");
-                liveTEP.SQLw_Data4 = clcTEP.CalculateTEP_4(indx, liveTEP.SQLw_Data4, _RtModel);
-
-                
-
-                TEP.K4_Qg = _RtModel[indx].Value.ToString();
+                //TEP.K4_Qg = _RtModel[indx].Value.ToString();
 
                 
                 //if (_RtModel[0].TagName == "K4_Qg")
