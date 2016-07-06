@@ -3,6 +3,7 @@ using Alisa.Utils;
 using MVVM_test.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,9 @@ namespace Alisa.ViewModel
         RuntimeDB rDB = new RuntimeDB();
         //Таймер
         DispatcherTimer t1 = new DispatcherTimer();
-        
+
+        private ObservableCollection<RuntimeModel> _RtModel;
+        LogFile logFile = new LogFile();
 
         #endregion
 
@@ -42,8 +45,8 @@ namespace Alisa.ViewModel
         /// </summary>
         public TEPModel TEP { get; set; }
         public Test1 tdd { get; set; }
-
-        
+        public RuntimeModel RtModel { get; set; }
+        public LiveTEP liveTEP { get; set; }
 
         #endregion     
 
@@ -51,6 +54,9 @@ namespace Alisa.ViewModel
 
         public MainViewModel()
         {
+            String logText = DateTime.Now.ToString() + "|event| |Запуск приложения Alisa";
+            logFile.WriteLog(logText);
+
             ClickCommand = new Command(arg => ClickMethod());
             ClickCommand2 = new Command(arg => ClickMethod2());
 
@@ -66,10 +72,10 @@ namespace Alisa.ViewModel
             t1.Start();
 
 
-
+            liveTEP = new LiveTEP { };
             tdd = new Test1 {  };
 
-
+            
             
         }
 
@@ -94,31 +100,67 @@ namespace Alisa.ViewModel
         private async void ReadData()
         {
             try
-            {
-                //вычитывание значений тегов из БД
-                tagValue = await Task<List<Single>>.Factory.StartNew(() =>
+            {                
+                _RtModel = new ObservableCollection<RuntimeModel>();
+
+                _RtModel = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() =>
                 {
                     return rDB.DataRead(tags, dbc);
                 });
 
+                CalculateTEP clcTEP = new CalculateTEP();
+                
+
+                Int32 indx = IndexCalc("K4_Qg");
+
+                liveTEP.SQLw_Data1 = clcTEP.CalculateTEP_1(indx, liveTEP.SQLw_Data1,_RtModel);
+
+                indx = IndexCalc("K5_Qg");
+                liveTEP.SQLw_Data2 = clcTEP.CalculateTEP_2(indx, liveTEP.SQLw_Data2, _RtModel);
+
+                indx = IndexCalc("K1_V10040");
+                liveTEP.SQLw_Data3 = clcTEP.CalculateTEP_3(indx, liveTEP.SQLw_Data3, _RtModel);
+
+                indx = IndexCalc("K1_Fsv");
+                liveTEP.SQLw_Data4 = clcTEP.CalculateTEP_4(indx, liveTEP.SQLw_Data4, _RtModel);
+
+                
+
+                TEP.K4_Qg = _RtModel[indx].Value.ToString();
+
+                
+                //if (_RtModel[0].TagName == "K4_Qg")
+                //{
+                //    TEP.K4_Qg = _RtModel[0].Value.ToString();
+                //}
+
                 //Присвоение значений из БД к модели
-                TEP.K4_Qg = tagValue[0].ToString();
-                TEP.K5_Qg = tagValue[1].ToString();
-                TEP.K1_V10040 = tagValue[2].ToString();
+                //TEP.K4_Qg = tagValue[0].ToString();
+                //TEP.K5_Qg = tagValue[1].ToString();
+                //TEP.K1_V10040 = tagValue[2].ToString();
                 //TEP.K1_Fsv = tagValue[3].ToString();
                 //TEP.OK_AI1102 = tagValue[4].ToString();
                 //TEP.OK_AI1105 = tagValue[5].ToString();
 
-                Single rt1 = Convert.ToSingle(TEP.K4_Qg) / 10;
-                tdd.connect = (Convert.ToSingle(tdd.connect) + rt1).ToString();
+                //Single rt1 = Convert.ToSingle(TEP.K4_Qg) / 10;
+                //liveTEP.SQLw_Data1 = liveTEP.SQLw_Data1 + rt1;
             }
             catch (Exception exception)
             {
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ReadData|" + exception.Message;
+                logFile.WriteLog(logText);
                 MessageBox.Show(exception.Message, "Ошибка");
             }
         }
 
+        private Int32 IndexCalc(String name)
+        {
+            Int32 indx;
+            indx = _RtModel.IndexOf(_RtModel.Where(X => X.TagName == name).FirstOrDefault());
+            return indx;
+        }
 
+        
 
 
         /// <summary>
