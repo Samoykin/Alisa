@@ -21,26 +21,26 @@ namespace Alisa.Model
 
         #region Fields
 
-        private Single _SQLw_Data1;
-        private Single _SQLw_Data2;
-        private Single _SQLw_Data3;
-        private Single _SQLw_Data4;
-        private Single _SQLw_Data5;
-        private Single _SQLw_Data6;
-        private Single _SQLw_Data7;
-        private Single _SQLw_Data8;
-        private Single _SQLw_Data9;
-        private Single _SQLw_Data10;
-        private Single _SQLw_Data11;
-        private Single _SQLw_Data12;
-        private Single _SQLw_Data13;
+        private Double _SQLw_Data1;
+        private Double _SQLw_Data2;
+        private Double _SQLw_Data3;
+        private Double _SQLw_Data4;
+        private Double _SQLw_Data5;
+        private Double _SQLw_Data6;
+        private Double _SQLw_Data7;
+        private Double _SQLw_Data8;
+        private Double _SQLw_Data9;
+        private Double _SQLw_Data10;
+        private Double _SQLw_Data11;
+        private Double _SQLw_Data12;
+        private Double _SQLw_Data13;
 
         #endregion
 
         #region Properties
 
         #region SQLw_Data1
-        public Single SQLw_Data1
+        public Double SQLw_Data1
         {
             get { return _SQLw_Data1; }
             set
@@ -55,7 +55,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data2
-        public Single SQLw_Data2
+        public Double SQLw_Data2
         {
             get { return _SQLw_Data2; }
             set
@@ -70,7 +70,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data3
-        public Single SQLw_Data3
+        public Double SQLw_Data3
         {
             get { return _SQLw_Data3; }
             set
@@ -85,7 +85,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data4
-        public Single SQLw_Data4
+        public Double SQLw_Data4
         {
             get { return _SQLw_Data4; }
             set
@@ -100,7 +100,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data5
-        public Single SQLw_Data5
+        public Double SQLw_Data5
         {
             get { return _SQLw_Data5; }
             set
@@ -115,7 +115,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data6
-        public Single SQLw_Data6
+        public Double SQLw_Data6
         {
             get { return _SQLw_Data6; }
             set
@@ -130,7 +130,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data7
-        public Single SQLw_Data7
+        public Double SQLw_Data7
         {
             get { return _SQLw_Data7; }
             set
@@ -145,7 +145,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data8
-        public Single SQLw_Data8
+        public Double SQLw_Data8
         {
             get { return _SQLw_Data8; }
             set
@@ -160,7 +160,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data9
-        public Single SQLw_Data9
+        public Double SQLw_Data9
         {
             get { return _SQLw_Data9; }
             set
@@ -175,7 +175,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data10
-        public Single SQLw_Data10
+        public Double SQLw_Data10
         {
             get { return _SQLw_Data10; }
             set
@@ -190,7 +190,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data11
-        public Single SQLw_Data11
+        public Double SQLw_Data11
         {
             get { return _SQLw_Data11; }
             set
@@ -205,7 +205,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data12
-        public Single SQLw_Data12
+        public Double SQLw_Data12
         {
             get { return _SQLw_Data12; }
             set
@@ -220,7 +220,7 @@ namespace Alisa.Model
         #endregion
 
         #region SQLw_Data13
-        public Single SQLw_Data13
+        public Double SQLw_Data13
         {
             get { return _SQLw_Data13; }
             set

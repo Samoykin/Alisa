@@ -8,7 +8,7 @@
         <Button x:Name="mailButton" Content="Письмо" HorizontalAlignment="Left" Margin="650,385,0,0" VerticalAlignment="Top" Width="75"/>
         <TextBox x:Name="tb3" HorizontalAlignment="Left" Height="23" Margin="135,435,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Path=liveTEP.SQLw_Data1, Mode=TwoWay}" />
         <Button Content="Click me" HorizontalAlignment="Left" Margin="650,412,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand}"/>
-        <Button Content="Click me2" HorizontalAlignment="Left" Margin="650,447,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand}"/>
+        <Button Content="Click me2" HorizontalAlignment="Left" Margin="650,447,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand2}"/>
         <TabControl HorizontalAlignment="Left" Height="339" Margin="10,10,0,0" VerticalAlignment="Top" Width="776" Background="#FFF9F9F9" BorderBrush="#FF8790AC" RenderTransformOrigin="0,0">
             <TabItem Header="Главная">
                 <Grid Background="White">
@@ -26,11 +26,19 @@
                              Binding="{Binding Path=UnitCost,StringFormat={}{0:C}}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock HorizontalAlignment="Left" Margin="80,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data1}"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="120,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data2}"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="160,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data3}"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="200,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data4}"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="240,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data5}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="80,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data1, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="120,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data2, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="160,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data3, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="200,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data4, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="240,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data5, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="280,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data6, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="320,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data7, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="360,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data8, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="400,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data9, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="440,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data10, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="480,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data11, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="520,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data12, StringFormat={}{0:0.##}}"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="560,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data13, StringFormat={}{0:0.##}}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Настройки">

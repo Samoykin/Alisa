@@ -1,4 +1,5 @@
 ﻿using Alisa.Model;
+using Alisa.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,7 @@ namespace Alisa.ViewModel
 {
     class RuntimeDB
     {
-        //List<Single> tagValue = new List<float>();
+        LogFile logFile = new LogFile();
         
         private ObservableCollection<RuntimeModel> _RtModel = new ObservableCollection<RuntimeModel>();
 
@@ -29,6 +30,8 @@ namespace Alisa.ViewModel
             }
             catch (SqlException se)
             {
+                String logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + se.Message;
+                logFile.WriteLog(logText);
                 return _RtModel;
             }
 

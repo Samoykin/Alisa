@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -183,8 +184,12 @@ namespace Alisa.ViewModel
 
         private void ClickMethod2()
         {
-            //ttt = "qwq";
-
+            String DataBaseName = "DBTEP.sqlite";
+            SQLiteDB sqliteDB = new SQLiteDB();
+            if (!File.Exists(DataBaseName))
+            {
+                sqliteDB.CreateBase();
+            }
         }
 
         #endregion
