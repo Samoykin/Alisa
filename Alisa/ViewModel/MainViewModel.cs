@@ -34,6 +34,8 @@ namespace Alisa.ViewModel
 
         private ObservableCollection<RuntimeModel> _RtModel;
         private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
+
+        
         String tagPathCoeff = @"Coeff.txt";
         LogFile logFile = new LogFile();
 
@@ -53,7 +55,7 @@ namespace Alisa.ViewModel
 
         #endregion     
 
-        
+        public ObservableCollection<HistTEP> histTEP { get; set; }
 
         public MainViewModel()
         {
@@ -62,6 +64,7 @@ namespace Alisa.ViewModel
 
             ClickCommand = new Command(arg => ClickMethod());
             ClickCommand2 = new Command(arg => ClickMethod2());
+            ClickCommand3 = new Command(arg => ClickMethod3());
 
             TEP = new TEPModel { };
 
@@ -83,6 +86,24 @@ namespace Alisa.ViewModel
             tdd = new Test1 {  };
 
             tdd.connect = _coeffModel[0].Value.ToString();
+
+            histTEP = new ObservableCollection<HistTEP>();
+            //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 23, SQLw_Data2 = 23, SQLw_Data3 = 23, SQLw_Data4 = 23, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
+            //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 223, SQLw_Data2 = 283, SQLw_Data3 = 23, SQLw_Data4 = 283, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
+            
+
+            //gridTEP.ItemsSource = histTEP;
+
+            
+
+            //histTEP1 = new ObservableCollection<HistTEP>()
+            //{
+            //    new HistTEP {Value1 = "Honda", Value2= 30000},
+            //    new HistTEP {Value1 = "Ford", Value2= 15000},
+            //    new HistTEP {Value1 = "Lada", Value2= 5000}
+            //};
+
+            //ItemsSource="{Binding Source=g_list}"
             
         }
 
@@ -93,6 +114,7 @@ namespace Alisa.ViewModel
         /// </summary>
         public ICommand ClickCommand { get; set; }
         public ICommand ClickCommand2 { get; set; }
+        public ICommand ClickCommand3 { get; set; }
 
         #endregion
 
@@ -190,6 +212,18 @@ namespace Alisa.ViewModel
             {
                 sqliteDB.CreateBase();
             }
+
+            //sqliteDB.TEPCreateTable();
+            sqliteDB.TEPWrite(liveTEP);
+        }
+
+        private void ClickMethod3()
+        {
+            histTEP = new ObservableCollection<HistTEP> { };
+            SQLiteDB sqliteDB = new SQLiteDB();
+            
+            //sqliteDB.TEPCreateTable();
+            histTEP= sqliteDB.TEPRead();
         }
 
         #endregion

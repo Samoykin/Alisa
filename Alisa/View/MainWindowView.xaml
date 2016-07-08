@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Alisa" Height="508.865" Width="804.256">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Height="34" Margin="10,390,0,0" VerticalAlignment="Top" Width="98"/>
-        <Button x:Name="btn2" Content="Button" HorizontalAlignment="Left" Height="34" Margin="10,435,0,0" VerticalAlignment="Top" Width="98"/>
         <Button x:Name="mailButton" Content="Письмо" HorizontalAlignment="Left" Margin="650,385,0,0" VerticalAlignment="Top" Width="75"/>
         <TextBox x:Name="tb3" HorizontalAlignment="Left" Height="23" Margin="135,435,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Path=liveTEP.SQLw_Data1, Mode=TwoWay}" />
         <Button Content="Click me" HorizontalAlignment="Left" Margin="650,412,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand}"/>
@@ -17,15 +15,9 @@
                     <TextBlock HorizontalAlignment="Left" Margin="89,69,0,0" TextWrapping="Wrap" Text="K1 - Fгаза [м3], 1-FI501" VerticalAlignment="Top" Width="68"/>
                     <TextBlock HorizontalAlignment="Left" Margin="162,69,0,0" TextWrapping="Wrap" Text="K2 - Fгаза [м3], 2-FI501" VerticalAlignment="Top" Width="68"/>
                     <TextBlock HorizontalAlignment="Left" Margin="235,69,0,0" TextWrapping="Wrap" Text="K3 - Fгаза [м3], 3-FI501" VerticalAlignment="Top" Width="68"/>
-                    <DataGrid x:Name="gridTEP" HorizontalAlignment="Left" VerticalAlignment="Top" Height="146" Width="746" Margin="10,111,0,0" AutoGenerateColumns="False">
+                    <DataGrid x:Name="gridTEP" HorizontalAlignment="Left" VerticalAlignment="Top" Height="146" Width="746" Margin="10,111,0,0" ItemsSource="{Binding Path=histTEP, Mode=TwoWay}" />
 
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="K1 - Fгаза [м3], 1-FI501" Width="100"  
-                             Binding="{Binding Path=RtModel.TagName}"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Цена" 
-                             Binding="{Binding Path=UnitCost,StringFormat={}{0:C}}"></DataGridTextColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
+
                     <TextBlock HorizontalAlignment="Left" Margin="80,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data1, StringFormat={}{0:0.##}}"/>
                     <TextBlock HorizontalAlignment="Left" Margin="120,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data2, StringFormat={}{0:0.##}}"/>
                     <TextBlock HorizontalAlignment="Left" Margin="160,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data3, StringFormat={}{0:0.##}}"/>
@@ -45,6 +37,7 @@
                 <Grid Background="White"/>
             </TabItem>
         </TabControl>
+        <Button Content="Click me2" HorizontalAlignment="Left" Margin="10,436,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand3}"/>
 
     </Grid>
 </Window>
