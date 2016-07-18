@@ -55,6 +55,7 @@ namespace Alisa.ViewModel
 
         #endregion     
 
+        public HistTEP htep { get; set; }
         public ObservableCollection<HistTEP> histTEP { get; set; }
 
         public MainViewModel()
@@ -87,7 +88,8 @@ namespace Alisa.ViewModel
 
             tdd.connect = _coeffModel[0].Value.ToString();
 
-            histTEP = new ObservableCollection<HistTEP>();
+            histTEP = new ObservableCollection<HistTEP> { };
+            //histTEP = new ObservableCollection<HistTEP>();
             //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 23, SQLw_Data2 = 23, SQLw_Data3 = 23, SQLw_Data4 = 23, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
             //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 223, SQLw_Data2 = 283, SQLw_Data3 = 23, SQLw_Data4 = 283, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
             
@@ -219,11 +221,15 @@ namespace Alisa.ViewModel
 
         private void ClickMethod3()
         {
-            histTEP = new ObservableCollection<HistTEP> { };
+            ObservableCollection<HistTEP>  histTEP2 = new ObservableCollection<HistTEP> { };
             SQLiteDB sqliteDB = new SQLiteDB();
             
             //sqliteDB.TEPCreateTable();
-            histTEP= sqliteDB.TEPRead();
+            histTEP2 = sqliteDB.TEPRead();
+
+            histTEP.Clear();
+            foreach (HistTEP ht in histTEP2)
+                histTEP.Add(ht);            
         }
 
         #endregion
