@@ -17,10 +17,10 @@ namespace Alisa.ViewModel
         
         private ObservableCollection<RuntimeModel> _RtModel = new ObservableCollection<RuntimeModel>();
 
-        public ObservableCollection<RuntimeModel> DataRead(String tags, DBConnect dbc)
+        public ObservableCollection<RuntimeModel> DataRead(String tags, XMLFields xmlFields)
         {
-            String connStr = @"server=" + dbc.server + @";uid=" + dbc.login + @";
-                        pwd=" + dbc.password + @";database=" + dbc.database + @"";
+            String connStr = @"server=" + xmlFields.dbServer + @";uid=" + xmlFields.dbLogin + @";
+                        pwd=" + xmlFields.dbPass + @";database=" + xmlFields.dbName + @"";
 
             SqlConnection conn = new SqlConnection(connStr);
 

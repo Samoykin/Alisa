@@ -7,9 +7,9 @@ namespace Alisa.Utils
 {
     class XMLConfig
     {
-        DBConnect dbc = new DBConnect();
+        XMLFields xmlFields = new XMLFields();
 
-        public DBConnect ReadXmlConf(String path)
+        public XMLFields ReadXmlConf(String path)
         {
             XmlDocument document = new XmlDocument();
             document.Load(path);
@@ -19,17 +19,33 @@ namespace Alisa.Utils
             {
                 foreach (XmlNode childnode in xnode.ChildNodes)
                 {
-                    if (childnode.Name == "server")
-                        dbc.server = childnode.InnerText;
-                    if (childnode.Name == "login")
-                        dbc.login = childnode.InnerText;
-                    if (childnode.Name == "password")
-                        dbc.password = childnode.InnerText;
-                    if (childnode.Name == "database")
-                        dbc.database = childnode.InnerText;
+                    //кокфигурация подключения к MSSQL
+                    if (childnode.Name == "dbServer")
+                        xmlFields.dbServer = childnode.InnerText;
+                    if (childnode.Name == "dbLogin")
+                        xmlFields.dbLogin = childnode.InnerText;
+                    if (childnode.Name == "dbPass")
+                        xmlFields.dbPass = childnode.InnerText;
+                    if (childnode.Name == "dbName")
+                        xmlFields.dbName = childnode.InnerText;
+                    //конфигурация отправки E-mail
+                    if (childnode.Name == "mailSmtpServer")
+                        xmlFields.mailSmtpServer = childnode.InnerText;
+                    if (childnode.Name == "mailPort")
+                        xmlFields.mailPort = childnode.InnerText;
+                    if (childnode.Name == "mailPort")
+                        xmlFields.mailPort = childnode.InnerText;
+                    if (childnode.Name == "mailLogin")
+                        xmlFields.mailLogin = childnode.InnerText;
+                    if (childnode.Name == "mailPass")
+                        xmlFields.mailPass = childnode.InnerText;
+                    if (childnode.Name == "mailFrom")
+                        xmlFields.mailFrom = childnode.InnerText;
+                    if (childnode.Name == "mailTo")
+                        xmlFields.mailTo = childnode.InnerText;
                 }
             }
-            return dbc;
+            return xmlFields;
         }
     }
 }

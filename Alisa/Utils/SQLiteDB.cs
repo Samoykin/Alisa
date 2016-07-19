@@ -62,14 +62,16 @@ namespace Alisa.Utils
             connection.Close();
         }
 
-        public ObservableCollection<HistTEP> TEPRead()
+        public ObservableCollection<HistTEP> TEPRead(DateTime startDate, DateTime endDate)
         {
+            String format_date = "yyyy-MM-dd HH:mm:ss.fff";
+
             histTEP = new ObservableCollection<HistTEP>();
 
             SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source={0};Password={1};", DataBaseName, pass));
             connection.Open();
-            SQLiteCommand command = new SQLiteCommand("SELECT * FROM TEP;", connection);
-            //DateTime, SQLw_Data1, SQLw_Data2 
+            SQLiteCommand command = new SQLiteCommand("SELECT * FROM TEP WHERE DateTime >= '" + startDate.ToString(format_date) + "' and DateTime <= '" + endDate.ToString(format_date) + "'  ;", connection);
+            //and DateTime <= '" + endDate.ToString() + "'
             SQLiteDataReader reader = command.ExecuteReader();
             foreach (DbDataRecord record in reader)
             {

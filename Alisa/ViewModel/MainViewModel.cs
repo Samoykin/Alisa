@@ -21,7 +21,7 @@ namespace Alisa.ViewModel
         //конфигурация
         String path = @"Config.xml";
         XMLConfig xmlConf = new XMLConfig();
-        DBConnect dbc = new DBConnect();
+        XMLFields xmlFields = new XMLFields();
         //Теги
         ReadTextFile rf = new ReadTextFile();
         String tagPath = @"TagList.txt";
@@ -31,10 +31,12 @@ namespace Alisa.ViewModel
         RuntimeDB rDB = new RuntimeDB();
         //Таймер
         DispatcherTimer t1 = new DispatcherTimer();
+        DispatcherTimer t2 = new DispatcherTimer();
+
+        String DataBaseName = "DBTEP.sqlite";
 
         private ObservableCollection<RuntimeModel> _RtModel;
         private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
-
         
         String tagPathCoeff = @"Coeff.txt";
         LogFile logFile = new LogFile();
@@ -70,25 +72,39 @@ namespace Alisa.ViewModel
             TEP = new TEPModel { };
 
             //Вычитывание параметров из XML
-            dbc = xmlConf.ReadXmlConf(path);
+            xmlFields = xmlConf.ReadXmlConf(path);
             //вычитывание списка тегов из файла
             tags = rf.readFile(tagPath);
 
             //Коэффициенты            
             _coeffModel = rf.readCoeff(tagPathCoeff);
 
-
+            //таймер вычитывания значений из БД и расчета ТЭП
             t1.Interval = new TimeSpan(0, 0, 6);
             t1.Tick += new EventHandler(timer_Tick);
             t1.Start();
+
+            //таймер на вызов метода записи 2-х часовок
+            t2.Interval = new TimeSpan(0, 1, 0);
+            t2.Tick += new EventHandler(timer_Tick2);
+            t2.Start();
 
 
             liveTEP = new LiveTEP { };
             tdd = new Test1 {  };
 
             tdd.connect = _coeffModel[0].Value.ToString();
+            tdd.startDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
+            tdd.endDate = DateTime.Now;
 
             histTEP = new ObservableCollection<HistTEP> { };
+
+
+
+            //Handler_I Handler1 = new Handler_I();
+            tdd.onCount += Message;
+            tdd.day = true;
+            ClickMethod3();
             //histTEP = new ObservableCollection<HistTEP>();
             //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 23, SQLw_Data2 = 23, SQLw_Data3 = 23, SQLw_Data4 = 23, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
             //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 223, SQLw_Data2 = 283, SQLw_Data3 = 23, SQLw_Data4 = 283, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
@@ -136,48 +152,14 @@ namespace Alisa.ViewModel
 
                 _RtModel = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() =>
                 {
-                    return rDB.DataRead(tags, dbc);
+                    return rDB.DataRead(tags, xmlFields);
                 });
 
                 CalculateTEP clcTEP = new CalculateTEP();
 
                 liveTEP = clcTEP.Calculate(liveTEP, _RtModel, _coeffModel);
 
-
-
-                //Int32 indx = IndexCalc("K4_Qg");
-
-                //liveTEP.SQLw_Data1 = clcTEP.CalculateTEP_1(indx, liveTEP.SQLw_Data1,_RtModel);
-
-                //indx = IndexCalc("K5_Qg");
-                //liveTEP.SQLw_Data2 = clcTEP.CalculateTEP_2(indx, liveTEP.SQLw_Data2, _RtModel);
-
-                //indx = IndexCalc("K1_V10040");
-                //liveTEP.SQLw_Data3 = clcTEP.CalculateTEP_3(indx, liveTEP.SQLw_Data3, _RtModel);
-
-                //indx = IndexCalc("K1_Fsv");
-                //liveTEP.SQLw_Data4 = clcTEP.CalculateTEP_4(indx, liveTEP.SQLw_Data4, _RtModel);
-
-                
-
-                //TEP.K4_Qg = _RtModel[indx].Value.ToString();
-
-                
-                //if (_RtModel[0].TagName == "K4_Qg")
-                //{
-                //    TEP.K4_Qg = _RtModel[0].Value.ToString();
-                //}
-
-                //Присвоение значений из БД к модели
-                //TEP.K4_Qg = tagValue[0].ToString();
-                //TEP.K5_Qg = tagValue[1].ToString();
-                //TEP.K1_V10040 = tagValue[2].ToString();
-                //TEP.K1_Fsv = tagValue[3].ToString();
-                //TEP.OK_AI1102 = tagValue[4].ToString();
-                //TEP.OK_AI1105 = tagValue[5].ToString();
-
-                //Single rt1 = Convert.ToSingle(TEP.K4_Qg) / 10;
-                //liveTEP.SQLw_Data1 = liveTEP.SQLw_Data1 + rt1;
+                               
             }
             catch (Exception exception)
             {
@@ -194,8 +176,59 @@ namespace Alisa.ViewModel
             return indx;
         }
 
-        
 
+        void timer_Tick2(object sender, EventArgs e)
+        {
+            Decimal hour = DateTime.Now.Hour;
+            Decimal minute = DateTime.Now.Minute;
+
+            if (minute == 0)
+            {
+                if (hour == Math.Floor(hour / 2) * 2 + 1)
+                {
+                    
+                    SQLiteDB sqliteDB = new SQLiteDB();
+                    if (!File.Exists(DataBaseName))
+                    {
+                        sqliteDB.CreateBase();
+                    }
+
+                    sqliteDB.TEPCreateTable();
+                    sqliteDB.TEPWrite(liveTEP);
+                }
+            }
+
+        }
+
+        public void Message()
+        {
+            DateTime dt = tdd.startDate;
+
+            if (tdd.day)
+            {    
+                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
+                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-1, 0, 0, 0));
+            }
+            if (tdd.firstShift)
+            {
+                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 9, 00, 00);
+                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+            }
+            if (tdd.secondShift)
+            {
+                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 21, 00, 00);
+                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+            }
+            if (tdd.month)
+            {
+                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
+                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-30, 0, 0, 0));
+            }
+
+
+            //MessageBox.Show("Точно, уже 71!");
+
+        }
 
         /// <summary>
         /// Click method.
@@ -215,18 +248,21 @@ namespace Alisa.ViewModel
                 sqliteDB.CreateBase();
             }
 
-            //sqliteDB.TEPCreateTable();
+            sqliteDB.TEPCreateTable();
             sqliteDB.TEPWrite(liveTEP);
         }
 
         private void ClickMethod3()
         {
+            Message();
+
             ObservableCollection<HistTEP>  histTEP2 = new ObservableCollection<HistTEP> { };
             SQLiteDB sqliteDB = new SQLiteDB();
             
             //sqliteDB.TEPCreateTable();
-            histTEP2 = sqliteDB.TEPRead();
-
+            histTEP2 = sqliteDB.TEPRead(tdd.startDate, tdd.endDate);
+            //DateTime.Now.Subtract(new TimeSpan(10, 0, 0, 0))
+            
             histTEP.Clear();
             foreach (HistTEP ht in histTEP2)
                 histTEP.Add(ht);            
@@ -241,6 +277,10 @@ namespace Alisa.ViewModel
 
     class Test1 : INotifyPropertyChanged
     {
+        public delegate void MethodContainer();
+        public event MethodContainer onCount;
+
+
         #region Implement INotyfyPropertyChanged members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -256,6 +296,12 @@ namespace Alisa.ViewModel
         #endregion
 
         private string _connect;
+        private DateTime _startDate;
+        private DateTime _endDate;
+        private Boolean _day;
+        private Boolean _firstShift;
+        private Boolean _secondShift;
+        private Boolean _month;
 
         public string connect
         {
@@ -268,9 +314,106 @@ namespace Alisa.ViewModel
                     OnPropertyChanged("connect");
                 }
             }
+        }              
+
+        public DateTime startDate
+        {
+            get { return _startDate; }
+            set
+            {
+                if (_startDate != value)
+                {
+                    _startDate = value;
+                    OnPropertyChanged("startDate");
+                    //onCount();
+                }
+            }
         }
+
+        public DateTime endDate
+        {
+            get { return _endDate; }
+            set
+            {
+                if (_endDate != value)
+                {
+                    _endDate = value;
+                    OnPropertyChanged("endDate");
+                }
+            }
+        }
+
+        public Boolean day
+        {
+            get { return _day; }
+            set
+            {
+                if (_day != value)
+                {
+                    _day = value;
+                    OnPropertyChanged("day");
+                    onCount();
+                }
+            }
+        }
+
+        public Boolean firstShift
+        {
+            get { return _firstShift; }
+            set
+            {
+                if (_firstShift != value)
+                {
+                    _firstShift = value;
+                    OnPropertyChanged("firstShift");
+                    onCount();
+                }
+            }
+        }
+
+        public Boolean secondShift
+        {
+            get { return _secondShift; }
+            set
+            {
+                if (_secondShift != value)
+                {
+                    _secondShift = value;
+                    OnPropertyChanged("secondShift");
+                    onCount();
+                }
+            }
+        }
+
+        public Boolean month
+        {
+            get { return _month; }
+            set
+            {
+                if (_month != value)
+                {
+                    _month = value;
+                    OnPropertyChanged("month");
+                    onCount();
+                }
+            }
+        }
+
+
+
     }
 
+
+    class Handler_I
+    {
+        public void Message()
+        {
+            //tdd.startDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
+            //tdd.endDate = DateTime.Now;
+            //MessageBox.Show("Точно, уже 71!");
+
+        }
+    }
 
 
 }

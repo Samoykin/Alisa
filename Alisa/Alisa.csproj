@@ -72,7 +72,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\CoeffModel.cs" />
-    <Compile Include="Model\DBConnect.cs" />
+    <Compile Include="Model\XMLFields.cs" />
     <Compile Include="Model\HistTEP.cs" />
     <Compile Include="Model\LiveTEP.cs" />
     <Compile Include="Model\RuntimeModel.cs" />
@@ -84,7 +84,7 @@
     <Compile Include="ViewModel\Command.cs" />
     <Compile Include="ViewModel\RuntimeDB.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\TEPMail.cs" />
+    <Compile Include="Utils\TEPMail.cs" />
     <Compile Include="View\MainWindowView.xaml.cs">
       <DependentUpon>MainWindowView.xaml</DependentUpon>
       <SubType>Code</SubType>
