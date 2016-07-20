@@ -9,8 +9,10 @@ namespace Alisa.Model
         public String dbLogin;
         public String dbPass;
         public String dbName;
+        public String SQLitePass;
+        public String SQLiteName;
         public String mailSmtpServer;
-        public String mailPort;
+        public Int16 mailPort;
         public String mailLogin;
         public String mailPass;
         public String mailFrom;

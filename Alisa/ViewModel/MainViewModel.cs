@@ -32,6 +32,7 @@ namespace Alisa.ViewModel
         //Таймер
         DispatcherTimer t1 = new DispatcherTimer();
         DispatcherTimer t2 = new DispatcherTimer();
+        DispatcherTimer t3 = new DispatcherTimer();
 
         String DataBaseName = "DBTEP.sqlite";
 
@@ -68,6 +69,8 @@ namespace Alisa.ViewModel
             ClickCommand = new Command(arg => ClickMethod());
             ClickCommand2 = new Command(arg => ClickMethod2());
             ClickCommand3 = new Command(arg => ClickMethod3());
+            ClickCommand4 = new Command(arg => ClickMethod4());
+            ClickCommand5 = new Command(arg => ClickMethod5());
 
             TEP = new TEPModel { };
 
@@ -89,6 +92,11 @@ namespace Alisa.ViewModel
             t2.Tick += new EventHandler(timer_Tick2);
             t2.Start();
 
+            //таймер на отправку писем
+            t3.Interval = new TimeSpan(0, 1, 0);
+            t3.Tick += new EventHandler(timer_Tick3);
+            t3.Start();
+
 
             liveTEP = new LiveTEP { };
             tdd = new Test1 {  };
@@ -102,7 +110,7 @@ namespace Alisa.ViewModel
 
 
             //Handler_I Handler1 = new Handler_I();
-            tdd.onCount += Message;
+            tdd.onCount += Filter;
             tdd.day = true;
             ClickMethod3();
             //histTEP = new ObservableCollection<HistTEP>();
@@ -133,6 +141,8 @@ namespace Alisa.ViewModel
         public ICommand ClickCommand { get; set; }
         public ICommand ClickCommand2 { get; set; }
         public ICommand ClickCommand3 { get; set; }
+        public ICommand ClickCommand4 { get; set; }
+        public ICommand ClickCommand5 { get; set; }
 
         #endregion
 
@@ -184,10 +194,10 @@ namespace Alisa.ViewModel
 
             if (minute == 0)
             {
-                if (hour == Math.Floor(hour / 2) * 2 + 1)
+                if (hour == Math.Floor(hour / 2) * 2 )
                 {
-                    
-                    SQLiteDB sqliteDB = new SQLiteDB();
+
+                    SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
                     if (!File.Exists(DataBaseName))
                     {
                         sqliteDB.CreateBase();
@@ -200,7 +210,33 @@ namespace Alisa.ViewModel
 
         }
 
-        public void Message()
+        void timer_Tick3(object sender, EventArgs e)
+        {
+            Decimal hour = DateTime.Now.Hour;
+            Decimal minute = DateTime.Now.Minute;
+
+
+            if (minute == 0)
+            {
+                if (hour == 3)
+                {
+                    //выбираем данные за сутки
+                    tdd.day = true;
+                    ClickMethod3();
+                    //сохраняем отчет в csv
+                    TEPToCSV tepToCSV = new TEPToCSV();
+                    tepToCSV.saveData(histTEP);
+
+                    //отправка письма
+                    SendMail();
+
+
+                }
+            }
+
+        }
+
+        public void Filter()
         {
             DateTime dt = tdd.startDate;
 
@@ -230,6 +266,8 @@ namespace Alisa.ViewModel
 
         }
 
+
+
         /// <summary>
         /// Click method.
         /// </summary>
@@ -242,7 +280,7 @@ namespace Alisa.ViewModel
         private void ClickMethod2()
         {
             String DataBaseName = "DBTEP.sqlite";
-            SQLiteDB sqliteDB = new SQLiteDB();
+            SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
             if (!File.Exists(DataBaseName))
             {
                 sqliteDB.CreateBase();
@@ -254,19 +292,70 @@ namespace Alisa.ViewModel
 
         private void ClickMethod3()
         {
-            Message();
+            Filter();
 
             ObservableCollection<HistTEP>  histTEP2 = new ObservableCollection<HistTEP> { };
-            SQLiteDB sqliteDB = new SQLiteDB();
+            SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
             
             //sqliteDB.TEPCreateTable();
             histTEP2 = sqliteDB.TEPRead(tdd.startDate, tdd.endDate);
             //DateTime.Now.Subtract(new TimeSpan(10, 0, 0, 0))
             
             histTEP.Clear();
+            htep = new HistTEP { };
             foreach (HistTEP ht in histTEP2)
-                histTEP.Add(ht);            
+            {
+                htep.DateTimeTEP = DateTime.Now;
+                htep.SQLw_Data1 += ht.SQLw_Data1;
+                htep.SQLw_Data2 += ht.SQLw_Data2;
+                htep.SQLw_Data3 += ht.SQLw_Data3;
+                htep.SQLw_Data4 += ht.SQLw_Data4;
+                htep.SQLw_Data5 += ht.SQLw_Data5;
+                htep.SQLw_Data6 += ht.SQLw_Data6;
+                htep.SQLw_Data7 += ht.SQLw_Data7;
+                htep.SQLw_Data8 += ht.SQLw_Data8;
+                htep.SQLw_Data9 += ht.SQLw_Data9;
+                htep.SQLw_Data10 += ht.SQLw_Data10;
+                htep.SQLw_Data11 += ht.SQLw_Data11;
+                htep.SQLw_Data12 += ht.SQLw_Data12;
+                htep.SQLw_Data13 += ht.SQLw_Data13;
+                histTEP.Add(ht);  
+            }
+            histTEP.Add(htep); 
+                          
         }
+
+        private void ClickMethod4()
+        {
+            SendMail();
+        }
+
+        private async void SendMail()
+        {
+            String date = DateTime.Now.ToString("yyyy.MM.dd");
+            String att = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + date + ".csv";
+            String sibject = "Отчет ТЭП" + date;
+
+            TEPMail tepMail = new TEPMail();
+
+            await Task.Factory.StartNew(() =>
+            {
+                tepMail.SendMail(xmlFields, sibject, "Тело", att);
+            });
+        }
+
+
+        private void ClickMethod5()
+        {
+            //выбираем данные за сутки
+            tdd.day = true;
+            ClickMethod3();
+
+            TEPToCSV tepToCSV = new TEPToCSV();
+            tepToCSV.saveData(histTEP);
+        }
+
+
 
         #endregion
 
@@ -404,16 +493,6 @@ namespace Alisa.ViewModel
     }
 
 
-    class Handler_I
-    {
-        public void Message()
-        {
-            //tdd.startDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
-            //tdd.endDate = DateTime.Now;
-            //MessageBox.Show("Точно, уже 71!");
-
-        }
-    }
 
 
 }

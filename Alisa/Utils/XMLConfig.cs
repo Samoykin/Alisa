@@ -28,13 +28,16 @@ namespace Alisa.Utils
                         xmlFields.dbPass = childnode.InnerText;
                     if (childnode.Name == "dbName")
                         xmlFields.dbName = childnode.InnerText;
+                    //кокфигурация подключения к SQLite
+                    if (childnode.Name == "SQLitePass")
+                        xmlFields.SQLitePass = childnode.InnerText;
+                    if (childnode.Name == "SQLiteName")
+                        xmlFields.SQLiteName = childnode.InnerText;
                     //конфигурация отправки E-mail
                     if (childnode.Name == "mailSmtpServer")
                         xmlFields.mailSmtpServer = childnode.InnerText;
                     if (childnode.Name == "mailPort")
-                        xmlFields.mailPort = childnode.InnerText;
-                    if (childnode.Name == "mailPort")
-                        xmlFields.mailPort = childnode.InnerText;
+                        xmlFields.mailPort = Convert.ToInt16(childnode.InnerText);
                     if (childnode.Name == "mailLogin")
                         xmlFields.mailLogin = childnode.InnerText;
                     if (childnode.Name == "mailPass")

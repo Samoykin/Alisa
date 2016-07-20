@@ -1,4 +1,5 @@
 ﻿using Alisa.Model;
+using Alisa.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,32 +13,38 @@ namespace Alisa.ViewModel
 {
     class TEPMail
     {
-        private void SendMail(XMLFields xmlFields)
+        private LogFile logFile = new LogFile();  
+
+        public void SendMail(XMLFields xmlFields, String sibject, String body, String att)
         {
             try
             {
                 using (var mailMessage = new MailMessage())
                 {
-                    mailMessage.From = new MailAddress("sheinos@strnpz.ru");
-                    mailMessage.To.Add(new MailAddress("khafizovin@strnpz.ru"));
-                    mailMessage.Subject = "Заголовок"; // тема письма
-                    mailMessage.Body = "Сообщение"; // письмо
+                    mailMessage.From = new MailAddress(xmlFields.mailFrom);
+                    mailMessage.To.Add(new MailAddress(xmlFields.mailTo));
+                    mailMessage.Subject = sibject; // тема письма
+                    mailMessage.Body = body; // письмо
                     mailMessage.IsBodyHtml = false; // без html, но можно включить
-                    using (var sc = new SmtpClient("strnpz-msg01.strnpz.ru", 25))
+                    Attachment attData = new Attachment(att);
+                    mailMessage.Attachments.Add(attData);
+
+                    using (var sc = new SmtpClient(xmlFields.mailSmtpServer, xmlFields.mailPort))
                     {
                         sc.EnableSsl = true;
                         sc.DeliveryMethod = SmtpDeliveryMethod.Network;
                         sc.UseDefaultCredentials = false;
                         sc.Timeout = 20000;
-                        sc.Credentials = new NetworkCredential("sheinos@strnpz.ru", "sxo");
+                        sc.Credentials = new NetworkCredential(xmlFields.mailLogin, xmlFields.mailPass);
                         sc.Send(mailMessage);
                     }
                 }
-                
-   
             }
             catch (Exception exception)
             {
+                String logText = DateTime.Now.ToString() + "|fail|TEPMail - SendMail|" + exception.Message;
+                logFile.WriteLog(logText);
+
                 MessageBox.Show(exception.Message, "Ошибка");
             }
 

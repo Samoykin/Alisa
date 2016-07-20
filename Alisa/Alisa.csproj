@@ -36,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>klen.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -80,9 +83,10 @@
     <Compile Include="Utils\LogFile.cs" />
     <Compile Include="Utils\ReadTextFile.cs" />
     <Compile Include="Utils\SQLiteDB.cs" />
+    <Compile Include="Utils\TEPToCSV.cs" />
     <Compile Include="Utils\XMLConfig.cs" />
     <Compile Include="ViewModel\Command.cs" />
-    <Compile Include="ViewModel\RuntimeDB.cs" />
+    <Compile Include="Utils\RuntimeDB.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="Utils\TEPMail.cs" />
     <Compile Include="View\MainWindowView.xaml.cs">
@@ -118,7 +122,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="klen.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

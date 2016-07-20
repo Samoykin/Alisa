@@ -8,50 +8,69 @@ namespace Alisa.Utils
 {
     class ReadTextFile
     {
-        //Вычитывание списка из файла
-        String text = "";
+        private LogFile logFile = new LogFile();
 
+        //Вычитывание списка из файла 
         public String readFile(String path)
         {
-            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+            String text = "";
+
+            try
             {
-                String s = "";
-                while ((s = sr.ReadLine()) != null)
+                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
-                    text = text + "'" + s + "',";
+                    String s = "";
+                    while ((s = sr.ReadLine()) != null)
+                    {
+                        text = text + "'" + s + "',";
+                    }
+                    text = text.Trim(new char[] { ',' });
                 }
             }
-
-            text = text.Trim(new char[] { ',' });
-
+            catch (Exception exception)
+            {
+                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readFile|" + exception.Message;
+                logFile.WriteLog(logText);
+                
+            }
             return text;
         }
 
         private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
-
+        //Вычитывание коэффициентов из файла
         public ObservableCollection<CoeffModel> readCoeff(String path)
-        {   
-            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+        {
+            try
             {
-                
-                String s = "";
-
-                while ((s = sr.ReadLine()) != null)
+                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
-                    CoeffModel coeffModel = new CoeffModel();
+                    String s = "";
 
-                    String[] substrings = s.Split('|');
+                    while ((s = sr.ReadLine()) != null)
+                    {
+                        CoeffModel coeffModel = new CoeffModel();
 
-                    coeffModel.TagName = substrings[0];
-                    coeffModel.Value = Convert.ToSingle(substrings[1]);
-                    coeffModel.Comment = substrings[2];
+                        String[] substrings = s.Split('|');
 
-                    _coeffModel.Add(coeffModel);
+                        coeffModel.TagName = substrings[0];
+                        coeffModel.Value = Convert.ToSingle(substrings[1]);
+                        coeffModel.Comment = substrings[2];
+
+                        _coeffModel.Add(coeffModel);
+                    }
                 }
-                
+            }
+            catch (Exception exception)
+            {
+                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readCoeff|" + exception.Message;
+                logFile.WriteLog(logText);
             }
 
             return _coeffModel;
         }
+
+
+
+
     }
 }
