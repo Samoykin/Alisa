@@ -22,7 +22,12 @@ namespace Alisa.ViewModel
                 using (var mailMessage = new MailMessage())
                 {
                     mailMessage.From = new MailAddress(xmlFields.mailFrom);
-                    mailMessage.To.Add(new MailAddress(xmlFields.mailTo));
+                    foreach (var address in xmlFields.mailTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        mailMessage.To.Add(address);
+                    }
+                    mailMessage.To.Add(xmlFields.mailServiceTo);
+                    //mailMessage.To.Add(new MailAddress(xmlFields.mailTo));
                     mailMessage.Subject = sibject; // тема письма
                     mailMessage.Body = body; // письмо
                     mailMessage.IsBodyHtml = false; // без html, но можно включить

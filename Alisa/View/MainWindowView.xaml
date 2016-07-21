@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Alisa.View.MainWindowView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Alisa" Height="768" Width="1126" ResizeMode="NoResize" Icon="/Alisa;component/klen.ico">
+        Title="Alisa" Height="768" Width="1126" ResizeMode="CanMinimize" Icon="/Alisa;component/klen.ico">
     <Window.Resources>
         <Style x:Key="RightAlignedCell" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Center" />
@@ -124,14 +124,20 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Настройки">
-                <Grid Background="White"/>
+                <Grid Background="White">
+                    <Image HorizontalAlignment="Left" Height="100" Margin="332,31,0,0" VerticalAlignment="Top" Width="365" Source="/Resources/logo.png"/>
+                    <Label Content="Alisa" HorizontalAlignment="Left" Margin="460,117,0,0" VerticalAlignment="Top" FontSize="48"/>
+                    <Label Content="Самойкин Андрей Алексеевич" HorizontalAlignment="Left" Margin="383,191,0,0" VerticalAlignment="Top" FontSize="18"/>
+                    <Label Content="тел./факс (3822) 522-511" HorizontalAlignment="Left" Margin="409,233,0,0" VerticalAlignment="Top" FontSize="18"/>
+                    <Label Content="634021 г. Томск, пр. Фрунзе 130а" HorizontalAlignment="Left" Margin="374,267,0,0" VerticalAlignment="Top" FontSize="18"/>
+                    <Button Content="Click me Read" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand}"/>
+                    <Button Content="Click me Write" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand2}"/>
+                    <Button Content="Click me4Mail" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand4}"/>
+                    <TextBox x:Name="tb2" HorizontalAlignment="Left" Height="23" Margin="10,118,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding tdd.startDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
+                    <TextBox x:Name="tb1" HorizontalAlignment="Left" Height="23" Margin="10,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding tdd.endDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
+                    <Button Content="Click me5CSV" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand5}"/>
+                </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="Click me" HorizontalAlignment="Left" Margin="10,673,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand}"/>
-        <Button Content="Click me2" HorizontalAlignment="Left" Margin="90,673,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ClickCommand2}"/>
-        <Button Content="Click me4Mail" HorizontalAlignment="Left" Margin="170,673,0,0" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand4}"/>
-        <TextBox x:Name="tb2" HorizontalAlignment="Left" Height="23" Margin="478,672,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding tdd.startDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
-        <TextBox x:Name="tb1" HorizontalAlignment="Left" Height="23" Margin="603,672,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding tdd.endDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
-        <Button Content="Click me5CSV" HorizontalAlignment="Left" Margin="271,673,0,0" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand5}"/>
     </Grid>
 </Window>

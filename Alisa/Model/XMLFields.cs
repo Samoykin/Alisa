@@ -17,5 +17,6 @@ namespace Alisa.Model
         public String mailPass;
         public String mailFrom;
         public String mailTo;
+        public String mailServiceTo;
     }
 }

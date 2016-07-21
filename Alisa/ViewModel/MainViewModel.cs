@@ -108,29 +108,10 @@ namespace Alisa.ViewModel
             histTEP = new ObservableCollection<HistTEP> { };
 
 
-
-            //Handler_I Handler1 = new Handler_I();
             tdd.onCount += Filter;
             tdd.day = true;
             ClickMethod3();
-            //histTEP = new ObservableCollection<HistTEP>();
-            //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 23, SQLw_Data2 = 23, SQLw_Data3 = 23, SQLw_Data4 = 23, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
-            //histTEP.Add(new HistTEP { dateTime = Convert.ToDateTime("08.07.2016 14:56:29"), SQLw_Data1 = 223, SQLw_Data2 = 283, SQLw_Data3 = 23, SQLw_Data4 = 283, SQLw_Data5 = 23, SQLw_Data6 = 23, SQLw_Data7 = 23, SQLw_Data8 = 23, SQLw_Data9 = 23, SQLw_Data10 = 23, SQLw_Data11 = 23, SQLw_Data12 = 23, SQLw_Data13 = 23 });
-            
 
-            //gridTEP.ItemsSource = histTEP;
-
-            
-
-            //histTEP1 = new ObservableCollection<HistTEP>()
-            //{
-            //    new HistTEP {Value1 = "Honda", Value2= 30000},
-            //    new HistTEP {Value1 = "Ford", Value2= 15000},
-            //    new HistTEP {Value1 = "Lada", Value2= 5000}
-            //};
-
-            //ItemsSource="{Binding Source=g_list}"
-            
         }
 
         #region Commands
@@ -205,6 +186,22 @@ namespace Alisa.ViewModel
 
                     sqliteDB.TEPCreateTable();
                     sqliteDB.TEPWrite(liveTEP);
+
+                    liveTEP.SQLw_Data1 = 0;
+                    liveTEP.SQLw_Data2 = 0;
+                    liveTEP.SQLw_Data3 = 0;
+                    liveTEP.SQLw_Data4 = 0;
+                    liveTEP.SQLw_Data5 = 0;
+                    liveTEP.SQLw_Data6 = 0;
+                    liveTEP.SQLw_Data7 = 0;
+                    liveTEP.SQLw_Data8 = 0;
+                    liveTEP.SQLw_Data9 = 0;
+                    liveTEP.SQLw_Data10 = 0;
+                    liveTEP.SQLw_Data11 = 0;
+                    liveTEP.SQLw_Data12 = 0;
+                    liveTEP.SQLw_Data13 = 0;
+
+
                 }
             }
 
@@ -228,8 +225,22 @@ namespace Alisa.ViewModel
                     tepToCSV.saveData(histTEP);
 
                     //отправка письма
-                    SendMail();
+                    String date = DateTime.Now.ToString("yyyy.MM.dd");
+                    String att = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + date + ".csv";
+                    String subject = "Отчет ТЭП " + date;
+                    String body = "<h2>Отчет ТЭП " + date + "</h2><br>" +
+                        "---------------------------------------<br>" +
+                        "Элком+, Алиса<br>" +
+                        "тел./факс (3822) 522-511<br>";
+                    SendMail(subject, body, att);
 
+                    //отправка письма в Элком с логами
+                    att = Directory.GetCurrentDirectory() + @"\log.txt";
+                    subject = "Логи " + date;
+                    body = "<h2>Логи " + date + "</h2><br>" +
+                        "---------------------------------------<br>" +
+                        "Элком+, Алиса<br>";
+                    SendMail(subject, body, att);
 
                 }
             }
@@ -261,8 +272,6 @@ namespace Alisa.ViewModel
                 tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-30, 0, 0, 0));
             }
 
-
-            //MessageBox.Show("Точно, уже 71!");
 
         }
 
@@ -327,20 +336,17 @@ namespace Alisa.ViewModel
 
         private void ClickMethod4()
         {
-            SendMail();
+            String att = Directory.GetCurrentDirectory() + @"\log.txt";
+            SendMail("Тема", "Привет", att);
         }
 
-        private async void SendMail()
+        private async void SendMail(String subject, String body, String att)
         {
-            String date = DateTime.Now.ToString("yyyy.MM.dd");
-            String att = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + date + ".csv";
-            String sibject = "Отчет ТЭП" + date;
-
             TEPMail tepMail = new TEPMail();
 
             await Task.Factory.StartNew(() =>
             {
-                tepMail.SendMail(xmlFields, sibject, "Тело", att);
+                tepMail.SendMail(xmlFields, subject, body, att);
             });
         }
 
