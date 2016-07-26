@@ -26,6 +26,9 @@ namespace Alisa.Utils
                     }
                     text = text.Trim(new char[] { ',' });
                 }
+
+                String logText = DateTime.Now.ToString() + "|event|ReadTextFile - readFile|Считан список из файла " + path;
+                logFile.WriteLog(logText);
             }
             catch (Exception exception)
             {
@@ -59,6 +62,8 @@ namespace Alisa.Utils
                         _coeffModel.Add(coeffModel);
                     }
                 }
+                String logText = DateTime.Now.ToString() + "|event|ReadTextFile - readCoeff|Считаны коэффициенты из файла " + path;
+                logFile.WriteLog(logText);
             }
             catch (Exception exception)
             {

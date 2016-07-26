@@ -42,6 +42,9 @@ namespace Alisa.ViewModel
                         sc.Timeout = 20000;
                         sc.Credentials = new NetworkCredential(xmlFields.mailLogin, xmlFields.mailPass);
                         sc.Send(mailMessage);
+
+                        String logText = DateTime.Now.ToString() + "|event|TEPMail - SendMail|Письмо отправлено";
+                        logFile.WriteLog(logText);
                     }
                 }
             }

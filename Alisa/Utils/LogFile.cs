@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace Alisa.Utils
 {
@@ -9,10 +10,11 @@ namespace Alisa.Utils
 
         public void WriteLog(String str)
         {
-            using (StreamWriter sw = new StreamWriter(path, true, System.Text.Encoding.Default))
-            {
-                sw.WriteLine(str);
-            }
+                using (StreamWriter sw = new StreamWriter(path, true, System.Text.Encoding.Default))
+                {
+                    sw.WriteLine(str);
+                }
+
         }
     }
 }

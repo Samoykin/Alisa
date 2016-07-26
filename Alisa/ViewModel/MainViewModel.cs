@@ -71,6 +71,7 @@ namespace Alisa.ViewModel
             ClickCommand3 = new Command(arg => ClickMethod3());
             ClickCommand4 = new Command(arg => ClickMethod4());
             ClickCommand5 = new Command(arg => ClickMethod5());
+            ClickCommand6 = new Command(arg => ClickMethod6()); //закрыть окно
 
             TEP = new TEPModel { };
 
@@ -124,6 +125,7 @@ namespace Alisa.ViewModel
         public ICommand ClickCommand3 { get; set; }
         public ICommand ClickCommand4 { get; set; }
         public ICommand ClickCommand5 { get; set; }
+        public ICommand ClickCommand6 { get; set; }
 
         #endregion
 
@@ -156,7 +158,6 @@ namespace Alisa.ViewModel
             {
                 String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ReadData|" + exception.Message;
                 logFile.WriteLog(logText);
-                MessageBox.Show(exception.Message, "Ошибка");
             }
         }
 
@@ -250,26 +251,33 @@ namespace Alisa.ViewModel
         public void Filter()
         {
             DateTime dt = tdd.startDate;
-
-            if (tdd.day)
-            {    
-                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
-                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-1, 0, 0, 0));
-            }
-            if (tdd.firstShift)
+            try
             {
-                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 9, 00, 00);
-                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+                if (tdd.day)
+                {
+                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
+                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-1, 0, 0, 0));
+                }
+                if (tdd.firstShift)
+                {
+                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 9, 00, 00);
+                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+                }
+                if (tdd.secondShift)
+                {
+                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 21, 00, 00);
+                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+                }
+                if (tdd.month)
+                {
+                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
+                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-30, 0, 0, 0));
+                }
             }
-            if (tdd.secondShift)
+            catch (Exception exception) 
             {
-                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 21, 00, 00);
-                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
-            }
-            if (tdd.month)
-            {
-                tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
-                tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-30, 0, 0, 0));
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - Filter|" + exception.Message;
+                logFile.WriteLog(logText);
             }
 
 
@@ -305,49 +313,69 @@ namespace Alisa.ViewModel
 
             ObservableCollection<HistTEP>  histTEP2 = new ObservableCollection<HistTEP> { };
             SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
-            
-            //sqliteDB.TEPCreateTable();
-            histTEP2 = sqliteDB.TEPRead(tdd.startDate, tdd.endDate);
-            //DateTime.Now.Subtract(new TimeSpan(10, 0, 0, 0))
-            
-            histTEP.Clear();
-            htep = new HistTEP { };
-            foreach (HistTEP ht in histTEP2)
+
+            try
             {
-                htep.DateTimeTEP = DateTime.Now;
-                htep.SQLw_Data1 += ht.SQLw_Data1;
-                htep.SQLw_Data2 += ht.SQLw_Data2;
-                htep.SQLw_Data3 += ht.SQLw_Data3;
-                htep.SQLw_Data4 += ht.SQLw_Data4;
-                htep.SQLw_Data5 += ht.SQLw_Data5;
-                htep.SQLw_Data6 += ht.SQLw_Data6;
-                htep.SQLw_Data7 += ht.SQLw_Data7;
-                htep.SQLw_Data8 += ht.SQLw_Data8;
-                htep.SQLw_Data9 += ht.SQLw_Data9;
-                htep.SQLw_Data10 += ht.SQLw_Data10;
-                htep.SQLw_Data11 += ht.SQLw_Data11;
-                htep.SQLw_Data12 += ht.SQLw_Data12;
-                htep.SQLw_Data13 += ht.SQLw_Data13;
-                histTEP.Add(ht);  
+                //sqliteDB.TEPCreateTable();
+                histTEP2 = sqliteDB.TEPRead(tdd.startDate, tdd.endDate);
+                //DateTime.Now.Subtract(new TimeSpan(10, 0, 0, 0))
+
+                histTEP.Clear();
+                htep = new HistTEP { };
+                foreach (HistTEP ht in histTEP2)
+                {
+                    htep.DateTimeTEP = DateTime.Now;
+                    htep.SQLw_Data1 += ht.SQLw_Data1;
+                    htep.SQLw_Data2 += ht.SQLw_Data2;
+                    htep.SQLw_Data3 += ht.SQLw_Data3;
+                    htep.SQLw_Data4 += ht.SQLw_Data4;
+                    htep.SQLw_Data5 += ht.SQLw_Data5;
+                    htep.SQLw_Data6 += ht.SQLw_Data6;
+                    htep.SQLw_Data7 += ht.SQLw_Data7;
+                    htep.SQLw_Data8 += ht.SQLw_Data8;
+                    htep.SQLw_Data9 += ht.SQLw_Data9;
+                    htep.SQLw_Data10 += ht.SQLw_Data10;
+                    htep.SQLw_Data11 += ht.SQLw_Data11;
+                    htep.SQLw_Data12 += ht.SQLw_Data12;
+                    htep.SQLw_Data13 += ht.SQLw_Data13;
+                    histTEP.Add(ht);
+                }
+                histTEP.Add(htep);
             }
-            histTEP.Add(htep); 
+            catch (Exception exception)
+            {
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ClickMethod3|" + exception.Message;
+                logFile.WriteLog(logText);
+            }
                           
         }
 
         private void ClickMethod4()
         {
-            String att = Directory.GetCurrentDirectory() + @"\log.txt";
-            SendMail("Тема", "Привет", att);
+            String log = Directory.GetCurrentDirectory() + @"\log.txt";
+            String log_temp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
+
+            File.Delete(log_temp);
+
+            File.Copy(log, log_temp);
+            SendMail("Тема", "Привет", log_temp);
         }
 
         private async void SendMail(String subject, String body, String att)
         {
             TEPMail tepMail = new TEPMail();
-
-            await Task.Factory.StartNew(() =>
+            try
             {
-                tepMail.SendMail(xmlFields, subject, body, att);
-            });
+                await Task.Factory.StartNew(() =>
+                {
+                    tepMail.SendMail(xmlFields, subject, body, att);
+                });
+            }
+            catch (Exception exception)
+            {
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - SendMail|" + exception.Message;
+                logFile.WriteLog(logText);
+            }
         }
 
 
@@ -361,7 +389,10 @@ namespace Alisa.ViewModel
             tepToCSV.saveData(histTEP);
         }
 
-
+        private void ClickMethod6()
+        {
+            
+        }
 
         #endregion
 

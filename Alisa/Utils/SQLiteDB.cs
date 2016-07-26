@@ -42,6 +42,9 @@ namespace Alisa.Utils
                 SQLiteConnection.CreateFile(_dbName);
                 SQLiteConnection m_dbConnection = new SQLiteConnection("Data Source=DBTels.sqlite;Version=3;");
                 m_dbConnection.SetPassword(_pass);
+
+                String logText = DateTime.Now.ToString() + "|event|SQLiteDB - CreateBase|Создана БД DBTEP";
+                logFile.WriteLog(logText);
             }
         }
 
@@ -58,10 +61,13 @@ namespace Alisa.Utils
                     sqlitecommand.ExecuteNonQuery();
                     connection.Close();
                 }
+
+                String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPCreateTable|Создана таблица TEP";
+                logFile.WriteLog(logText);
             }
             catch (Exception exception)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPWrite|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPCreateTable|" + exception.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -83,6 +89,9 @@ namespace Alisa.Utils
                     command.ExecuteNonQuery();
                     connection.Close();
                 }
+
+                String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPWrite|Записан 2-х часовой отчет TEP";
+                logFile.WriteLog(logText);
             }
             catch (Exception exception)
             {
@@ -94,6 +103,7 @@ namespace Alisa.Utils
         public ObservableCollection<HistTEP> TEPRead(DateTime startDate, DateTime endDate)
         {
             String format_date = "yyyy-MM-dd HH:mm:ss.fff";
+            String format_date_small = "yyyy-MM-dd HH:mm";
 
             histTEP = new ObservableCollection<HistTEP>();
             try
@@ -125,6 +135,9 @@ namespace Alisa.Utils
                     }
                     connection.Close(); 
                 }
+
+                String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPRead|Выбран отчет TEP за период с " + startDate.ToString(format_date_small) + " по " + endDate.ToString(format_date_small);
+                logFile.WriteLog(logText);
             }            
             catch (Exception exception)
             {

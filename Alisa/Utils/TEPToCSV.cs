@@ -44,6 +44,9 @@ namespace Alisa.Utils
 
                 sw.Close();
 
+                String logText = DateTime.Now.ToString() + "|event|TEPToCSV - saveData|Отчет сохранен в csv " + filePath;
+                logFile.WriteLog(logText);
+
             }
             catch (Exception exception)
             {

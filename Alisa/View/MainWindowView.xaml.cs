@@ -16,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Outlook2 = Microsoft.Office.Interop.Outlook;
+
 
 namespace Alisa.View
 {
@@ -30,6 +30,9 @@ namespace Alisa.View
         {
             InitializeComponent();
         }
+
+
+
 
 
 
