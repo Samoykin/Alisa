@@ -62,8 +62,8 @@ namespace Alisa.Utils
                     connection.Close();
                 }
 
-                String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPCreateTable|Создана таблица TEP";
-                logFile.WriteLog(logText);
+                //String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPCreateTable|Создана таблица TEP";
+                //logFile.WriteLog(logText);
             }
             catch (Exception exception)
             {

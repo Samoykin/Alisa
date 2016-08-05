@@ -37,7 +37,7 @@ namespace Alisa.ViewModel
         String DataBaseName = "DBTEP.sqlite";
 
         private ObservableCollection<RuntimeModel> _RtModel;
-        private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
+        //private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
         
         String tagPathCoeff = @"Coeff.txt";
         LogFile logFile = new LogFile();
@@ -60,6 +60,8 @@ namespace Alisa.ViewModel
 
         public HistTEP htep { get; set; }
         public ObservableCollection<HistTEP> histTEP { get; set; }
+        public CoeffModel cModel { get; set; }
+        public ObservableCollection<CoeffModel> _coeffModel { get; set; }
 
         public MainViewModel()
         {
@@ -80,8 +82,11 @@ namespace Alisa.ViewModel
             //вычитывание списка тегов из файла
             tags = rf.readFile(tagPath);
 
-            //Коэффициенты            
+            //Коэффициенты  
+            _coeffModel = new ObservableCollection<CoeffModel> { };
             _coeffModel = rf.readCoeff(tagPathCoeff);
+
+            
 
             //таймер вычитывания значений из БД и расчета ТЭП
             t1.Interval = new TimeSpan(0, 0, 6);
@@ -236,7 +241,13 @@ namespace Alisa.ViewModel
                     SendMail(subject, body, att);
 
                     //отправка письма в Элком с логами
-                    att = Directory.GetCurrentDirectory() + @"\log.txt";
+                    String log = Directory.GetCurrentDirectory() + @"\log.txt";
+                    String log_temp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
+
+                    File.Delete(log_temp);
+                    File.Copy(log, log_temp);
+
+                    att = Directory.GetCurrentDirectory() + @"\log_temp.txt";
                     subject = "Логи " + date;
                     body = "<h2>Логи " + date + "</h2><br>" +
                         "---------------------------------------<br>" +
@@ -255,7 +266,7 @@ namespace Alisa.ViewModel
             {
                 if (tdd.day)
                 {
-                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
+                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
                     tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-1, 0, 0, 0));
                 }
                 if (tdd.firstShift)
@@ -270,7 +281,7 @@ namespace Alisa.ViewModel
                 }
                 if (tdd.month)
                 {
-                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 3, 00, 00);
+                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
                     tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-30, 0, 0, 0));
                 }
             }
