@@ -88,10 +88,10 @@ namespace Alisa.Utils
                 //Eтепла от котлов [Гкал]
                 //{ Удельная энтальпия сухого насыщенного пара в кДж/кг }
                 Double FI502_h = (-1.8395 * Math.Pow(10, -3) * Math.Pow(FI502_P, 4)) + (0.1079 * Math.Pow(FI502_P, 3)) + (-2.4192 * Math.Pow(FI502_P, 2)) + (26.7095 * FI502_P) + 2661.85;
-                
+
                 //{ Тепловая энергия в Гкал/ч }
                 Double FI502_Etta = 0.23885 * Math.Pow(10, -6) * FI502_Qm * 1000 * FI502_h;
-                
+
                 Double Data6 = FI502_Etta / 600;
                 liveTEP.SQLw_Data6 = liveTEP.SQLw_Data6 + Data6;
 
@@ -146,7 +146,7 @@ namespace Alisa.Utils
                 //Fводы на подпитку [нм3] FI503
                 //{ Плотность воды кг/м3 }
                 indx = IndexCalc("OK_AI1603", _RtModel);
-                
+
                 Double FI503_Ro = Math.Pow(10, 9) / (998792.53 + 95.33246 * _RtModel[indx].Value * 98.0665 + 3.4743522 * Math.Pow(_RtModel[indx].Value * 98.0665, 2));
 
                 //{ Массовый расход т/ч (основная формула) }
@@ -226,7 +226,7 @@ namespace Alisa.Utils
                 indx2 = IndexCalc("K1_Tsv_out", _RtModel);
                 indx3 = IndexCalc("K1_Tsv_in", _RtModel);
                 Double Et_K3 = _RtModel[indx].Value * (_RtModel[indx2].Value - _RtModel[indx3].Value) / 1000;
-                
+
                 Double Data12 = Et_K3 / 600;
                 liveTEP.SQLw_Data12 = liveTEP.SQLw_Data12 + Data12;
 
@@ -234,15 +234,20 @@ namespace Alisa.Utils
                 //Количество газа УВП [тыс. нм3]
                 indx = IndexCalc("OK_UVP_Q", _RtModel);
 
-                Double OK_UVP_Q_old = 0;
-                if (_RtModel[indx].Value < OK_UVP_Q_old)
-                    OK_UVP_Q_old = _RtModel[indx].Value;
+                //Double OK_UVP_Q_old = 0;
 
-                Double DeltaQ2 = _RtModel[indx].Value - OK_UVP_Q_old;
-                
+                if (liveTEP.OK_UVP_Q_old == 0)
+                    liveTEP.OK_UVP_Q_old = _RtModel[indx].Value;
+
+                if (_RtModel[indx].Value < liveTEP.OK_UVP_Q_old)
+                    liveTEP.OK_UVP_Q_old = _RtModel[indx].Value;
+
+                Double DeltaQ2 = _RtModel[indx].Value - liveTEP.OK_UVP_Q_old;
+
                 Double Data13 = DeltaQ2;
                 liveTEP.SQLw_Data13 = liveTEP.SQLw_Data13 + Data13;
 
+                
 
 
             }

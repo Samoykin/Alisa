@@ -34,6 +34,7 @@ namespace Alisa.Model
         private Double _SQLw_Data11;
         private Double _SQLw_Data12;
         private Double _SQLw_Data13;
+        private Double _OK_UVP_Q_old;
 
         #endregion
 
@@ -218,7 +219,7 @@ namespace Alisa.Model
             }
         }
         #endregion
-
+              
         #region SQLw_Data13
         public Double SQLw_Data13
         {
@@ -229,6 +230,21 @@ namespace Alisa.Model
                 {
                     _SQLw_Data13 = value;
                     OnPropertyChanged("SQLw_Data13");
+                }
+            }
+        }
+        #endregion
+
+        #region OK_UVP_Q_old
+        public Double OK_UVP_Q_old
+        {
+            get { return _OK_UVP_Q_old; }
+            set
+            {
+                if (_OK_UVP_Q_old != value)
+                {
+                    _OK_UVP_Q_old = value;
+                    OnPropertyChanged("OK_UVP_Q_old");
                 }
             }
         }

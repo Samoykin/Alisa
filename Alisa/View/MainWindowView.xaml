@@ -126,12 +126,12 @@
             <TabItem Header="О программе">
                 <Grid Background="White">
                     <Image HorizontalAlignment="Left" Height="100" Margin="332,31,0,0" VerticalAlignment="Top" Width="365" Source="/Resources/logo.png"/>
-                    <Label Content="Alisa v1.0" HorizontalAlignment="Left" Margin="411,117,0,0" VerticalAlignment="Top" FontSize="48"/>
+                    <Label Content="Alisa v1.2" HorizontalAlignment="Left" Margin="411,117,0,0" VerticalAlignment="Top" FontSize="48"/>
                     <Label Content="Самойкин Андрей" HorizontalAlignment="Left" Margin="434,214,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="тел./факс (3822) 522-511" HorizontalAlignment="Left" Margin="409,253,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="634021 г. Томск, пр. Фрунзе 130а" HorizontalAlignment="Left" Margin="374,290,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="2016" HorizontalAlignment="Left" Margin="490,183,0,0" VerticalAlignment="Top" FontSize="18"/>
-                    <StackPanel HorizontalAlignment="Left" Height="150" Margin="10,10,0,0" VerticalAlignment="Top" Width="146" Visibility="Hidden">
+                    <StackPanel HorizontalAlignment="Left" Height="247" Margin="10,10,0,0" VerticalAlignment="Top" Width="146">
                         <Button Content="Click me Write" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand2}"/>
                         <Button Content="Click me4Mail" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand4}"/>
                         <Button Content="Click me5CSV" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand5}"/>
@@ -141,9 +141,9 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Тест">
+            <TabItem Header="Коэффициенты">
                 <Grid Background="White">
-                    <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="653" Width="432"  ItemsSource="{Binding _coeffModel, Mode=OneWay}" AutoGenerateColumns="false">
+                    <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="653" Width="500"  ItemsSource="{Binding _coeffModel, Mode=OneWay}" AutoGenerateColumns="false">
                         <DataGrid.Columns>
                             <DataGridTextColumn Width="110" Binding="{Binding TagName, Mode=OneWay}" ElementStyle="{StaticResource RightAlignedCell}" CanUserResize="False">
                                 <DataGridTextColumn.Header>
@@ -155,7 +155,7 @@
                                     <Label Content="Значение" Style="{StaticResource DataGridHeader}"/>
                                 </DataGridTextColumn.Header>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Width="200" Binding="{Binding Comment, Mode=OneWay}" CanUserResize="False">
+                            <DataGridTextColumn Width="300" Binding="{Binding Comment, Mode=OneWay}" CanUserResize="False">
                                 <DataGridTextColumn.Header >
                                     <Label Content="Комментарий" Style="{StaticResource DataGridHeader}"/>
                                 </DataGridTextColumn.Header>

@@ -45,7 +45,15 @@ namespace Alisa.Utils
                     if (childnode.Name == "mailFrom")
                         xmlFields.mailFrom = childnode.InnerText;
                     if (childnode.Name == "mailTo")
-                        xmlFields.mailTo += childnode.InnerText+";";
+                        if (xmlFields.mailTo == "")
+                        {
+                            xmlFields.mailTo = childnode.InnerText;
+                        }
+                        else
+                        {
+                            xmlFields.mailTo += ";" + childnode.InnerText;
+                        }                        
+                        
                     if (childnode.Name == "mailServiceTo")
                         xmlFields.mailServiceTo = childnode.InnerText;
                 }

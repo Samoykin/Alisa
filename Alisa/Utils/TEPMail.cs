@@ -15,22 +15,34 @@ namespace Alisa.ViewModel
     {
         private LogFile logFile = new LogFile();  
 
-        public void SendMail(XMLFields xmlFields, String sibject, String body, String att)
+        public void SendMail(XMLFields xmlFields, String sibject, String body, String att, Boolean service)
         {
             try
             {
                 using (var mailMessage = new MailMessage())
                 {
                     mailMessage.From = new MailAddress(xmlFields.mailFrom);
-                    foreach (var address in xmlFields.mailTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
+
+                    if (service)
                     {
-                        mailMessage.To.Add(address);
+                        mailMessage.To.Add(xmlFields.mailServiceTo);
                     }
-                    mailMessage.To.Add(xmlFields.mailServiceTo);
+                    else
+                    {
+                        foreach (var address in xmlFields.mailTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            mailMessage.To.Add(address);
+                        }
+                    }
+                    
+                    //mailMessage.To.Add(xmlFields.mailTo);
+                    //
                     //mailMessage.To.Add(new MailAddress(xmlFields.mailTo));
                     mailMessage.Subject = sibject; // тема письма
+                    
                     mailMessage.Body = body; // письмо
-                    mailMessage.IsBodyHtml = false; // без html, но можно включить
+                    
+                    mailMessage.IsBodyHtml = true; // без html, но можно включить
                     Attachment attData = new Attachment(att);
                     mailMessage.Attachments.Add(attData);
 
@@ -53,7 +65,7 @@ namespace Alisa.ViewModel
                 String logText = DateTime.Now.ToString() + "|fail|TEPMail - SendMail|" + exception.Message;
                 logFile.WriteLog(logText);
 
-                MessageBox.Show(exception.Message, "Ошибка");
+                //MessageBox.Show(exception.Message, "Ошибка");
             }
 
         }
