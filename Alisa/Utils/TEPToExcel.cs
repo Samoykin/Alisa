@@ -16,20 +16,20 @@ namespace Alisa.Utils
         private String filePath = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + DateTime.Now.ToString("yyyy.MM.dd") + ".xlsx";
 
         private Excel.Application ExcelApp;
-        private Excel.Workbook WorkBookExcel;
+        //private Excel.Workbook WorkBookExcel;
         private Excel.Worksheet WorkSheetExcel;
-        private Excel.Range RangeExcel;
+        //private Excel.Range RangeExcel;
 
 
         public void saveData(ObservableCollection<HistTEP> histTEP)
         {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
             try
             {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
                 ExcelApp = new Excel.Application();
                 ExcelApp.Visible = true;
                 ExcelApp.Workbooks.Add();
@@ -52,36 +52,35 @@ namespace Alisa.Utils
 
                 int i = 0;
 
+                Int32 TEPCount = histTEP.Count();
+                Object tt = 0;
+
                 foreach (HistTEP record in histTEP)
                 {
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 1];
-                    RangeExcel.Value = histTEP[i].DateTimeTEP;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 2];
-                    RangeExcel.Value = histTEP[i].SQLw_Data1;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 3];
-                    RangeExcel.Value = histTEP[i].SQLw_Data2;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 4];
-                    RangeExcel.Value = histTEP[i].SQLw_Data3;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 5];
-                    RangeExcel.Value = histTEP[i].SQLw_Data4;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 6];
-                    RangeExcel.Value = histTEP[i].SQLw_Data5;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 7];
-                    RangeExcel.Value = histTEP[i].SQLw_Data6;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 8];
-                    RangeExcel.Value = histTEP[i].SQLw_Data7;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 9];
-                    RangeExcel.Value = histTEP[i].SQLw_Data8;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 10];
-                    RangeExcel.Value = histTEP[i].SQLw_Data9;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 11];
-                    RangeExcel.Value = histTEP[i].SQLw_Data10;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 12];
-                    RangeExcel.Value = histTEP[i].SQLw_Data11;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 13];
-                    RangeExcel.Value = histTEP[i].SQLw_Data12;
-                    RangeExcel = (Excel.Range)WorkSheetExcel.Cells[i + 2, 14];
-                    RangeExcel.Value = histTEP[i].SQLw_Data13;
+                    //tt = histTEP[i].DateTimeTEP;
+                    if (i == TEPCount-1)
+                    {
+                        tt = "Итого:";
+                    }
+                    else
+                    {
+                        tt = histTEP[i].DateTimeTEP;
+                    }
+                    WorkSheetExcel.Cells[i + 2, 1] = tt;
+                    WorkSheetExcel.Cells[i + 2, 2] = histTEP[i].SQLw_Data1;
+
+                    WorkSheetExcel.Cells[i + 2, 3] = histTEP[i].SQLw_Data2;
+                    WorkSheetExcel.Cells[i + 2, 4] = histTEP[i].SQLw_Data3;
+                    WorkSheetExcel.Cells[i + 2, 5] = histTEP[i].SQLw_Data4;
+                    WorkSheetExcel.Cells[i + 2, 6] = histTEP[i].SQLw_Data5;
+                    WorkSheetExcel.Cells[i + 2, 7] = histTEP[i].SQLw_Data6;
+                    WorkSheetExcel.Cells[i + 2, 8] = histTEP[i].SQLw_Data7;
+                    WorkSheetExcel.Cells[i + 2, 9] = histTEP[i].SQLw_Data8;
+                    WorkSheetExcel.Cells[i + 2, 10] = histTEP[i].SQLw_Data9;
+                    WorkSheetExcel.Cells[i + 2, 11] = histTEP[i].SQLw_Data10;
+                    WorkSheetExcel.Cells[i + 2, 12] = histTEP[i].SQLw_Data11;
+                    WorkSheetExcel.Cells[i + 2, 13] = histTEP[i].SQLw_Data12;
+                    WorkSheetExcel.Cells[i + 2, 14] = histTEP[i].SQLw_Data13;                                        
                                        
                     i++;
                 }
@@ -100,6 +99,10 @@ namespace Alisa.Utils
             {
                 String logText = DateTime.Now.ToString() + "|fail|TEPToExcel - saveData|" + exception.Message;
                 logFile.WriteLog(logText);
+
+                WorkSheetExcel.SaveAs(filePath);
+                ExcelApp.Quit();
+                GC.Collect();
 
             }
         }

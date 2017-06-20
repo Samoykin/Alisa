@@ -23,13 +23,13 @@ namespace Alisa.ViewModel
         //конфигурация
         String path = @"Config.xml";
         XMLConfig xmlConf = new XMLConfig();
-        XMLFields xmlFields = new XMLFields();
+        XMLFields xmlFields = new XMLFields(); //модель конфигурации
         //Теги
-        ReadTextFile rf = new ReadTextFile();
+        ReadTextFile rf = new ReadTextFile(); //работа со списками тегов
         String tagPath = @"TagList.txt";
         String tags;
         //БД
-        List<Single> tagValue = new List<float>();
+        List<Single> tagValue = new List<Single>(); //теги в MSSQL Runtime
         RuntimeDB rDB = new RuntimeDB();
         //Таймер
         DispatcherTimer t1 = new DispatcherTimer();
@@ -37,36 +37,28 @@ namespace Alisa.ViewModel
         DispatcherTimer t2 = new DispatcherTimer();
         DispatcherTimer t3 = new DispatcherTimer();
 
+        String DataBaseName = "DBTEP.sqlite"; //БД SQLite
 
-
-        String DataBaseName = "DBTEP.sqlite";
-
-        private ObservableCollection<RuntimeModel> _RtModel;
-        //private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
+        private ObservableCollection<RuntimeModel> _RtModel; //коллекция значений тегов из файла
         
-        String tagPathCoeff = @"Coeff.txt";
-        LogFile logFile = new LogFile();
+        String tagPathCoeff = @"Coeff.txt"; //путь к файлу коэфициентов
+        LogFile logFile = new LogFile(); //логи
 
         #endregion
-
         
 
         #region Properties
 
-        /// <summary>
-        /// Get or set params.
-        /// </summary>
         public TEPModel TEP { get; set; }
         public Test1 tdd { get; set; }
         public RuntimeModel RtModel { get; set; }
         public LiveTEP liveTEP { get; set; }
-
-        #endregion     
-
         public HistTEP htep { get; set; }
         public ObservableCollection<HistTEP> histTEP { get; set; }
         public CoeffModel cModel { get; set; }
         public ObservableCollection<CoeffModel> _coeffModel { get; set; }
+
+        #endregion     
 
         public MainViewModel()
         {
@@ -126,10 +118,6 @@ namespace Alisa.ViewModel
         }
 
         #region Commands
-
-        /// <summary>
-        /// Get or set ClickCommand.
-        /// </summary>
         public ICommand ClickCommand { get; set; }
         public ICommand ClickCommand2 { get; set; }
         public ICommand ClickCommand3 { get; set; }
