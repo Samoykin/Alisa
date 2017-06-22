@@ -30,12 +30,14 @@ namespace Alisa.ViewModel
         String tags;
         //БД
         List<Single> tagValue = new List<Single>(); //теги в MSSQL Runtime
-        RuntimeDB rDB = new RuntimeDB();
+        RuntimeDB rDB;
         //Таймер
         DispatcherTimer t1 = new DispatcherTimer();
         DispatcherTimer t11 = new DispatcherTimer();
         DispatcherTimer t2 = new DispatcherTimer();
         DispatcherTimer t3 = new DispatcherTimer();
+        DispatcherTimer tConnStatus = new DispatcherTimer();
+        DispatcherTimer tSlaveWrite = new DispatcherTimer();
 
         String DataBaseName = "DBTEP.sqlite"; //БД SQLite
 
@@ -58,6 +60,8 @@ namespace Alisa.ViewModel
         public CoeffModel cModel { get; set; }
         public ObservableCollection<CoeffModel> _coeffModel { get; set; }
 
+        public Misc Misc { get; set; }
+
         #endregion     
 
         public MainViewModel()
@@ -73,9 +77,18 @@ namespace Alisa.ViewModel
             ClickCommand6 = new Command(arg => ClickMethod6()); //закрыть окно
 
             TEP = new TEPModel { };
+            Misc = new Misc { };
 
             //Вычитывание параметров из XML
             xmlFields = xmlConf.ReadXmlConf(path);
+
+            rDB = new RuntimeDB(xmlFields);
+
+            if (xmlFields.Master)
+                Misc.Master = "Master";
+            else
+                Misc.Master = "Slave";
+
             //вычитывание списка тегов из файла
             tags = rf.readFile(tagPath);
 
@@ -103,6 +116,11 @@ namespace Alisa.ViewModel
             t3.Tick += new EventHandler(timer_Tick3);
             t3.Start();
 
+            //таймер проверки связи с БД MSSQL
+            tConnStatus.Interval = new TimeSpan(0, 0, 1);
+            tConnStatus.Tick += new EventHandler(timerConnStatus);
+            tConnStatus.Start();
+
             liveTEP = new LiveTEP { };
             tdd = new Test1 {  };
 
@@ -125,6 +143,7 @@ namespace Alisa.ViewModel
         public ICommand ClickCommand5 { get; set; }
         public ICommand ClickCommand6 { get; set; }
 
+
         #endregion
 
         #region Methods
@@ -144,13 +163,8 @@ namespace Alisa.ViewModel
 
                 _RtModel = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() =>
                 {
-                    return rDB.DataRead(tags, xmlFields, _RtModel);
+                    return rDB.DataReadTest(tags, _RtModel);
                 });
-
-                //CalculateTEP clcTEP = new CalculateTEP();
-
-                //liveTEP = clcTEP.Calculate(liveTEP, _RtModel, _coeffModel);
-
                                
             }
             catch (Exception exception)
@@ -210,9 +224,8 @@ namespace Alisa.ViewModel
 
             if (minute == 0)
             {
-                if (hour == Math.Floor(hour / 2) * 2 )
+                if (hour == Math.Floor(hour / 2) * 2 + 1)
                 {
-
                     SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
                     if (!File.Exists(DataBaseName))
                     {
@@ -221,6 +234,22 @@ namespace Alisa.ViewModel
 
                     sqliteDB.TEPCreateTable();
                     sqliteDB.TEPWrite(liveTEP);
+
+                    if (Misc.Master == "Master" && Misc.MSSQLStatus == "")
+                    {
+                        Boolean lastReport = rDB.DataReadLastReport(hour);
+                        if (lastReport == false)
+                            rDB.DataWrite(liveTEP, xmlFields);
+                    }
+                    else if (Misc.Master == "Slave")
+                    {
+                        //таймер проверки записи отчета Masterom
+                        tSlaveWrite.Interval = new TimeSpan(0, 0, 2);
+                        tSlaveWrite.Tick += new EventHandler(timerSlaveWrite);
+                        tSlaveWrite.Start();
+                    }
+
+
 
                     liveTEP.SQLw_Data1 = 0;
                     liveTEP.SQLw_Data2 = 0;
@@ -235,11 +264,23 @@ namespace Alisa.ViewModel
                     liveTEP.SQLw_Data11 = 0;
                     liveTEP.SQLw_Data12 = 0;
                     liveTEP.SQLw_Data13 = 0;
-
-
                 }
             }
 
+        }
+
+        void timerSlaveWrite(object sender, EventArgs e)
+        {
+            Decimal hour = DateTime.Now.Hour;
+            if (Misc.MSSQLStatus == "")
+            {
+                Boolean lastReport = rDB.DataReadLastReport(hour);
+                if (lastReport == false)
+                {
+                    rDB.DataWrite(liveTEP, xmlFields);
+                }
+                tSlaveWrite.Stop();
+            }
         }
 
         void timer_Tick3(object sender, EventArgs e)
@@ -247,10 +288,9 @@ namespace Alisa.ViewModel
             Decimal hour = DateTime.Now.Hour;
             Decimal minute = DateTime.Now.Minute;
 
-
             if (minute == 0)
             {
-                if (hour == 5)
+                if (hour == 6)
                 {
                     //выбираем данные за сутки
                     tdd.day = true;
@@ -286,6 +326,33 @@ namespace Alisa.ViewModel
                 }
             }
 
+        }
+
+        void timerConnStatus(object sender, EventArgs e)
+        {
+            ConnStatus();
+        }
+
+        private async void ConnStatus()
+        {
+            Boolean status = false;
+            try
+            {
+                status = await Task<Boolean>.Factory.StartNew(() =>
+                {
+                    return rDB.CheckMSSQLConn();
+                });
+            }
+            catch(Exception ex)
+            {
+                //String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ConnStatus|" + ex.Message;
+                //logFile.WriteLog(logText);
+            }
+
+            if (!status)
+                Misc.MSSQLStatus = "| MSSQL - нет связи";
+            else
+                Misc.MSSQLStatus = "";
         }
 
         public void Filter()
@@ -331,7 +398,18 @@ namespace Alisa.ViewModel
         //читает с БД
         private void ClickMethod()
         {
-            ReadData();
+            //ReadData();
+            RuntimeDB rtDB = new RuntimeDB(xmlFields);
+            //rtDB.DataWrite(liveTEP, xmlFields);
+            //rtDB.CheckMSSQLConn();
+
+            Decimal hour = 7;
+            if (Misc.Master == "Master" && Misc.MSSQLStatus == "")
+            {
+                Boolean lastReport = rDB.DataReadLastReport(hour);
+                if (lastReport == false)
+                    rDB.DataWrite(liveTEP, xmlFields);
+            }
 
         }
 
@@ -443,6 +521,8 @@ namespace Alisa.ViewModel
 
         }
 
+      
+
         private async void SendMail(String subject, String body, String att, Boolean service)
         {
             TEPMail tepMail = new TEPMail();
@@ -476,6 +556,9 @@ namespace Alisa.ViewModel
         {
             
         }
+
+
+
 
         #endregion
 

@@ -23,13 +23,16 @@ namespace Alisa.ViewModel
                 {
                     mailMessage.From = new MailAddress(xmlFields.mailFrom);
 
+                    List<String> mailToList = new List<string>();
+                    var addresses = xmlFields.mailTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+
                     if (service)
                     {
                         mailMessage.To.Add(xmlFields.mailServiceTo);
                     }
                     else
                     {
-                        foreach (var address in xmlFields.mailTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
+                        foreach (var address in addresses)
                         {
                             mailMessage.To.Add(address);
                         }
@@ -52,7 +55,7 @@ namespace Alisa.ViewModel
                         sc.DeliveryMethod = SmtpDeliveryMethod.Network;
                         sc.UseDefaultCredentials = false;
                         sc.Timeout = 20000;
-                        sc.Credentials = new NetworkCredential(xmlFields.mailLogin, xmlFields.mailPass);
+                        sc.Credentials = new NetworkCredential(xmlFields.mailLogin, xmlFields.mailPass);                        
                         sc.Send(mailMessage);
 
                         String logText = DateTime.Now.ToString() + "|event|TEPMail - SendMail|Письмо отправлено";

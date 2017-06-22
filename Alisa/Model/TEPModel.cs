@@ -13,7 +13,7 @@ namespace Alisa.Model
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(String propertyName)
         {
             if (PropertyChanged != null)
             {
@@ -25,19 +25,19 @@ namespace Alisa.Model
 
         #region Fields
 
-        private string _K4_Qg;
-        private string _K5_Qg;
-        private string _K1_V10040;
-        private string _K1_Fsv;
-        private string _OK_AI1102;
-        private string _OK_AI1105;
+        private String _K4_Qg;
+        private String _K5_Qg;
+        private String _K1_V10040;
+        private String _K1_Fsv;
+        private String _OK_AI1102;
+        private String _OK_AI1105;
 
         #endregion
 
         #region Properties
 
         #region K4_Qg
-            public string K4_Qg
+            public String K4_Qg
             {
                 get { return _K4_Qg; }
                 set
@@ -52,7 +52,7 @@ namespace Alisa.Model
         #endregion
 
         #region K5_Qg
-            public string K5_Qg
+            public String K5_Qg
             {
                 get { return _K5_Qg; }
                 set
@@ -67,7 +67,7 @@ namespace Alisa.Model
         #endregion
 
         #region K1_V10040
-            public string K1_V10040
+            public String K1_V10040
             {
                 get { return _K1_V10040; }
                 set
@@ -82,7 +82,7 @@ namespace Alisa.Model
         #endregion
 
         #region K1_Fsv
-            public string K1_Fsv
+            public String K1_Fsv
             {
                 get { return _K1_Fsv; }
                 set
@@ -97,7 +97,7 @@ namespace Alisa.Model
             #endregion
 
         #region OK_AI1102
-            public string OK_AI1102
+            public String OK_AI1102
             {
                 get { return _OK_AI1102; }
                 set
@@ -112,7 +112,7 @@ namespace Alisa.Model
             #endregion
 
         #region OK_AI1105
-            public string OK_AI1105
+            public String OK_AI1105
             {
                 get { return _OK_AI1105; }
                 set

@@ -65,9 +65,9 @@ namespace Alisa.Utils
                 //String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPCreateTable|Создана таблица TEP";
                 //logFile.WriteLog(logText);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPCreateTable|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPCreateTable|" + ex.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -93,9 +93,9 @@ namespace Alisa.Utils
                 String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPWrite|Записан 2-х часовой отчет TEP";
                 logFile.WriteLog(logText);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPWrite|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPWrite|" + ex.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -139,9 +139,9 @@ namespace Alisa.Utils
                 String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPRead|Выбран отчет TEP за период с " + startDate.ToString(format_date_small) + " по " + endDate.ToString(format_date_small);
                 logFile.WriteLog(logText);
             }            
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPRead|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPRead|" + ex.Message;
                 logFile.WriteLog(logText);
             }
             return histTEP;

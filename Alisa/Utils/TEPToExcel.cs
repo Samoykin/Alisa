@@ -16,7 +16,6 @@ namespace Alisa.Utils
         private String filePath = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + DateTime.Now.ToString("yyyy.MM.dd") + ".xlsx";
 
         private Excel.Application ExcelApp;
-        //private Excel.Workbook WorkBookExcel;
         private Excel.Worksheet WorkSheetExcel;
         //private Excel.Range RangeExcel;
 
@@ -39,7 +38,7 @@ namespace Alisa.Utils
                 WorkSheetExcel.Cells[1, 2] = "K1 - Fгаза[м3], 1-FI501";
                 WorkSheetExcel.Cells[1, 3] = "K2 - Fгаза[м3], 2-FI501";
                 WorkSheetExcel.Cells[1, 4] = "K3 - Fгаза[м3], 3-FI501";
-                WorkSheetExcel.Cells[1, 5] = "K3 - Fводы[нм3],3-FI502";
+                WorkSheetExcel.Cells[1, 5] = "K3 - Fводы[нм3], 3-FI502";
                 WorkSheetExcel.Cells[1, 6] = "Fпара от котл[т/ч], FI502";
                 WorkSheetExcel.Cells[1, 7] = "Етепла от котл [Гкал]";
                 WorkSheetExcel.Cells[1, 8] = "Fпара на уст [т/ч], FI507";
@@ -50,6 +49,46 @@ namespace Alisa.Utils
                 WorkSheetExcel.Cells[1, 13] = "Етепла 3-го котла [Гкал]";
                 WorkSheetExcel.Cells[1, 14] = "Кол-во газа (УВП)[тыс. нм3]";
 
+                (WorkSheetExcel.Cells[1, 1] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 2] as Excel.Range).EntireColumn.ColumnWidth = 14;
+                (WorkSheetExcel.Cells[1, 3] as Excel.Range).EntireColumn.ColumnWidth = 14;
+                (WorkSheetExcel.Cells[1, 4] as Excel.Range).EntireColumn.ColumnWidth = 14;
+                (WorkSheetExcel.Cells[1, 5] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 6] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 7] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 8] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 9] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 10] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 11] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 12] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 13] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                (WorkSheetExcel.Cells[1, 14] as Excel.Range).EntireColumn.ColumnWidth = 15;
+
+                (WorkSheetExcel.Cells[1, 2] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 3] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 4] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 5] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 6] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 7] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 8] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 9] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 10] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 11] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 12] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 13] as Excel.Range).WrapText = true;
+                (WorkSheetExcel.Cells[1, 14] as Excel.Range).WrapText = true;
+
+                int k = 1;
+                while (k < 15)
+                {
+                    (WorkSheetExcel.Cells[1, k] as Excel.Range).Interior.ColorIndex = 45;
+                    k++;
+                }
+
+                (WorkSheetExcel.Cells[1, 1] as Excel.Range).EntireRow.RowHeight = 33;
+
+                (WorkSheetExcel.Cells[1, 1] as Excel.Range).EntireColumn.VerticalAlignment = Excel.XlVAlign.xlVAlignTop;
+
                 int i = 0;
 
                 Int32 TEPCount = histTEP.Count();
@@ -57,10 +96,16 @@ namespace Alisa.Utils
 
                 foreach (HistTEP record in histTEP)
                 {
-                    //tt = histTEP[i].DateTimeTEP;
                     if (i == TEPCount-1)
                     {
                         tt = "Итого:";
+
+                        int j = 1;
+                        while (j < 15)
+                        {
+                            (WorkSheetExcel.Cells[i + 2, j] as Excel.Range).Interior.ColorIndex = 15;
+                            j++;
+                        }
                     }
                     else
                     {
@@ -80,8 +125,9 @@ namespace Alisa.Utils
                     WorkSheetExcel.Cells[i + 2, 11] = histTEP[i].SQLw_Data10;
                     WorkSheetExcel.Cells[i + 2, 12] = histTEP[i].SQLw_Data11;
                     WorkSheetExcel.Cells[i + 2, 13] = histTEP[i].SQLw_Data12;
-                    WorkSheetExcel.Cells[i + 2, 14] = histTEP[i].SQLw_Data13;                                        
-                                       
+                    WorkSheetExcel.Cells[i + 2, 14] = histTEP[i].SQLw_Data13;
+
+
                     i++;
                 }
 

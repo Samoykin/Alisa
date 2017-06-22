@@ -81,11 +81,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\CoeffModel.cs" />
+    <Compile Include="Model\ConfigMSSQL.cs" />
+    <Compile Include="Model\Misc.cs" />
     <Compile Include="Model\XMLFields.cs" />
     <Compile Include="Model\HistTEP.cs" />
     <Compile Include="Model\LiveTEP.cs" />
     <Compile Include="Model\RuntimeModel.cs" />
     <Compile Include="Utils\CalculateTEP.cs" />
+    <Compile Include="Utils\ConfigXML.cs" />
     <Compile Include="Utils\LogFile.cs" />
     <Compile Include="Utils\ReadTextFile.cs" />
     <Compile Include="Utils\SQLiteDB.cs" />
