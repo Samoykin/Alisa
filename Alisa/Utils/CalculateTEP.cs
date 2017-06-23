@@ -251,9 +251,9 @@ namespace Alisa.Utils
 
 
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - Calculate|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - Calculate|" + e.Message;
                 logFile.WriteLog(logText);
             }
 

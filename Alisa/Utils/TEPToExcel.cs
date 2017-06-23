@@ -141,9 +141,9 @@ namespace Alisa.Utils
                 logFile.WriteLog(logText);
 
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|TEPToExcel - saveData|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|TEPToExcel - saveData|" + e.Message;
                 logFile.WriteLog(logText);
 
                 WorkSheetExcel.SaveAs(filePath);

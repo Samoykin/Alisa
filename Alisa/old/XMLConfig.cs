@@ -60,9 +60,9 @@ namespace Alisa.Utils
             {
                 xmlFields.Master = Convert.ToBoolean(xelCat.Element("Master").Value);
             }
-            catch(Exception ex)
+            catch(Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|XMLConfig - ReadXmlConf|" + ex.Message;
+                String logText = DateTime.Now.ToString() + "|fail|XMLConfig - ReadXmlConf|" + e.Message;
                 logFile.WriteLog(logText);
             }
 

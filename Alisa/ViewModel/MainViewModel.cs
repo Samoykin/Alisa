@@ -21,9 +21,13 @@ namespace Alisa.ViewModel
     {
         #region Fields
         //конфигурация
-        String path = @"Config.xml";
-        XMLConfig xmlConf = new XMLConfig();
-        XMLFields xmlFields = new XMLFields(); //модель конфигурации
+        //String path = @"Config.xml";
+        String path = @"Settings.xml";
+        //XMLConfig xmlConf = new XMLConfig();
+        //XMLFields xmlFields = new XMLFields(); //модель конфигурации
+
+        RootElement settingsModel = new RootElement();
+
         //Теги
         ReadTextFile rf = new ReadTextFile(); //работа со списками тегов
         String tagPath = @"TagList.txt";
@@ -38,6 +42,9 @@ namespace Alisa.ViewModel
         DispatcherTimer t3 = new DispatcherTimer();
         DispatcherTimer tConnStatus = new DispatcherTimer();
         DispatcherTimer tSlaveWrite = new DispatcherTimer();
+        DispatcherTimer tAccessReport = new DispatcherTimer();
+
+        Boolean reportFlag = false;
 
         String DataBaseName = "DBTEP.sqlite"; //БД SQLite
 
@@ -52,9 +59,10 @@ namespace Alisa.ViewModel
         #region Properties
 
         public TEPModel TEP { get; set; }
-        public Test1 tdd { get; set; }
+        public Filters Filters { get; set; }
         public RuntimeModel RtModel { get; set; }
         public LiveTEP liveTEP { get; set; }
+        public LiveTEP TEPtoBase { get; set; }
         public HistTEP htep { get; set; }
         public ObservableCollection<HistTEP> histTEP { get; set; }
         public CoeffModel cModel { get; set; }
@@ -71,7 +79,7 @@ namespace Alisa.ViewModel
 
             ClickCommand = new Command(arg => ClickMethod());
             ClickCommand2 = new Command(arg => ClickMethod2());
-            ClickCommand3 = new Command(arg => ClickMethod3());
+            ClickApplyFilter = new Command(arg => ApplyFilter());
             ClickCommand4 = new Command(arg => ClickMethod4());
             ClickCommand5 = new Command(arg => ClickMethod5());
             ClickCommand6 = new Command(arg => ClickMethod6()); //закрыть окно
@@ -80,11 +88,37 @@ namespace Alisa.ViewModel
             Misc = new Misc { };
 
             //Вычитывание параметров из XML
-            xmlFields = xmlConf.ReadXmlConf(path);
+            //Инициализация модели настроек
+            SettingsXML<RootElement> settingsXML = new SettingsXML<RootElement>(path);
+            settingsModel.MSSQL = new MSSQL();
+            settingsModel.SQLite = new SQLite();
+            settingsModel.Mail = new Mail();
+            settingsModel.Mail.To = new List<string>();
+            settingsModel.Reserv = new Reserv();
 
-            rDB = new RuntimeDB(xmlFields);
+            if (!File.Exists(path))
+            {
+                settingsModel = SetDefaultValue(settingsModel); //значения по умолчанию
+                settingsXML.WriteXml(settingsModel);
+            }
+            else
+            {
+                settingsModel = settingsXML.ReadXml(settingsModel);
+            }
 
-            if (xmlFields.Master)
+            
+
+
+
+
+
+
+
+            //xmlFields = xmlConf.ReadXmlConf(path);
+
+            rDB = new RuntimeDB(settingsModel.MSSQL);
+
+            if (settingsModel.Reserv.Master)
                 Misc.Master = "Master";
             else
                 Misc.Master = "Slave";
@@ -121,24 +155,29 @@ namespace Alisa.ViewModel
             tConnStatus.Tick += new EventHandler(timerConnStatus);
             tConnStatus.Start();
 
-            liveTEP = new LiveTEP { };
-            tdd = new Test1 {  };
+            //таймер на доступ к записи отчета
+            tAccessReport.Interval = new TimeSpan(0, 2, 0);
+            tAccessReport.Tick += new EventHandler(timerAccessReport);
+            tAccessReport.Start();
 
-            tdd.connect = _coeffModel[0].Value.ToString();
-            tdd.startDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
-            tdd.endDate = DateTime.Now;
+            liveTEP = new LiveTEP { };
+            TEPtoBase = new LiveTEP { };
+            Filters = new Filters {  };
+            
+            Filters.StartDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
+            Filters.EndDate = DateTime.Now;
 
             histTEP = new ObservableCollection<HistTEP> { };
 
-            tdd.onCount += Filter;
-            tdd.day = true;
-            ClickMethod3();
+            Filters.onCount += Filter;
+            Filters.Day = true;
+            ApplyFilter();
         }
 
         #region Commands
         public ICommand ClickCommand { get; set; }
         public ICommand ClickCommand2 { get; set; }
-        public ICommand ClickCommand3 { get; set; }
+        public ICommand ClickApplyFilter { get; set; }
         public ICommand ClickCommand4 { get; set; }
         public ICommand ClickCommand5 { get; set; }
         public ICommand ClickCommand6 { get; set; }
@@ -149,8 +188,7 @@ namespace Alisa.ViewModel
         #region Methods
 
         void timer_Tick(object sender, EventArgs e)
-        {
-            
+        {            
             ReadData();            
         }
         
@@ -167,16 +205,15 @@ namespace Alisa.ViewModel
                 });
                                
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ReadData|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ReadData|" + e.Message;
                 logFile.WriteLog(logText);
             }
         }
 
         void timer_Tick_Calc(object sender, EventArgs e)
         {
-
             CalcData();
         }
 
@@ -194,9 +231,9 @@ namespace Alisa.ViewModel
                 liveTEP.OK_UVP_Q_old = _RtModel[indx].Value;
 
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - CalcData|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - CalcData|" + e.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -224,9 +261,9 @@ namespace Alisa.ViewModel
 
             if (minute == 0)
             {
-                if (hour == Math.Floor(hour / 2) * 2 + 1)
+                if (hour == Math.Floor(hour / 2) * 2 + 1 && reportFlag==true)
                 {
-                    SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
+                    SQLiteDB sqliteDB = new SQLiteDB(settingsModel.SQLite);
                     if (!File.Exists(DataBaseName))
                     {
                         sqliteDB.CreateBase();
@@ -235,11 +272,13 @@ namespace Alisa.ViewModel
                     sqliteDB.TEPCreateTable();
                     sqliteDB.TEPWrite(liveTEP);
 
+                    TEPtoBase = liveTEP;
+
                     if (Misc.Master == "Master" && Misc.MSSQLStatus == "")
                     {
                         Boolean lastReport = rDB.DataReadLastReport(hour);
                         if (lastReport == false)
-                            rDB.DataWrite(liveTEP, xmlFields);
+                            rDB.DataWrite(TEPtoBase);
                     }
                     else if (Misc.Master == "Slave")
                     {
@@ -248,8 +287,6 @@ namespace Alisa.ViewModel
                         tSlaveWrite.Tick += new EventHandler(timerSlaveWrite);
                         tSlaveWrite.Start();
                     }
-
-
 
                     liveTEP.SQLw_Data1 = 0;
                     liveTEP.SQLw_Data2 = 0;
@@ -277,10 +314,16 @@ namespace Alisa.ViewModel
                 Boolean lastReport = rDB.DataReadLastReport(hour);
                 if (lastReport == false)
                 {
-                    rDB.DataWrite(liveTEP, xmlFields);
+                    rDB.DataWrite(TEPtoBase);
                 }
                 tSlaveWrite.Stop();
             }
+        }
+
+        void timerAccessReport(object sender, EventArgs e)
+        {
+            reportFlag = true;
+            tAccessReport.Stop();
         }
 
         void timer_Tick3(object sender, EventArgs e)
@@ -293,8 +336,8 @@ namespace Alisa.ViewModel
                 if (hour == 6)
                 {
                     //выбираем данные за сутки
-                    tdd.day = true;
-                    ClickMethod3();
+                    Filters.Day = true;
+                    ApplyFilter();
                     //сохраняем отчет в csv
                     TEPToExcel tepToExcel = new TEPToExcel();
                     tepToExcel.saveData(histTEP);
@@ -343,7 +386,7 @@ namespace Alisa.ViewModel
                     return rDB.CheckMSSQLConn();
                 });
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 //String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ConnStatus|" + ex.Message;
                 //logFile.WriteLog(logText);
@@ -357,33 +400,33 @@ namespace Alisa.ViewModel
 
         public void Filter()
         {
-            DateTime dt = tdd.startDate;
+            DateTime dt = Filters.StartDate;
             try
             {
-                if (tdd.day)
+                if (Filters.Day)
                 {
-                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
-                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-1, 0, 0, 0));
+                    Filters.StartDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
+                    Filters.EndDate = Filters.StartDate.Subtract(new TimeSpan(-1, 0, 0, 0));
                 }
-                if (tdd.firstShift)
+                if (Filters.FirstShift)
                 {
-                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 9, 00, 00);
-                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+                    Filters.StartDate = new DateTime(dt.Year, dt.Month, dt.Day, 9, 00, 00);
+                    Filters.EndDate = Filters.StartDate.Subtract(new TimeSpan(0, -12, 0, 0));
                 }
-                if (tdd.secondShift)
+                if (Filters.SecondShift)
                 {
-                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 21, 00, 00);
-                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(0, -12, 0, 0));
+                    Filters.StartDate = new DateTime(dt.Year, dt.Month, dt.Day, 21, 00, 00);
+                    Filters.EndDate = Filters.StartDate.Subtract(new TimeSpan(0, -12, 0, 0));
                 }
-                if (tdd.month)
+                if (Filters.Month)
                 {
-                    tdd.startDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
-                    tdd.endDate = tdd.startDate.Subtract(new TimeSpan(-30, 0, 0, 0));
+                    Filters.StartDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
+                    Filters.EndDate = Filters.StartDate.Subtract(new TimeSpan(-30, 0, 0, 0));
                 }
             }
-            catch (Exception exception) 
+            catch (Exception e) 
             {
-                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - Filter|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - Filter|" + e.Message;
                 logFile.WriteLog(logText);
             }
 
@@ -391,54 +434,21 @@ namespace Alisa.ViewModel
         }
 
 
-
-        /// <summary>
-        /// Click method.
-        /// </summary>
-        //читает с БД
-        private void ClickMethod()
-        {
-            //ReadData();
-            RuntimeDB rtDB = new RuntimeDB(xmlFields);
-            //rtDB.DataWrite(liveTEP, xmlFields);
-            //rtDB.CheckMSSQLConn();
-
-            Decimal hour = 7;
-            if (Misc.Master == "Master" && Misc.MSSQLStatus == "")
-            {
-                Boolean lastReport = rDB.DataReadLastReport(hour);
-                if (lastReport == false)
-                    rDB.DataWrite(liveTEP, xmlFields);
-            }
-
-        }
-
-        //создает БД, таблицу и делает запись
-        private void ClickMethod2()
-        {
-            String DataBaseName = "DBTEP.sqlite";
-            SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
-            if (!File.Exists(DataBaseName))
-            {
-                sqliteDB.CreateBase();
-            }
-
-            sqliteDB.TEPCreateTable();
-            sqliteDB.TEPWrite(liveTEP);
-        }
-
-        private void ClickMethod3()
+        //------------------------------------------
+        //Кнопки
+        //------------------------------------------
+        
+        //Применение выбранного фильтра на "Главной"
+        private void ApplyFilter()
         {
             Filter();
 
             ObservableCollection<HistTEP>  histTEP2 = new ObservableCollection<HistTEP> { };
-            SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
+            SQLiteDB sqliteDB = new SQLiteDB(settingsModel.SQLite);
 
             try
             {
-                //sqliteDB.TEPCreateTable();
-                histTEP2 = sqliteDB.TEPRead(tdd.startDate, tdd.endDate);
-                //DateTime.Now.Subtract(new TimeSpan(10, 0, 0, 0))
+                histTEP2 = sqliteDB.TEPRead(Filters.StartDate, Filters.EndDate);
 
                 histTEP.Clear();
                 htep = new HistTEP { };
@@ -462,12 +472,71 @@ namespace Alisa.ViewModel
                 }
                 histTEP.Add(htep);
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ClickMethod3|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - ClickMethod3|" + e.Message;
                 logFile.WriteLog(logText);
             }
                           
+        }
+
+        //читает с БД
+        private void ClickMethod()
+        {
+            //ReadData();
+            RuntimeDB rtDB = new RuntimeDB(settingsModel.MSSQL);
+            //rtDB.DataWrite(liveTEP, xmlFields);
+            //rtDB.CheckMSSQLConn();
+
+            Decimal hour = 7;
+            if (Misc.Master == "Master" && Misc.MSSQLStatus == "")
+            {
+                Boolean lastReport = rDB.DataReadLastReport(hour);
+                if (lastReport == false)
+                    rDB.DataWrite(liveTEP);
+            }
+
+        }
+
+        //создает БД, таблицу и делает запись
+        private void ClickMethod2()
+        {
+            //String DataBaseName = "DBTEP.sqlite";
+            //SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
+            //if (!File.Exists(DataBaseName))
+            //{
+            //    sqliteDB.CreateBase();
+            //}
+
+            //sqliteDB.TEPCreateTable();
+            //sqliteDB.TEPWrite(liveTEP);
+
+            
+
+
+        }
+
+        public RootElement SetDefaultValue(RootElement set)
+        {
+            set.MSSQL.Server = "192.168.8.224";
+            set.MSSQL.DBName = "Runtime";
+            set.MSSQL.Login = "sa";
+            set.MSSQL.Pass = "sa";
+
+            set.SQLite.DBName = "DBTEP.sqlite";
+            set.SQLite.Pass = "";
+
+            set.Mail.SmtpServer = "sdsdsds";
+            set.Mail.Port = 25;
+            set.Mail.Login = "SamoykinAA";
+            set.Mail.Pass = "Ghjcnj_Gfhjkm3";
+            set.Mail.From = "SamoykinAA@elcomplus.ru";
+            set.Mail.To.Add("SamoykinAA@elcomplus.ru");
+            set.Mail.ServiceTo = "";
+
+            set.Reserv.Master = true;
+
+            return set;
         }
 
         //запись в лог и отсылка сообщения с логами
@@ -483,8 +552,8 @@ namespace Alisa.ViewModel
 
 
             //выбираем данные за сутки
-            tdd.day = true;
-            ClickMethod3();
+            Filters.Day = true;
+            ApplyFilter();
             //сохраняем отчет в csv
             TEPToExcel tepToExcel = new TEPToExcel();
             tepToExcel.saveData(histTEP);
@@ -530,12 +599,12 @@ namespace Alisa.ViewModel
             {
                 await Task.Factory.StartNew(() =>
                 {
-                    tepMail.SendMail(xmlFields, subject, body, att, service);
+                    tepMail.SendMail(settingsModel.Mail, subject, body, att, service);
                 });
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - SendMail|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|MainViewModel - SendMail|" + e.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -544,8 +613,8 @@ namespace Alisa.ViewModel
         private void ClickMethod5()
         {
             //выбираем данные за сутки
-            tdd.day = true;
-            ClickMethod3();
+            Filters.Day = true;
+            ApplyFilter();
 
             // TEPToCSV tepToCSV = new TEPToCSV();
             TEPToExcel tepToExcel = new TEPToExcel();
@@ -567,135 +636,7 @@ namespace Alisa.ViewModel
     }
 
 
-    class Test1 : INotifyPropertyChanged
-    {
-        public delegate void MethodContainer();
-        public event MethodContainer onCount;
-
-
-        #region Implement INotyfyPropertyChanged members
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        #endregion
-
-        private string _connect;
-        private DateTime _startDate;
-        private DateTime _endDate;
-        private Boolean _day;
-        private Boolean _firstShift;
-        private Boolean _secondShift;
-        private Boolean _month;
-
-        public string connect
-        {
-            get { return _connect; }
-            set
-            {
-                if (_connect != value)
-                {
-                    _connect = value;
-                    OnPropertyChanged("connect");
-                }
-            }
-        }              
-
-        public DateTime startDate
-        {
-            get { return _startDate; }
-            set
-            {
-                if (_startDate != value)
-                {
-                    _startDate = value;
-                    OnPropertyChanged("startDate");
-                    //onCount();
-                }
-            }
-        }
-
-        public DateTime endDate
-        {
-            get { return _endDate; }
-            set
-            {
-                if (_endDate != value)
-                {
-                    _endDate = value;
-                    OnPropertyChanged("endDate");
-                }
-            }
-        }
-
-        public Boolean day
-        {
-            get { return _day; }
-            set
-            {
-                if (_day != value)
-                {
-                    _day = value;
-                    OnPropertyChanged("day");
-                    onCount();
-                }
-            }
-        }
-
-        public Boolean firstShift
-        {
-            get { return _firstShift; }
-            set
-            {
-                if (_firstShift != value)
-                {
-                    _firstShift = value;
-                    OnPropertyChanged("firstShift");
-                    onCount();
-                }
-            }
-        }
-
-        public Boolean secondShift
-        {
-            get { return _secondShift; }
-            set
-            {
-                if (_secondShift != value)
-                {
-                    _secondShift = value;
-                    OnPropertyChanged("secondShift");
-                    onCount();
-                }
-            }
-        }
-
-        public Boolean month
-        {
-            get { return _month; }
-            set
-            {
-                if (_month != value)
-                {
-                    _month = value;
-                    OnPropertyChanged("month");
-                    onCount();
-                }
-            }
-        }
-
-
-
-    }
-
-
+  
 
 
 }

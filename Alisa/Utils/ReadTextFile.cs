@@ -30,9 +30,9 @@ namespace Alisa.Utils
                 String logText = DateTime.Now.ToString() + "|event|ReadTextFile - readFile|Считан список из файла " + path;
                 logFile.WriteLog(logText);
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readFile|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readFile|" + e.Message;
                 logFile.WriteLog(logText);
                 
             }
@@ -65,9 +65,9 @@ namespace Alisa.Utils
                 String logText = DateTime.Now.ToString() + "|event|ReadTextFile - readCoeff|Считаны коэффициенты из файла " + path;
                 logFile.WriteLog(logText);
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readCoeff|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readCoeff|" + e.Message;
                 logFile.WriteLog(logText);
             }
 

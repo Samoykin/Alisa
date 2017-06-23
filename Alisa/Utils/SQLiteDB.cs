@@ -23,10 +23,10 @@ namespace Alisa.Utils
         private HistTEP oneTEP;
         private LogFile logFile = new LogFile();
 
-        public SQLiteDB(XMLFields xmlFields)
+        public SQLiteDB(SQLite SQLite)
         {
-            _dbName = xmlFields.SQLiteName;
-            _pass = xmlFields.SQLitePass;
+            _dbName = SQLite.DBName;
+            _pass = SQLite.Pass;
         }
 
         private String ConnString()
@@ -62,12 +62,10 @@ namespace Alisa.Utils
                     connection.Close();
                 }
 
-                //String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPCreateTable|Создана таблица TEP";
-                //logFile.WriteLog(logText);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPCreateTable|" + ex.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPCreateTable|" + e.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -93,9 +91,9 @@ namespace Alisa.Utils
                 String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPWrite|Записан 2-х часовой отчет TEP";
                 logFile.WriteLog(logText);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPWrite|" + ex.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPWrite|" + e.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -139,9 +137,9 @@ namespace Alisa.Utils
                 String logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPRead|Выбран отчет TEP за период с " + startDate.ToString(format_date_small) + " по " + endDate.ToString(format_date_small);
                 logFile.WriteLog(logText);
             }            
-            catch (Exception ex)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPRead|" + ex.Message;
+                String logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPRead|" + e.Message;
                 logFile.WriteLog(logText);
             }
             return histTEP;

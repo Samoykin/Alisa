@@ -81,20 +81,22 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\CoeffModel.cs" />
-    <Compile Include="Model\ConfigMSSQL.cs" />
+    <Compile Include="old\ConfigMSSQL.cs" />
+    <Compile Include="Model\Filters.cs" />
     <Compile Include="Model\Misc.cs" />
-    <Compile Include="Model\XMLFields.cs" />
+    <Compile Include="Model\Settings.cs" />
+    <Compile Include="old\XMLFields.cs" />
     <Compile Include="Model\HistTEP.cs" />
     <Compile Include="Model\LiveTEP.cs" />
     <Compile Include="Model\RuntimeModel.cs" />
     <Compile Include="Utils\CalculateTEP.cs" />
-    <Compile Include="Utils\ConfigXML.cs" />
+    <Compile Include="Utils\SettingsXML.cs" />
     <Compile Include="Utils\LogFile.cs" />
     <Compile Include="Utils\ReadTextFile.cs" />
     <Compile Include="Utils\SQLiteDB.cs" />
     <Compile Include="Utils\TEPToCSV.cs" />
     <Compile Include="Utils\TEPToExcel.cs" />
-    <Compile Include="Utils\XMLConfig.cs" />
+    <Compile Include="old\XMLConfig.cs" />
     <Compile Include="ViewModel\Command.cs" />
     <Compile Include="Utils\RuntimeDB.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

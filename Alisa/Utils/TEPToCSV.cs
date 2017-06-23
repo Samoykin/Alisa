@@ -48,9 +48,9 @@ namespace Alisa.Utils
                 logFile.WriteLog(logText);
 
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|TEPToCSV - saveData|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|TEPToCSV - saveData|" + e.Message;
                 logFile.WriteLog(logText);
 
             }

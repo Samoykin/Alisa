@@ -124,12 +124,12 @@
                     <TextBlock HorizontalAlignment="Left" Margin="918,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data12, StringFormat=\{0:0.##\}}" FontSize="14"/>
                     <TextBlock HorizontalAlignment="Left" Margin="995,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding liveTEP.SQLw_Data13, StringFormat=\{0:0.##\}}" FontSize="14"/>
                     <Label Content="Текущие" HorizontalAlignment="Left" Margin="20,65,0,0" VerticalAlignment="Top" FontSize="14"/>
-                    <DatePicker x:Name="startDate" HorizontalAlignment="Left" Margin="312,23,0,0" VerticalAlignment="Top" SelectedDate="{Binding tdd.startDate, Mode=TwoWay}" />
-                    <Button x:Name="choiceUpd" Content="Обновить" HorizontalAlignment="Left" Margin="436,24,0,0" VerticalAlignment="Top" Width="75"  Command="{Binding ClickCommand3}"/>
-                    <RadioButton Content="Сутки" HorizontalAlignment="Left" Margin="20,27,0,0" VerticalAlignment="Top" IsChecked="{Binding tdd.day, Mode=TwoWay}"/>
-                    <RadioButton Content="1 смена" HorizontalAlignment="Left" Margin="90,27,0,0" VerticalAlignment="Top" IsChecked="{Binding tdd.firstShift, Mode=TwoWay}"/>
-                    <RadioButton Content="2 смена" HorizontalAlignment="Left" Margin="166,27,0,0" VerticalAlignment="Top" IsChecked="{Binding tdd.secondShift, Mode=TwoWay}"/>
-                    <RadioButton Content="Месяц" HorizontalAlignment="Left" Margin="242,27,0,0" VerticalAlignment="Top" IsChecked="{Binding tdd.month, Mode=TwoWay}"/>
+                    <DatePicker x:Name="startDate" HorizontalAlignment="Left" Margin="312,23,0,0" VerticalAlignment="Top" SelectedDate="{Binding Filters.StartDate, Mode=TwoWay}" />
+                    <Button x:Name="choiceUpd" Content="Обновить" HorizontalAlignment="Left" Margin="436,24,0,0" VerticalAlignment="Top" Width="75"  Command="{Binding ClickApplyFilter}"/>
+                    <RadioButton Content="Сутки" HorizontalAlignment="Left" Margin="20,27,0,0" VerticalAlignment="Top" IsChecked="{Binding Filters.Day, Mode=TwoWay}"/>
+                    <RadioButton Content="1 смена" HorizontalAlignment="Left" Margin="90,27,0,0" VerticalAlignment="Top" IsChecked="{Binding Filters.FirstShift, Mode=TwoWay}"/>
+                    <RadioButton Content="2 смена" HorizontalAlignment="Left" Margin="166,27,0,0" VerticalAlignment="Top" IsChecked="{Binding Filters.SecondShift, Mode=TwoWay}"/>
+                    <RadioButton Content="Месяц" HorizontalAlignment="Left" Margin="242,27,0,0" VerticalAlignment="Top" IsChecked="{Binding Filters.Month, Mode=TwoWay}"/>
 
 
 
@@ -138,18 +138,18 @@
             <TabItem Header="О программе">
                 <Grid Background="White">
                     <Image HorizontalAlignment="Left" Height="100" Margin="332,31,0,0" VerticalAlignment="Top" Width="365" Source="/Resources/logo.png"/>
-                    <Label Content="Alisa v1.2.7.0" HorizontalAlignment="Left" Margin="375,117,0,0" VerticalAlignment="Top" FontSize="48"/>
+                    <Label Content="Alisa v1.2.11.0" HorizontalAlignment="Left" Margin="363,117,0,0" VerticalAlignment="Top" FontSize="48"/>
                     <Label Content="Самойкин Андрей" HorizontalAlignment="Left" Margin="434,214,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="тел./факс (3822) 522-511" HorizontalAlignment="Left" Margin="409,253,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="634021 г. Томск, пр. Фрунзе 130а" HorizontalAlignment="Left" Margin="374,290,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="2016" HorizontalAlignment="Left" Margin="490,183,0,0" VerticalAlignment="Top" FontSize="18"/>
-                    <StackPanel HorizontalAlignment="Left" Height="247" Margin="10,10,0,0" VerticalAlignment="Top" Width="146">
+                    <StackPanel HorizontalAlignment="Left" Height="247" Margin="10,10,0,0" VerticalAlignment="Top" Width="146" Visibility="Hidden">
                         <Button Content="Click me Write" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand2}"/>
                         <Button Content="Click me4Mail" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand4}"/>
                         <Button Content="Click me5Excel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand5}"/>
                         <Button Content="Click me Read" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding ClickCommand}"/>
-                        <TextBox x:Name="tb2" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding tdd.startDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
-                        <TextBox x:Name="tb1" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding tdd.endDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
+                        <TextBox x:Name="tb2" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Filters.StartDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
+                        <TextBox x:Name="tb1" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Filters.EndDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

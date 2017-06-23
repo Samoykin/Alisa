@@ -18,13 +18,15 @@ namespace Alisa.ViewModel
 
         String logText;
         String connStr;
-        XMLFields _xmlFields;
+        //XMLFields _xmlFields;
+        MSSQL _MSSQL;
 
-        public RuntimeDB(XMLFields xmlFields)
+        public RuntimeDB(MSSQL MSSQL)
         {
-            connStr = @"server=" + xmlFields.dbServer + @";uid=" + xmlFields.dbLogin + @";
-                        pwd=" + xmlFields.dbPass + @";database=" + xmlFields.dbName + @"";
-            _xmlFields = xmlFields;
+            connStr = @"server=" + MSSQL.Server + @";uid=" + MSSQL.Login + @";
+                        pwd=" + MSSQL.Pass + @";database=" + MSSQL.DBName + @"";
+            //_xmlFields = xmlFields;
+            _MSSQL = MSSQL;
         }
 
         public ObservableCollection<RuntimeModel> DataReadTest(String tags, ObservableCollection<RuntimeModel> _RtModel)
@@ -95,9 +97,9 @@ namespace Alisa.ViewModel
                     conn.Close();
                 }
             }
-            catch (SqlException ex)
+            catch (SqlException e)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + ex.Message;
+                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + e.Message;
                 logFile.WriteLog(logText);
             }
             return _RtModel;
@@ -106,8 +108,8 @@ namespace Alisa.ViewModel
 
         public Boolean DataReadLastReport(Decimal hour)
         {
-            String connStr = @"server=" + _xmlFields.dbServer + @";uid=" + _xmlFields.dbLogin + @";
-                        pwd=" + _xmlFields.dbPass + @";database=AlarmSuite";
+            String connStr = @"server=" + _MSSQL.Server + @";uid=" + _MSSQL.Login + @";
+                        pwd=" + _MSSQL.Pass + @";database=AlarmSuite";
             Boolean lastReport = true;
             try
             {
@@ -133,9 +135,9 @@ namespace Alisa.ViewModel
                     conn.Close();
                 }
             }
-            catch (SqlException ex)
+            catch (SqlException e)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + ex.Message;
+                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + e.Message;
                 logFile.WriteLog(logText);                
             }
 
@@ -143,10 +145,10 @@ namespace Alisa.ViewModel
 
         }
 
-        public void DataWrite(LiveTEP liveTEP, XMLFields xmlFields)
+        public void DataWrite(LiveTEP liveTEP)
         {
-            String connStr = @"server=" + xmlFields.dbServer + @";uid=" + xmlFields.dbLogin + @";
-                        pwd=" + xmlFields.dbPass + @";database=AlarmSuite";
+            String connStr = @"server=" + _MSSQL.Server + @";uid=" + _MSSQL.Login + @";
+                        pwd=" + _MSSQL.Pass + @";database=AlarmSuite";
             try
             {
                 using (SqlConnection conn = new SqlConnection(connStr))
@@ -181,9 +183,9 @@ namespace Alisa.ViewModel
                 logText = DateTime.Now.ToString() + "|event|RuntimeDB - DataWrite|Записан 2-х часовой отчет TEP";
                 logFile.WriteLog(logText);
             }
-            catch (SqlException ex)
+            catch (SqlException e)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataWrite|" + ex.Message;
+                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataWrite|" + e.Message;
                 logFile.WriteLog(logText);
             }
         }
@@ -198,9 +200,9 @@ namespace Alisa.ViewModel
                 conn.Open();
                 return true;
             }
-            catch (SqlException ex)
+            catch (SqlException e)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - CheckMSSQLConn|" + ex.Message;
+                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - CheckMSSQLConn|" + e.Message;
                 logFile.WriteLog(logText);
                 return false;                
             }

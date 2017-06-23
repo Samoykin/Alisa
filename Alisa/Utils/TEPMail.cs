@@ -15,24 +15,24 @@ namespace Alisa.ViewModel
     {
         private LogFile logFile = new LogFile();  
 
-        public void SendMail(XMLFields xmlFields, String sibject, String body, String att, Boolean service)
+        public void SendMail(Mail mail, String sibject, String body, String att, Boolean service)
         {
             try
             {
                 using (var mailMessage = new MailMessage())
                 {
-                    mailMessage.From = new MailAddress(xmlFields.mailFrom);
+                    mailMessage.From = new MailAddress(mail.From);
 
                     List<String> mailToList = new List<string>();
-                    var addresses = xmlFields.mailTo.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    //var addresses = mail.To.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
 
                     if (service)
                     {
-                        mailMessage.To.Add(xmlFields.mailServiceTo);
+                        mailMessage.To.Add(mail.ServiceTo);
                     }
                     else
                     {
-                        foreach (var address in addresses)
+                        foreach (var address in mail.To)
                         {
                             mailMessage.To.Add(address);
                         }
@@ -49,13 +49,13 @@ namespace Alisa.ViewModel
                     Attachment attData = new Attachment(att);
                     mailMessage.Attachments.Add(attData);
 
-                    using (var sc = new SmtpClient(xmlFields.mailSmtpServer, xmlFields.mailPort))
+                    using (var sc = new SmtpClient(mail.SmtpServer, mail.Port))
                     {
                         sc.EnableSsl = true;
                         sc.DeliveryMethod = SmtpDeliveryMethod.Network;
                         sc.UseDefaultCredentials = false;
                         sc.Timeout = 20000;
-                        sc.Credentials = new NetworkCredential(xmlFields.mailLogin, xmlFields.mailPass);                        
+                        sc.Credentials = new NetworkCredential(mail.Login, mail.Pass);                        
                         sc.Send(mailMessage);
 
                         String logText = DateTime.Now.ToString() + "|event|TEPMail - SendMail|Письмо отправлено";
@@ -63,9 +63,9 @@ namespace Alisa.ViewModel
                     }
                 }
             }
-            catch (Exception exception)
+            catch (Exception e)
             {
-                String logText = DateTime.Now.ToString() + "|fail|TEPMail - SendMail|" + exception.Message;
+                String logText = DateTime.Now.ToString() + "|fail|TEPMail - SendMail|" + e.Message;
                 logFile.WriteLog(logText);
 
                 //MessageBox.Show(exception.Message, "Ошибка");
