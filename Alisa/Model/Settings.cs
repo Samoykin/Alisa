@@ -1,77 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-
-namespace Alisa.Model
+﻿namespace Alisa.Model
 {
-    
+    using System;
+    using System.Collections.Generic;
+    using System.Xml.Serialization;
 
+    /// <summary>Оболочка.</summary>
+    public class Shell
+    {
+        /// <summary>Корневой элемент.</summary>
         [Serializable]
         [XmlRootAttribute("Settings")]
         public class RootElement
         {
+            /// <summary>БД MSSQL.</summary>
             public MSSQL MSSQL { get; set; }
+
+            /// <summary>БД SQLite.</summary>
             public SQLite SQLite { get; set; }
+
+            /// <summary>Почта.</summary>
             public Mail Mail { get; set; }
+
+            /// <summary>Резервирование.</summary>
             public Reserv Reserv { get; set; }
         }
 
+        /// <summary>Параметры MSSQL.</summary>
         [Serializable]
         public class MSSQL
         {
+            /// <summary>Имя сервера.</summary>
             [XmlAttribute]
-            public String Server { get; set; }
+            public string Server { get; set; }
+
+            /// <summary>Название БД.</summary>
             [XmlAttribute]
-            public String DBName { get; set; }
+            public string DBName { get; set; }
+
+            /// <summary>Логин.</summary>
             [XmlAttribute]
-            public String Login { get; set; }
+            public string Login { get; set; }
+
+            /// <summary>Пароль.</summary>
             [XmlAttribute]
-            public String Pass { get; set; }
+            public string Pass { get; set; }
         }
 
+        /// <summary>Параметры SQLite.</summary>
         [Serializable]
         public class SQLite
         {
+            /// <summary>Название БД.</summary>
             [XmlAttribute]
-            public String DBName { get; set; }
+            public string DBName { get; set; }
+
+            /// <summary>Пароль.</summary>
             [XmlAttribute]
-            public String Pass { get; set; }
+            public string Pass { get; set; }
         }
 
+        /// <summary>Параметры почты.</summary>
         [Serializable]
         public class Mail
         {
+            /// <summary>Сервер SMTP.</summary>
             [XmlAttribute]
-            public String SmtpServer { get; set; }
+            public string SmtpServer { get; set; }
+
+            /// <summary>Порт.</summary>
             [XmlAttribute]
-            public Int16 Port { get; set; }
+            public short Port { get; set; }
+
+            /// <summary>Логин.</summary>
             [XmlAttribute]
-            public String Login { get; set; }
+            public string Login { get; set; }
+
+            /// <summary>Пароль.</summary>
             [XmlAttribute]
-            public String Pass { get; set; }
+            public string Pass { get; set; }
+
+            /// <summary>Отправитель.</summary>
             [XmlAttribute]
-            public String From { get; set; }
+            public string From { get; set; }
+
+            /// <summary>Получатель.</summary>
             [XmlElement]
-            public List<String> To { get; set; }
+            public List<string> To { get; set; }
+
+            /// <summary>Копия.</summary>
             [XmlAttribute]
-            public String ServiceTo { get; set; }
+            public string ServiceTo { get; set; }
         }
 
+        /// <summary>Резервирование.</summary>
         [Serializable]
         public class Reserv
         {
+            /// <summary>Основной.</summary>
             [XmlAttribute]
-            public Boolean Master { get; set; }
+            public bool Master { get; set; }
         }
-
-
-
-
-
-
-
+    }
 }

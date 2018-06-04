@@ -1,119 +1,159 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Alisa.Model
+﻿namespace Alisa.Model
 {
-    class Filters : INotifyPropertyChanged
+    using System;
+    using System.ComponentModel;
+
+    /// <summary>Фильтры.</summary>
+    public class Filters : INotifyPropertyChanged
     {
+        #region Fields
+
+        private DateTime startDate;
+        private DateTime endDate;
+        private bool day;
+        private bool firstShift;
+        private bool secondShift;
+        private bool month;
+
+        #endregion
+
+        /// <summary>Контейнер делегата.</summary>
         public delegate void MethodContainer();
-        public event MethodContainer onCount;
 
+        /// <summary>Событие.</summary>
+        public event MethodContainer OnCount;
 
-        #region Implement INotyfyPropertyChanged members
-
+        /// <summary>Событие изменения свойства.</summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        #region Properties
+
+        /// <summary>Начальная дата.</summary>
+        public DateTime StartDate
         {
-            if (PropertyChanged != null)
+            get
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                return this.startDate;
+            }
+
+            set
+            {
+                if (this.startDate != value)
+                {
+                    this.startDate = value;
+                    this.OnPropertyChanged("startDate");
+                }
+            }
+        }
+
+        /// <summary>Конечная дата.</summary>
+        public DateTime EndDate
+        {
+            get
+            {
+                return this.endDate;
+            }
+
+            set
+            {
+                if (this.endDate != value)
+                {
+                    this.endDate = value;
+                    this.OnPropertyChanged("endDate");
+                }
+            }
+        }
+
+        /// <summary>День.</summary>
+        public bool Day
+        {
+            get
+            {
+                return this.day;
+            }
+
+            set
+            {
+                if (this.day != value)
+                {
+                    this.day = value;
+                    this.OnPropertyChanged("day");
+                    this.OnCount();
+                }
+            }
+        }
+
+        /// <summary>Первая смена.</summary>
+        public bool FirstShift
+        {
+            get
+            {
+                return this.firstShift;
+            }
+
+            set
+            {
+                if (this.firstShift != value)
+                {
+                    this.firstShift = value;
+                    this.OnPropertyChanged("firstShift");
+                    this.OnCount();
+                }
+            }
+        }
+
+        /// <summary>Вторая смена.</summary>
+        public bool SecondShift
+        {
+            get
+            {
+                return this.secondShift;
+            }
+
+            set
+            {
+                if (this.secondShift != value)
+                {
+                    this.secondShift = value;
+                    this.OnPropertyChanged("secondShift");
+                    this.OnCount();
+                }
+            }
+        }
+
+        /// <summary>Месяц.</summary>
+        public bool Month
+        {
+            get
+            {
+                return this.month;
+            }
+
+            set
+            {
+                if (this.month != value)
+                {
+                    this.month = value;
+                    this.OnPropertyChanged("month");
+                    this.OnCount();
+                }
             }
         }
 
         #endregion
 
-        DateTime _startDate;
-        DateTime _endDate;
-        Boolean _day;
-        Boolean _firstShift;
-        Boolean _secondShift;
-        Boolean _month;
+        #region Implement INotyfyPropertyChanged members
         
-        public DateTime StartDate
+        /// <summary>Изменения свойства.</summary>
+        /// <param name="propertyName">Имя свойства.</param>
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            get { return _startDate; }
-            set
+            if (this.PropertyChanged != null)
             {
-                if (_startDate != value)
-                {
-                    _startDate = value;
-                    OnPropertyChanged("startDate");
-                }
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
-        public DateTime EndDate
-        {
-            get { return _endDate; }
-            set
-            {
-                if (_endDate != value)
-                {
-                    _endDate = value;
-                    OnPropertyChanged("endDate");
-                }
-            }
-        }
-
-        public Boolean Day
-        {
-            get { return _day; }
-            set
-            {
-                if (_day != value)
-                {
-                    _day = value;
-                    OnPropertyChanged("day");
-                    onCount();
-                }
-            }
-        }
-
-        public Boolean FirstShift
-        {
-            get { return _firstShift; }
-            set
-            {
-                if (_firstShift != value)
-                {
-                    _firstShift = value;
-                    OnPropertyChanged("firstShift");
-                    onCount();
-                }
-            }
-        }
-
-        public Boolean SecondShift
-        {
-            get { return _secondShift; }
-            set
-            {
-                if (_secondShift != value)
-                {
-                    _secondShift = value;
-                    OnPropertyChanged("secondShift");
-                    onCount();
-                }
-            }
-        }
-
-        public Boolean Month
-        {
-            get { return _month; }
-            set
-            {
-                if (_month != value)
-                {
-                    _month = value;
-                    OnPropertyChanged("month");
-                    onCount();
-                }
-            }
-        }
+        #endregion
     }
 }

@@ -1,10 +1,12 @@
-﻿using System;
-
-namespace Alisa.Model
+﻿namespace Alisa.Model
 {
-    class RuntimeModel
+    /// <summary>Модель актуальных значений.</summary>
+    public class RuntimeModel
     {
-        public String TagName { get; set; }
-        public Single Value { get; set; }
+        /// <summary>Имя тега.</summary>
+        public string TagName { get; set; }
+
+        /// <summary>Значение.</summary>
+        public float Value { get; set; }
     }
 }

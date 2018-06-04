@@ -1,163 +1,179 @@
-﻿using Alisa.Model;
-using Alisa.Utils;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Alisa.ViewModel
+﻿namespace Alisa.ViewModel
 {
-    class RuntimeDB
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Data.Common;
+    using System.Data.SqlClient;
+    using System.IO;
+
+    using Model;
+    using Utils;
+    using static Model.Shell;
+
+    /// <summary>База данных MSSQL.</summary>
+    public class RuntimeDB
     {
         private LogFile logFile = new LogFile();
+        private string logText;
+        private string connStr;
+        private MSSQL mssql;
 
-        String logText;
-        String connStr;
-        //XMLFields _xmlFields;
-        MSSQL _MSSQL;
-
-        public RuntimeDB(MSSQL MSSQL)
+        /// <summary>Initializes a new instance of the <see cref="RuntimeDB" /> class.</summary>
+        /// <param name="mssql">Модель подключения к БД.</param>
+        public RuntimeDB(MSSQL mssql)
         {
-            connStr = @"server=" + MSSQL.Server + @";uid=" + MSSQL.Login + @";
-                        pwd=" + MSSQL.Pass + @";database=" + MSSQL.DBName + @"";
-            //_xmlFields = xmlFields;
-            _MSSQL = MSSQL;
+            this.connStr = @"server=" + mssql.Server + @";uid=" + mssql.Login + @";
+                        pwd=" + mssql.Pass + @";database=" + mssql.DBName;
+            this.mssql = mssql;
         }
 
-        public ObservableCollection<RuntimeModel> DataReadTest(String tags, ObservableCollection<RuntimeModel> _RtModel)
+        /// <summary>Прочитать данные из тестовой БД.</summary>
+        /// <param name="tags">Набор тегов.</param>
+        /// <param name="runtimeModels">Модель данных.</param>
+        /// <returns>Набор значений.</returns>
+        public ObservableCollection<RuntimeModel> DataReadTest(string tags, ObservableCollection<RuntimeModel> runtimeModels)
         {
-            _RtModel.Clear();
-            List<String> tagList = new List<string>();
+            var tagList = new List<string>();
+            var addresses = tags.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var rnd = new Random();
 
-            using (StreamReader sr = new StreamReader("TagList.txt", System.Text.Encoding.Default))
+            runtimeModels.Clear();
+            
+            using (var sr = new StreamReader("TagList.txt", System.Text.Encoding.Default))
             {
-                String s = "";
+                var s = string.Empty;
                 while ((s = sr.ReadLine()) != null)
                 {
                     tagList.Add(s);
                 }
-            }
+            }            
 
-            var addresses = tags.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-            Random rnd = new Random();
-
-            foreach(var adr in tagList)
+            foreach (var adr in tagList)
             {
-                RuntimeModel RtModel = new RuntimeModel();
-                String name = adr.Replace("'","");
-                RtModel.TagName = adr;
-                RtModel.Value = rnd.Next(0,20);
+                var runtimeModel = new RuntimeModel();
+                var name = adr.Replace("'", string.Empty);
+                runtimeModel.TagName = adr;
+                runtimeModel.Value = rnd.Next(0, 20);
 
-                _RtModel.Add(RtModel);
+                runtimeModels.Add(runtimeModel);
             }
 
-            return _RtModel;
+            return runtimeModels;
         }
-        public ObservableCollection<RuntimeModel> DataRead(String tags, ObservableCollection<RuntimeModel> _RtModel)
+
+        /// <summary>Прочитать данные из БД.</summary>
+        /// <param name="tags">Набор тегов.</param>
+        /// <param name="runtimeModels">Модель данных.</param>
+        /// <returns>Набор значений.</returns>
+        public ObservableCollection<RuntimeModel> DataRead(string tags, ObservableCollection<RuntimeModel> runtimeModels)
         {
-            _RtModel.Clear();
+            runtimeModels.Clear();
             
             try
             {
-                using (SqlConnection conn = new SqlConnection(connStr))
+                using (var conn = new SqlConnection(this.connStr))
                 {
                     conn.Open();
 
-                    String query = "SELECT DateTime=CONVERT(VARCHAR,DateTime,121), TagName, Value FROM Runtime.dbo.Live WHERE TagName IN (" + tags + ")";
+                    var query = "SELECT DateTime=CONVERT(VARCHAR,DateTime,121), TagName, Value FROM Runtime.dbo.Live WHERE TagName IN (" + tags + ")";
                     
-                    SqlCommand cmd = new SqlCommand(query, conn);
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    int i = 0;
+                    var cmd = new SqlCommand(query, conn);
+                    var reader = cmd.ExecuteReader();
+                    var i = 0;
 
                     foreach (DbDataRecord record in reader)
                     {
-                        RuntimeModel RtModel = new RuntimeModel();
-                        String tempStr = Convert.ToString(record["Value"]);
-                        if (String.IsNullOrEmpty(tempStr))
+                        var runtimeModel = new RuntimeModel();
+                        var tempStr = Convert.ToString(record["Value"]);
+                        if (string.IsNullOrEmpty(tempStr))
+                        {
                             tempStr = "0";
-                        Single aa = Convert.ToSingle(tempStr);
-                        String aa1 = record["TagName"].ToString();
+                        }
 
-                        RtModel.TagName = aa1;
-                        RtModel.Value = aa;
+                        var aa = Convert.ToSingle(tempStr);
+                        string aa1 = record["TagName"].ToString();
 
-                        _RtModel.Add(RtModel);
+                        runtimeModel.TagName = aa1;
+                        runtimeModel.Value = aa;
+
+                        runtimeModels.Add(runtimeModel);
                         i++;
-
                     }
 
                     reader.Close();
                     conn.Close();
                 }
             }
-            catch (SqlException e)
+            catch (SqlException ex)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + e.Message;
-                logFile.WriteLog(logText);
+                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + ex.Message;
+                this.logFile.WriteLog(this.logText);
             }
-            return _RtModel;
 
+            return runtimeModels;
         }
 
-        public Boolean DataReadLastReport(Decimal hour)
+        /// <summary>Прочитать последний отчет.</summary>
+        /// <param name="hour">Час.</param>
+        /// <returns>Состояние.</returns>
+        public bool DataReadLastReport(decimal hour)
         {
-            String connStr = @"server=" + _MSSQL.Server + @";uid=" + _MSSQL.Login + @";
-                        pwd=" + _MSSQL.Pass + @";database=AlarmSuite";
-            Boolean lastReport = true;
+            var connStr = @"server=" + this.mssql.Server + @";uid=" + this.mssql.Login + @";
+                        pwd=" + this.mssql.Pass + @";database=AlarmSuite";
+            var lastReport = true;
+
             try
             {
-                using (SqlConnection conn = new SqlConnection(connStr))
+                using (var conn = new SqlConnection(connStr))
                 {
                     conn.Open();
 
-                    String query = "SELECT TOP 1 DATA FROM dbo.Report ORDER BY DATA DESC";
+                    var query = "SELECT TOP 1 DATA FROM dbo.Report ORDER BY DATA DESC";
                     
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                    var cmd = new SqlCommand(query, conn);
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    var reader = cmd.ExecuteReader();
 
                     foreach (DbDataRecord record in reader)
                     {
-                        String sss = record["DATA"].ToString();
-                        Decimal hourT = Convert.ToDecimal(sss.Substring(9, 2));
+                        var sss = record["DATA"].ToString();
+                        var hourT = Convert.ToDecimal(sss.Substring(9, 2));
 
                         if (hourT != hour)
+                        {
                             lastReport = false;
+                        }
                     }
+
                     reader.Close();
                     conn.Close();
                 }
             }
-            catch (SqlException e)
+            catch (SqlException ex)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + e.Message;
-                logFile.WriteLog(logText);                
+                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + ex.Message;
+                this.logFile.WriteLog(this.logText);                
             }
 
             return lastReport;
-
         }
 
+        /// <summary>Записать отчет.</summary>
+        /// <param name="liveTEP">Текущие данные.</param>
         public void DataWrite(LiveTEP liveTEP)
         {
-            String connStr = @"server=" + _MSSQL.Server + @";uid=" + _MSSQL.Login + @";
-                        pwd=" + _MSSQL.Pass + @";database=AlarmSuite";
+            var connStr = @"server=" + this.mssql.Server + @";uid=" + this.mssql.Login + @";
+                        pwd=" + this.mssql.Pass + @";database=AlarmSuite";
             try
             {
-                using (SqlConnection conn = new SqlConnection(connStr))
-                {                    
-                    String format_date = "yyyyMMdd HH:mm:ss";
+                using (var conn = new SqlConnection(connStr))
+                {
+                    var format_date = "yyyyMMdd HH:mm:ss";
 
-                    String query = "INSERT INTO dbo.Report (DATA, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13) VALUES (@Data, @Data1, @Data2, @Data3, @Data4, @Data5, @Data6, @Data7, @Data8, @Data9, @Data10, @Data11, @Data12, @Data13)";
+                    var query = "INSERT INTO dbo.Report (DATA, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13) VALUES (@Data, @Data1, @Data2, @Data3, @Data4, @Data5, @Data6, @Data7, @Data8, @Data9, @Data10, @Data11, @Data12, @Data13)";
 
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (var cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Data", DateTime.Now.ToString(format_date));
                         cmd.Parameters.AddWithValue("@Data1", Math.Round(liveTEP.SQLw_Data1, 7).ToString());
@@ -177,41 +193,41 @@ namespace Alisa.ViewModel
                         conn.Open();
                         cmd.ExecuteNonQuery();
                     }
+
                     conn.Close();
                 }
 
-                logText = DateTime.Now.ToString() + "|event|RuntimeDB - DataWrite|Записан 2-х часовой отчет TEP";
-                logFile.WriteLog(logText);
+                this.logText = DateTime.Now.ToString() + "|event|RuntimeDB - DataWrite|Записан 2-х часовой отчет TEP";
+                this.logFile.WriteLog(this.logText);
             }
-            catch (SqlException e)
+            catch (SqlException ex)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataWrite|" + e.Message;
-                logFile.WriteLog(logText);
+                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataWrite|" + ex.Message;
+                this.logFile.WriteLog(this.logText);
             }
         }
 
-        //Состояние связи с MSSQL
-        public Boolean CheckMSSQLConn()
+        /// <summary>Проверить связь.</summary>
+        /// <returns>Состояние связи с MSSQL.</returns>
+        public bool CheckMSSQLConn()
         {
-            SqlConnection conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(this.connStr);
 
             try
             {
                 conn.Open();
                 return true;
             }
-            catch (SqlException e)
+            catch (SqlException ex)
             {
-                logText = DateTime.Now.ToString() + "|fail|RuntimeDB - CheckMSSQLConn|" + e.Message;
-                logFile.WriteLog(logText);
+                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - CheckMSSQLConn|" + ex.Message;
+                this.logFile.WriteLog(this.logText);
                 return false;                
             }
             finally
             {
                 conn.Dispose();
             }
-
         }
-
     }
 }

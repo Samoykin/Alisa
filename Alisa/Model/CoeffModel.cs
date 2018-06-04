@@ -1,11 +1,15 @@
-﻿using System;
-
-namespace Alisa.Model
+﻿namespace Alisa.Model
 {
-    class CoeffModel
+    /// <summary>Модель коэффициентов.</summary>
+    public class CoeffModel
     {
-        public String TagName { get; set; }
-        public Single Value { get; set; }
-        public String Comment { get; set; }
+        /// <summary>Имя тега.</summary>
+        public string TagName { get; set; }
+
+        /// <summary>Значение.</summary>
+        public float Value { get; set; }
+
+        /// <summary>Коментарий.</summary>
+        public string Comment { get; set; }
     }
 }

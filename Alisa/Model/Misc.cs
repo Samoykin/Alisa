@@ -1,57 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Alisa.Model
+﻿namespace Alisa.Model
 {
-    class Misc : INotifyPropertyChanged
-    {
-        #region Implement INotyfyPropertyChanged members
+    using System.ComponentModel;
 
+    /// <summary>Состояния.</summary>
+    public class Misc : INotifyPropertyChanged
+    {
+        #region Fields
+
+        private string master;
+        private string mssqlStatus;
+
+        #endregion
+
+        /// <summary>Событие изменения свойства.</summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(String propertyName)
+        #region Properties
+
+        /// <summary>Статус.</summary>
+        public string Master
         {
-            if (PropertyChanged != null)
+            get
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                return this.master;
+            }
+
+            set
+            {
+                if (this.master != value)
+                {
+                    this.master = value;
+                    this.OnPropertyChanged("Master");
+                }
+            }
+        }
+
+        /// <summary>Статус связи.</summary>
+        public string MSSQLStatus
+        {
+            get
+            {
+                return this.mssqlStatus;
+            }
+
+            set
+            {
+                if (this.mssqlStatus != value)
+                {
+                    this.mssqlStatus = value;
+                    this.OnPropertyChanged("MSSQLStatus");
+                }
             }
         }
 
         #endregion
-        //Поля
-        private String _master;
-        private String _mssqlStatus;
 
-        //Свойства
-        public String Master
+        #region Implement INotyfyPropertyChanged members
+
+        /// <summary>Изменения свойства.</summary>
+        /// <param name="propertyName">Имя свойства.</param>
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            get { return _master; }
-            set
+            if (this.PropertyChanged != null)
             {
-                if (_master != value)
-                {
-                    _master = value;
-                    OnPropertyChanged("Master");
-                }
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
-        public String MSSQLStatus
-        {
-            get { return _mssqlStatus; }
-            set
-            {
-                if (_mssqlStatus != value)
-                {
-                    _mssqlStatus = value;
-                    OnPropertyChanged("MSSQLStatus");
-                }
-            }
-        }
-
+        #endregion
     }
 }

@@ -1,20 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-
-namespace Alisa.Utils
+﻿namespace Alisa.Utils
 {
-    class LogFile
+    using System.IO;
+
+    /// <summary>Логгер.</summary>
+    public class LogFile
     {
-        String path = @"log.txt";
+        private string path = @"log.txt";
 
-        public void WriteLog(String str)
+        /// <summary>Записать в лог.</summary>
+        /// <param name="str">Строка.</param>
+        public void WriteLog(string str)
         {
-                using (StreamWriter sw = new StreamWriter(path, true, System.Text.Encoding.Default))
-                {
-                    sw.WriteLine(str);
-                }
-
+            using (var sw = new StreamWriter(this.path, true, System.Text.Encoding.Default))
+            {
+                sw.WriteLine(str);
+            }
         }
     }
 }

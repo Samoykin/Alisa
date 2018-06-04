@@ -1,260 +1,301 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace Alisa.Model
+﻿namespace Alisa.Model
 {
-    class LiveTEP : INotifyPropertyChanged
-    {
-        #region Implement INotyfyPropertyChanged members
+    using System;
+    using System.ComponentModel;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(String propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        #endregion
-
+    /// <summary>Текущие значения ТЭП.</summary>
+    public class LiveTEP : INotifyPropertyChanged
+    {     
         #region Fields
 
-        private Double _SQLw_Data1;
-        private Double _SQLw_Data2;
-        private Double _SQLw_Data3;
-        private Double _SQLw_Data4;
-        private Double _SQLw_Data5;
-        private Double _SQLw_Data6;
-        private Double _SQLw_Data7;
-        private Double _SQLw_Data8;
-        private Double _SQLw_Data9;
-        private Double _SQLw_Data10;
-        private Double _SQLw_Data11;
-        private Double _SQLw_Data12;
-        private Double _SQLw_Data13;
-        private Double _OK_UVP_Q_old;
+        private double sqlData1;
+        private double sqlData2;
+        private double sqlData3;
+        private double sqlData4;
+        private double sqlData5;
+        private double sqlData6;
+        private double sqlData7;
+        private double sqlData8;
+        private double sqlData9;
+        private double sqlData10;
+        private double sqlData11;
+        private double sqlData12;
+        private double sqlData13;
+        private double okuvpQ;
 
         #endregion
+
+        /// <summary>Событие изменения свойства.</summary>
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region Properties
 
-        #region SQLw_Data1
-        public Double SQLw_Data1
+        /// <summary>Текущее значение Data1.</summary>
+        public double SQLw_Data1
         {
-            get { return _SQLw_Data1; }
+            get
+            {
+                return this.sqlData1;
+            }
+
             set
             {
-                if (_SQLw_Data1 != value)
+                if (this.sqlData1 != value)
                 {
-                    _SQLw_Data1 = value;
-                    OnPropertyChanged("SQLw_Data1");
+                    this.sqlData1 = value;
+                    this.OnPropertyChanged("SQLw_Data1");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data2
-        public Double SQLw_Data2
+        /// <summary>Текущее значение Data2.</summary>
+        public double SQLw_Data2
         {
-            get { return _SQLw_Data2; }
+            get
+            {
+                return this.sqlData2;
+            }
+
             set
             {
-                if (_SQLw_Data2 != value)
+                if (this.sqlData2 != value)
                 {
-                    _SQLw_Data2 = value;
-                    OnPropertyChanged("SQLw_Data2");
+                    this.sqlData2 = value;
+                    this.OnPropertyChanged("SQLw_Data2");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data3
-        public Double SQLw_Data3
+        /// <summary>Текущее значение Data3.</summary>
+        public double SQLw_Data3
         {
-            get { return _SQLw_Data3; }
+            get
+            {
+                return this.sqlData3;
+            }
+
             set
             {
-                if (_SQLw_Data3 != value)
+                if (this.sqlData3 != value)
                 {
-                    _SQLw_Data3 = value;
-                    OnPropertyChanged("SQLw_Data3");
+                    this.sqlData3 = value;
+                    this.OnPropertyChanged("SQLw_Data3");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data4
-        public Double SQLw_Data4
+        /// <summary>Текущее значение Data4.</summary>
+        public double SQLw_Data4
         {
-            get { return _SQLw_Data4; }
+            get
+            {
+                return this.sqlData4;
+            }
+
             set
             {
-                if (_SQLw_Data4 != value)
+                if (this.sqlData4 != value)
                 {
-                    _SQLw_Data4 = value;
-                    OnPropertyChanged("SQLw_Data4");
+                    this.sqlData4 = value;
+                    this.OnPropertyChanged("SQLw_Data4");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data5
-        public Double SQLw_Data5
+        /// <summary>Текущее значение Data5.</summary>
+        public double SQLw_Data5
         {
-            get { return _SQLw_Data5; }
+            get
+            {
+                return this.sqlData5;
+            }
+
             set
             {
-                if (_SQLw_Data5 != value)
+                if (this.sqlData5 != value)
                 {
-                    _SQLw_Data5 = value;
-                    OnPropertyChanged("SQLw_Data5");
+                    this.sqlData5 = value;
+                    this.OnPropertyChanged("SQLw_Data5");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data6
-        public Double SQLw_Data6
+        /// <summary>Текущее значение Data6.</summary>
+        public double SQLw_Data6
         {
-            get { return _SQLw_Data6; }
+            get
+            {
+                return this.sqlData6;
+            }
+
             set
             {
-                if (_SQLw_Data6 != value)
+                if (this.sqlData6 != value)
                 {
-                    _SQLw_Data6 = value;
-                    OnPropertyChanged("SQLw_Data6");
+                    this.sqlData6 = value;
+                    this.OnPropertyChanged("SQLw_Data6");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data7
-        public Double SQLw_Data7
+        /// <summary>Текущее значение Data7.</summary>
+        public double SQLw_Data7
         {
-            get { return _SQLw_Data7; }
+            get
+            {
+                return this.sqlData7;
+            }
+
             set
             {
-                if (_SQLw_Data7 != value)
+                if (this.sqlData7 != value)
                 {
-                    _SQLw_Data7 = value;
-                    OnPropertyChanged("SQLw_Data7");
+                    this.sqlData7 = value;
+                    this.OnPropertyChanged("SQLw_Data7");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data8
-        public Double SQLw_Data8
+        /// <summary>Текущее значение Data8.</summary>
+        public double SQLw_Data8
         {
-            get { return _SQLw_Data8; }
+            get
+            {
+                return this.sqlData8;
+            }
+
             set
             {
-                if (_SQLw_Data8 != value)
+                if (this.sqlData8 != value)
                 {
-                    _SQLw_Data8 = value;
-                    OnPropertyChanged("SQLw_Data8");
+                    this.sqlData8 = value;
+                    this.OnPropertyChanged("SQLw_Data8");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data9
-        public Double SQLw_Data9
+        /// <summary>Текущее значение Data9.</summary>
+        public double SQLw_Data9
         {
-            get { return _SQLw_Data9; }
+            get
+            {
+                return this.sqlData9;
+            }
+
             set
             {
-                if (_SQLw_Data9 != value)
+                if (this.sqlData9 != value)
                 {
-                    _SQLw_Data9 = value;
-                    OnPropertyChanged("SQLw_Data9");
+                    this.sqlData9 = value;
+                    this.OnPropertyChanged("SQLw_Data9");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data10
-        public Double SQLw_Data10
+        /// <summary>Текущее значение Data10.</summary>
+        public double SQLw_Data10
         {
-            get { return _SQLw_Data10; }
+            get
+            {
+                return this.sqlData10;
+            }
+
             set
             {
-                if (_SQLw_Data10 != value)
+                if (this.sqlData10 != value)
                 {
-                    _SQLw_Data10 = value;
-                    OnPropertyChanged("SQLw_Data10");
+                    this.sqlData10 = value;
+                    this.OnPropertyChanged("SQLw_Data10");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data11
-        public Double SQLw_Data11
+        /// <summary>Текущее значение Data11.</summary>
+        public double SQLw_Data11
         {
-            get { return _SQLw_Data11; }
+            get
+            {
+                return this.sqlData11;
+            }
+
             set
             {
-                if (_SQLw_Data11 != value)
+                if (this.sqlData11 != value)
                 {
-                    _SQLw_Data11 = value;
-                    OnPropertyChanged("SQLw_Data11");
+                    this.sqlData11 = value;
+                    this.OnPropertyChanged("SQLw_Data11");
                 }
             }
         }
-        #endregion
 
-        #region SQLw_Data12
-        public Double SQLw_Data12
+        /// <summary>Текущее значение Data12.</summary>
+        public double SQLw_Data12
         {
-            get { return _SQLw_Data12; }
+            get
+            {
+                return this.sqlData12;
+            }
+
             set
             {
-                if (_SQLw_Data12 != value)
+                if (this.sqlData12 != value)
                 {
-                    _SQLw_Data12 = value;
-                    OnPropertyChanged("SQLw_Data12");
+                    this.sqlData12 = value;
+                    this.OnPropertyChanged("SQLw_Data12");
                 }
             }
         }
-        #endregion
-              
-        #region SQLw_Data13
-        public Double SQLw_Data13
+
+        /// <summary>Текущее значение Data13.</summary>
+        public double SQLw_Data13
         {
-            get { return _SQLw_Data13; }
+            get
+            {
+                return this.sqlData13;
+            }
+
             set
             {
-                if (_SQLw_Data13 != value)
+                if (this.sqlData13 != value)
                 {
-                    _SQLw_Data13 = value;
-                    OnPropertyChanged("SQLw_Data13");
+                    this.sqlData13 = value;
+                    this.OnPropertyChanged("SQLw_Data13");
                 }
             }
         }
-        #endregion
 
-        #region OK_UVP_Q_old
-        public Double OK_UVP_Q_old
+        /// <summary>Текущее значение UVP.</summary>
+        public double OK_UVP_Q_old
         {
-            get { return _OK_UVP_Q_old; }
+            get
+            {
+                return this.okuvpQ;
+            }
+
             set
             {
-                if (_OK_UVP_Q_old != value)
+                if (this.okuvpQ != value)
                 {
-                    _OK_UVP_Q_old = value;
-                    OnPropertyChanged("OK_UVP_Q_old");
+                    this.okuvpQ = value;
+                    this.OnPropertyChanged("OK_UVP_Q_old");
                 }
             }
         }
-        #endregion
 
         #endregion
 
+        #region Implement INotyfyPropertyChanged members
+        
+        /// <summary>Изменения свойства.</summary>
+        /// <param name="propertyName">Имя свойства.</param>
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            if (this.PropertyChanged != null)
+            {
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
-
-
-
+        #endregion
     }
 }

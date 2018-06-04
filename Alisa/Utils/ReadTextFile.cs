@@ -1,81 +1,83 @@
-﻿using Alisa.Model;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
+﻿namespace Alisa.Utils
+{    
+    using System;
+    using System.Collections.ObjectModel;
+    using System.IO;
 
-namespace Alisa.Utils
-{
-    class ReadTextFile
+    using Model;
+
+    /// <summary>Чтение данных из файла.</summary>
+    public class ReadTextFile
     {
         private LogFile logFile = new LogFile();
+        private ObservableCollection<CoeffModel> coeffModels = new ObservableCollection<CoeffModel>();
 
-        //Вычитывание списка из файла 
-        public String readFile(String path)
+        /// <summary>Прочитать файл.</summary>
+        /// <param name="path">Путь к файлу.</param>
+        /// <returns>Теги в виде строки.</returns>
+        public string ReadFile(string path)
         {
-            String text = "";
+            var text = string.Empty;
 
             try
             {
-                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+                using (var sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
-                    String s = "";
+                    string s = string.Empty;
                     while ((s = sr.ReadLine()) != null)
                     {
                         text = text + "'" + s + "',";
                     }
+
                     text = text.Trim(new char[] { ',' });
                 }
 
-                String logText = DateTime.Now.ToString() + "|event|ReadTextFile - readFile|Считан список из файла " + path;
-                logFile.WriteLog(logText);
+                var logText = DateTime.Now.ToString() + "|event|ReadTextFile - readFile|Считан список из файла " + path;
+                this.logFile.WriteLog(logText);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readFile|" + e.Message;
-                logFile.WriteLog(logText);
-                
+                var logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readFile|" + ex.Message;
+                this.logFile.WriteLog(logText);                
             }
+
             return text;
         }
 
-        private ObservableCollection<CoeffModel> _coeffModel = new ObservableCollection<CoeffModel>();
-        //Вычитывание коэффициентов из файла
-        public ObservableCollection<CoeffModel> readCoeff(String path)
+        /// <summary>Прочитать коэффициенты.</summary>
+        /// <param name="path">Путь к файлу.</param>
+        /// <returns>Коэффициенты.</returns>
+        public ObservableCollection<CoeffModel> ReadCoeff(string path)
         {
             try
             {
-                using (StreamReader sr = new StreamReader(path, System.Text.Encoding.Default))
+                using (var sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
-                    String s = "";
+                    string s = string.Empty;
 
                     while ((s = sr.ReadLine()) != null)
                     {
-                        CoeffModel coeffModel = new CoeffModel();
-
-                        String[] substrings = s.Split('|');
+                        var coeffModel = new CoeffModel();
+                        var substrings = s.Split('|');
 
                         coeffModel.TagName = substrings[0];
                         coeffModel.Value = Convert.ToSingle(substrings[1]);
                         coeffModel.Comment = substrings[2];
 
-                        _coeffModel.Add(coeffModel);
+                        this.coeffModels.Add(coeffModel);
                     }
                 }
-                String logText = DateTime.Now.ToString() + "|event|ReadTextFile - readCoeff|Считаны коэффициенты из файла " + path;
-                logFile.WriteLog(logText);
+
+                var logText = DateTime.Now.ToString() + "|event|ReadTextFile - readCoeff|Считаны коэффициенты из файла " + path;
+                this.logFile.WriteLog(logText);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                String logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readCoeff|" + e.Message;
-                logFile.WriteLog(logText);
+                var logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readCoeff|" + ex.Message;
+                this.logFile.WriteLog(logText);
             }
 
-            return _coeffModel;
-        }
-
-
-
-
+            return this.coeffModels;
+        }        
     }
 }
