@@ -5,17 +5,17 @@
     using System.Data.Common;
     using System.Data.SQLite;
     using System.IO;
-
     using Model;
+    using NLog;
     using static Model.Shell;
 
     /// <summary>База данных SQLite.</summary>
     public class SQLiteDB
     {
+        private Logger logger = LogManager.GetCurrentClassLogger();
         private string dataBaseName;
         private string pass;        
         private HistTEP oneTEP;
-        private LogFile logFile = new LogFile();
 
         /// <summary>Initializes a new instance of the <see cref="SQLiteDB" /> class.</summary>
         /// <param name="sqlite">Модель подключения к БД.</param>
@@ -36,8 +36,7 @@
                 var сonnection = new SQLiteConnection("Data Source=DBTels.sqlite;Version=3;");
                 сonnection.SetPassword(this.pass);
 
-                var logText = DateTime.Now.ToString() + "|event|SQLiteDB - CreateBase|Создана БД DBTEP";
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Создана БД DBTEP");
             }
         }
 
@@ -48,18 +47,15 @@
             {
                 using (var connection = new SQLiteConnection(this.Connstring()))
                 {
-                    var command = "CREATE TABLE IF NOT EXISTS TEP (id INTEGER PRIMARY KEY UNIQUE, DateTime DATETIME, SQLw_Data1 string, SQLw_Data2 string, SQLw_Data3 string, SQLw_Data4 string, SQLw_Data5 string, SQLw_Data6 string, SQLw_Data7 string, SQLw_Data8 string, SQLw_Data9 string, SQLw_Data10 string, SQLw_Data11 string, SQLw_Data12 string, SQLw_Data13 string);";
-
-                    var sqlitecommand = new SQLiteCommand(command, connection);
                     connection.Open();
-                    sqlitecommand.ExecuteNonQuery();
+                    var command = new SQLiteCommand("CREATE TABLE IF NOT EXISTS TEP (id INTEGER PRIMARY KEY UNIQUE, DateTime DATETIME, SQLw_Data1 string, SQLw_Data2 string, SQLw_Data3 string, SQLw_Data4 string, SQLw_Data5 string, SQLw_Data6 string, SQLw_Data7 string, SQLw_Data8 string, SQLw_Data9 string, SQLw_Data10 string, SQLw_Data11 string, SQLw_Data12 string, SQLw_Data13 string);", connection);
+                    command.ExecuteNonQuery();
                     connection.Close();
                 }
             }
             catch (Exception ex)
             {
-                string logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPCreateTable|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -72,23 +68,18 @@
                 using (var connection = new SQLiteConnection(this.Connstring()))
                 {
                     connection.Open();
-                    SQLiteCommand command;
-
                     var format_date = "yyyy-MM-dd HH:mm:ss.fff";
-
-                    command = new SQLiteCommand("INSERT INTO 'TEP' ('DateTime', 'SQLw_Data1', 'SQLw_Data2', 'SQLw_Data3', 'SQLw_Data4', 'SQLw_Data5', 'SQLw_Data6', 'SQLw_Data7', 'SQLw_Data8', 'SQLw_Data9', 'SQLw_Data10', 'SQLw_Data11', 'SQLw_Data12', 'SQLw_Data13') VALUES ('" + DateTime.Now.ToString(format_date) + "', '" + Convert.ToString(liveTEP.SQLw_Data1) + "', '" + Convert.ToString(liveTEP.SQLw_Data2) + "', '" + Convert.ToString(liveTEP.SQLw_Data3) + "', '" + Convert.ToString(liveTEP.SQLw_Data4) + "', '" + Convert.ToString(liveTEP.SQLw_Data5) + "', '" + Convert.ToString(liveTEP.SQLw_Data6) + "', '" + Convert.ToString(liveTEP.SQLw_Data7) + "', '" + Convert.ToString(liveTEP.SQLw_Data8) + "', '" + Convert.ToString(liveTEP.SQLw_Data9) + "', '" + Convert.ToString(liveTEP.SQLw_Data10) + "', '" + Convert.ToString(liveTEP.SQLw_Data11) + "', '" + Convert.ToString(liveTEP.SQLw_Data12) + "', '" + Convert.ToString(liveTEP.SQLw_Data13) + "');", connection);
+                    var command = new SQLiteCommand("INSERT INTO 'TEP' ('DateTime', 'SQLw_Data1', 'SQLw_Data2', 'SQLw_Data3', 'SQLw_Data4', 'SQLw_Data5', 'SQLw_Data6', 'SQLw_Data7', 'SQLw_Data8', 'SQLw_Data9', 'SQLw_Data10', 'SQLw_Data11', 'SQLw_Data12', 'SQLw_Data13') VALUES ('" + DateTime.Now.ToString(format_date) + "', '" + Convert.ToString(liveTEP.SQLw_Data1) + "', '" + Convert.ToString(liveTEP.SQLw_Data2) + "', '" + Convert.ToString(liveTEP.SQLw_Data3) + "', '" + Convert.ToString(liveTEP.SQLw_Data4) + "', '" + Convert.ToString(liveTEP.SQLw_Data5) + "', '" + Convert.ToString(liveTEP.SQLw_Data6) + "', '" + Convert.ToString(liveTEP.SQLw_Data7) + "', '" + Convert.ToString(liveTEP.SQLw_Data8) + "', '" + Convert.ToString(liveTEP.SQLw_Data9) + "', '" + Convert.ToString(liveTEP.SQLw_Data10) + "', '" + Convert.ToString(liveTEP.SQLw_Data11) + "', '" + Convert.ToString(liveTEP.SQLw_Data12) + "', '" + Convert.ToString(liveTEP.SQLw_Data13) + "');", connection);
                     
                     command.ExecuteNonQuery();
                     connection.Close();
                 }
 
-                var logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPWrite|Записан 2-х часовой отчет TEP";
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Записан 2-х часовой отчет TEP");
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPWrite|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -134,13 +125,11 @@
                     connection.Close(); 
                 }
 
-                var logText = DateTime.Now.ToString() + "|event|SQLiteDB - TEPRead|Выбран отчет TEP за период с " + startDate.ToString(format_date_small) + " по " + endDate.ToString(format_date_small);
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Выбран отчет TEP за период с " + startDate.ToString(format_date_small) + " по " + endDate.ToString(format_date_small));
             }            
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|SQLiteDB - TEPRead|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
 
             return this.HistTEP;

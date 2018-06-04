@@ -4,15 +4,13 @@
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Mail;
-
-    using Model;
-    using Utils;
+    using NLog;
     using static Model.Shell;
 
     /// <summary>Письиа с отчетом ТЭП.</summary>
     public class TEPMail
     {
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>Отправить письмо.</summary>
         /// <param name="mail">Письмо.</param>
@@ -56,15 +54,13 @@
                         sc.Credentials = new NetworkCredential(mail.Login, mail.Pass);                        
                         sc.Send(mailMessage);
 
-                        var logText = DateTime.Now.ToString() + "|event|TEPMail - SendMail|Письмо отправлено";
-                        this.logFile.WriteLog(logText);
+                        this.logger.Info("Письмо отправлено");
                     }
                 }
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|TEPMail - SendMail|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
     }

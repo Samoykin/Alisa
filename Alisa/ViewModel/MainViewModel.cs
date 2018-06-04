@@ -7,17 +7,17 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
-    using System.Windows.Threading;
-
+    using System.Windows.Threading;    
     using Model;
-    using MVVM_test.ViewModel;
+    using NLog;
     using Utils;
-    using static Model.Shell;
+    using static Model.Shell;    
 
     /// <summary>Главная ViewModel.</summary>
     public class MainViewModel
     {
         #region Fields
+        private Logger logger = LogManager.GetCurrentClassLogger();
 
         // конфигурация
         private string path = @"Settings.xml";
@@ -45,15 +45,13 @@
         private string dataBaseName = "DBTEP.sqlite"; // БД SQLite
         private ObservableCollection<RuntimeModel> runtimeModels; // коллекция значений тегов из файла
         private string tagPathCoeff = @"Coeff.txt"; // путь к файлу коэфициентов
-        private LogFile logFile = new LogFile(); // логи
 
         #endregion
-             
+
         /// <summary>Initializes a new instance of the <see cref="MainViewModel" /> class.</summary>
         public MainViewModel()
         {
-            var logText = DateTime.Now.ToString() + "|event| |Запуск приложения Alisa";
-            this.logFile.WriteLog(logText);
+            this.logger.Info("Запуск приложения Alisa");
 
             this.ClickCommand = new Command(arg => this.ClickMethod());
             this.ClickCommand2 = new Command(arg => this.ClickMethod2());
@@ -221,8 +219,7 @@
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - ReadData|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -245,8 +242,7 @@
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - CalcData|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -414,8 +410,7 @@
             }
             catch (Exception ex) 
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - Filter|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -432,8 +427,7 @@
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - ConnStatus|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
 
             if (!status)
@@ -487,8 +481,7 @@
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - ClickMethod3|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }                          
         }
 
@@ -594,8 +587,7 @@
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - SendMail|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
 

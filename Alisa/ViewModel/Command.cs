@@ -1,4 +1,4 @@
-﻿namespace MVVM_test.ViewModel
+﻿namespace Alisa.ViewModel
 {
     using System;
     using System.Windows.Input;

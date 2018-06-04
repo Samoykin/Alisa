@@ -2,14 +2,14 @@
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Linq;
-
+    using System.Linq;    
     using Model;
+    using NLog;
 
     /// <summary>Расчет ТЭП.</summary>
     public class CalculateTEP
     {
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>Расчет.</summary>
         /// <param name="liveTEP">Текущие значения.</param>
@@ -253,8 +253,7 @@
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|MainViewModel - Calculate|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
 
             return liveTEP;

@@ -3,15 +3,15 @@
     using System;
     using System.Collections.ObjectModel;
     using System.IO;
-    using System.Linq;
-    
+    using System.Linq;    
     using Model;
+    using NLog;
     using Excel = Microsoft.Office.Interop.Excel;
 
     /// <summary>Сохранение ТЭП в Excel.</summary>
     public class TEPToExcel
     {
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
         private string filePath = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + DateTime.Now.ToString("yyyy.MM.dd") + ".xlsx";
 
         private Excel.Application excelApp;
@@ -90,13 +90,13 @@
 
                 var i = 0;
 
-                object tt = 0;
+                object firstCol = 0;
 
                 foreach (var record in histTEP)
                 {
                     if (i == histTEP.Count() - 1)
                     {
-                        tt = "Итого:";
+                        firstCol = "Итого:";
 
                         var j = 1;
                         while (j < 15)
@@ -107,10 +107,10 @@
                     }
                     else
                     {
-                        tt = histTEP[i].DateTimeTEP;
+                        firstCol = histTEP[i].DateTimeTEP;
                     }
 
-                    this.workSheetExcel.Cells[i + 2, 1] = tt;
+                    this.workSheetExcel.Cells[i + 2, 1] = firstCol;
                     this.workSheetExcel.Cells[i + 2, 2] = histTEP[i].SQLw_Data1;
 
                     this.workSheetExcel.Cells[i + 2, 3] = histTEP[i].SQLw_Data2;
@@ -133,13 +133,11 @@
                 this.excelApp.Quit();
                 GC.Collect();
 
-                var logText = DateTime.Now.ToString() + "|event|TEPToExcel - saveData|Отчет сохранен в Excel " + this.filePath;
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Отчет сохранен в Excel " + this.filePath);
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|TEPToExcel - saveData|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
 
                 this.workSheetExcel.SaveAs(this.filePath);
                 this.excelApp.Quit();

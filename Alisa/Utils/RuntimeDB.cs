@@ -5,16 +5,15 @@
     using System.Collections.ObjectModel;
     using System.Data.Common;
     using System.Data.SqlClient;
-    using System.IO;
-
+    using System.IO;    
     using Model;
-    using Utils;
+    using NLog;
     using static Model.Shell;
 
     /// <summary>База данных MSSQL.</summary>
     public class RuntimeDB
     {
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
         private string logText;
         private string connStr;
         private MSSQL mssql;
@@ -107,8 +106,7 @@
             }
             catch (SqlException ex)
             {
-                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + ex.Message;
-                this.logFile.WriteLog(this.logText);
+                this.logger.Error(ex.Message);
             }
 
             return runtimeModels;
@@ -125,13 +123,13 @@
 
             try
             {
-                using (var conn = new SqlConnection(connStr))
+                using (var connection = new SqlConnection(connStr))
                 {
-                    conn.Open();
+                    connection.Open();
 
                     var query = "SELECT TOP 1 DATA FROM dbo.Report ORDER BY DATA DESC";
                     
-                    var cmd = new SqlCommand(query, conn);
+                    var cmd = new SqlCommand(query, connection);
 
                     var reader = cmd.ExecuteReader();
 
@@ -147,13 +145,12 @@
                     }
 
                     reader.Close();
-                    conn.Close();
+                    connection.Close();
                 }
             }
             catch (SqlException ex)
             {
-                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataRead|" + ex.Message;
-                this.logFile.WriteLog(this.logText);                
+                this.logger.Error(ex.Message);
             }
 
             return lastReport;
@@ -167,13 +164,13 @@
                         pwd=" + this.mssql.Pass + @";database=AlarmSuite";
             try
             {
-                using (var conn = new SqlConnection(connStr))
+                using (var connection = new SqlConnection(connStr))
                 {
                     var format_date = "yyyyMMdd HH:mm:ss";
 
                     var query = "INSERT INTO dbo.Report (DATA, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9, Data10, Data11, Data12, Data13) VALUES (@Data, @Data1, @Data2, @Data3, @Data4, @Data5, @Data6, @Data7, @Data8, @Data9, @Data10, @Data11, @Data12, @Data13)";
 
-                    using (var cmd = new SqlCommand(query, conn))
+                    using (var cmd = new SqlCommand(query, connection))
                     {
                         cmd.Parameters.AddWithValue("@Data", DateTime.Now.ToString(format_date));
                         cmd.Parameters.AddWithValue("@Data1", Math.Round(liveTEP.SQLw_Data1, 7).ToString());
@@ -190,20 +187,18 @@
                         cmd.Parameters.AddWithValue("@Data12", Math.Round(liveTEP.SQLw_Data12, 7).ToString());
                         cmd.Parameters.AddWithValue("@Data13", Math.Round(liveTEP.SQLw_Data13, 7).ToString());
 
-                        conn.Open();
+                        connection.Open();
                         cmd.ExecuteNonQuery();
                     }
 
-                    conn.Close();
+                    connection.Close();
                 }
 
-                this.logText = DateTime.Now.ToString() + "|event|RuntimeDB - DataWrite|Записан 2-х часовой отчет TEP";
-                this.logFile.WriteLog(this.logText);
+                this.logger.Info("Записан 2-х часовой отчет TEP");
             }
             catch (SqlException ex)
             {
-                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - DataWrite|" + ex.Message;
-                this.logFile.WriteLog(this.logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -211,22 +206,21 @@
         /// <returns>Состояние связи с MSSQL.</returns>
         public bool CheckMSSQLConn()
         {
-            var conn = new SqlConnection(this.connStr);
+            var connection = new SqlConnection(this.connStr);
 
             try
             {
-                conn.Open();
+                connection.Open();
                 return true;
             }
             catch (SqlException ex)
             {
-                this.logText = DateTime.Now.ToString() + "|fail|RuntimeDB - CheckMSSQLConn|" + ex.Message;
-                this.logFile.WriteLog(this.logText);
+                this.logger.Error(ex.Message);
                 return false;                
             }
             finally
             {
-                conn.Dispose();
+                connection.Dispose();
             }
         }
     }

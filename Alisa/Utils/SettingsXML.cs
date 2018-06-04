@@ -3,13 +3,14 @@
     using System;
     using System.IO;
     using System.Xml.Serialization;
+    using NLog;
 
     /// <summary>Параметры XML.</summary>
     /// <typeparam name="T">Тип.</typeparam>
     public class SettingsXML<T>
     {
-        private string path;
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
+        private string path;        
         private string logText;
 
         /// <summary>Initializes a new instance of the <see cref="SettingsXML{T}" /> class.</summary>
@@ -33,8 +34,7 @@
             }
             catch (Exception ex)
             {
-                this.logText = DateTime.Now.ToString() + "|fail|SettingsXML - WriteXml|" + ex.Message;
-                this.logFile.WriteLog(this.logText);
+                this.logger.Error(ex.Message);
             }
         }
 
@@ -53,8 +53,7 @@
             }
             catch (Exception ex)
             {
-                this.logText = DateTime.Now.ToString() + "|fail|SettingsXML - ReadXml|" + ex.Message;
-                this.logFile.WriteLog(this.logText);
+                this.logger.Error(ex.Message);
             }
 
             return data;

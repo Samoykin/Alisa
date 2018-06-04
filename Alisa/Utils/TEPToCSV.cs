@@ -3,14 +3,14 @@
     using System;
     using System.Collections.ObjectModel;
     using System.IO;
-    using System.Text;
-
+    using System.Text;    
     using Model;
+    using NLog;
 
     /// <summary>Сохранение ТЭП в csv.</summary>
     public class TEPToCSV
     {
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
         private string filePath = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + DateTime.Now.ToString("yyyy.MM.dd") + ".csv";
 
         /// <summary>Сохранить.</summary>
@@ -44,13 +44,11 @@
 
                 sw.Close();
 
-                var logText = DateTime.Now.ToString() + "|event|TEPToCSV - saveData|Отчет сохранен в csv " + this.filePath;
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Отчет сохранен в csv " + this.filePath);
             }
             catch (Exception ex)
             {
-                string logText = DateTime.Now.ToString() + "|fail|TEPToCSV - saveData|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
         }
     }

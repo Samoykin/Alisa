@@ -2,14 +2,14 @@
 {    
     using System;
     using System.Collections.ObjectModel;
-    using System.IO;
-
+    using System.IO;    
     using Model;
+    using NLog;
 
     /// <summary>Чтение данных из файла.</summary>
     public class ReadTextFile
     {
-        private LogFile logFile = new LogFile();
+        private Logger logger = LogManager.GetCurrentClassLogger();
         private ObservableCollection<CoeffModel> coeffModels = new ObservableCollection<CoeffModel>();
 
         /// <summary>Прочитать файл.</summary>
@@ -32,13 +32,11 @@
                     text = text.Trim(new char[] { ',' });
                 }
 
-                var logText = DateTime.Now.ToString() + "|event|ReadTextFile - readFile|Считан список из файла " + path;
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Считан список из файла " + path);
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readFile|" + ex.Message;
-                this.logFile.WriteLog(logText);                
+                this.logger.Error(ex.Message);
             }
 
             return text;
@@ -68,13 +66,11 @@
                     }
                 }
 
-                var logText = DateTime.Now.ToString() + "|event|ReadTextFile - readCoeff|Считаны коэффициенты из файла " + path;
-                this.logFile.WriteLog(logText);
+                this.logger.Info("Считаны коэффициенты из файла " + path);
             }
             catch (Exception ex)
             {
-                var logText = DateTime.Now.ToString() + "|fail|ReadTextFile - readCoeff|" + ex.Message;
-                this.logFile.WriteLog(logText);
+                this.logger.Error(ex.Message);
             }
 
             return this.coeffModels;
