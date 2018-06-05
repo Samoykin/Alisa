@@ -26,7 +26,7 @@
                     string s = string.Empty;
                     while ((s = sr.ReadLine()) != null)
                     {
-                        text = text + "'" + s + "',";
+                        text += $"'{s}',";
                     }
 
                     text = text.Trim(new char[] { ',' });

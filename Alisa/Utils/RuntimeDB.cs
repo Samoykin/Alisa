@@ -13,8 +13,8 @@
     /// <summary>База данных MSSQL.</summary>
     public class RuntimeDB
     {
+        private const string TagPath = "TagList.txt";
         private Logger logger = LogManager.GetCurrentClassLogger();
-        private string logText;
         private string connStr;
         private MSSQL mssql;
 
@@ -22,8 +22,7 @@
         /// <param name="mssql">Модель подключения к БД.</param>
         public RuntimeDB(MSSQL mssql)
         {
-            this.connStr = @"server=" + mssql.Server + @";uid=" + mssql.Login + @";
-                        pwd=" + mssql.Pass + @";database=" + mssql.DBName;
+            this.connStr = $"server={mssql.Server};uid={mssql.Login};pwd={mssql.Pass};database={mssql.DBName}";
             this.mssql = mssql;
         }
 
@@ -39,7 +38,7 @@
 
             runtimeModels.Clear();
             
-            using (var sr = new StreamReader("TagList.txt", System.Text.Encoding.Default))
+            using (var sr = new StreamReader(TagPath, System.Text.Encoding.Default))
             {
                 var s = string.Empty;
                 while ((s = sr.ReadLine()) != null)
@@ -75,7 +74,7 @@
                 {
                     conn.Open();
 
-                    var query = "SELECT DateTime=CONVERT(VARCHAR,DateTime,121), TagName, Value FROM Runtime.dbo.Live WHERE TagName IN (" + tags + ")";
+                    var query = $"SELECT DateTime=CONVERT(VARCHAR,DateTime,121), TagName, Value FROM Runtime.dbo.Live WHERE TagName IN ({tags})";
                     
                     var cmd = new SqlCommand(query, conn);
                     var reader = cmd.ExecuteReader();
@@ -117,8 +116,7 @@
         /// <returns>Состояние.</returns>
         public bool DataReadLastReport(decimal hour)
         {
-            var connStr = @"server=" + this.mssql.Server + @";uid=" + this.mssql.Login + @";
-                        pwd=" + this.mssql.Pass + @";database=AlarmSuite";
+            var connStr = $"server={this.mssql.Server};uid={this.mssql.Login};pwd={this.mssql.Pass};database=AlarmSuite";
             var lastReport = true;
 
             try
@@ -160,8 +158,8 @@
         /// <param name="liveTEP">Текущие данные.</param>
         public void DataWrite(LiveTEP liveTEP)
         {
-            var connStr = @"server=" + this.mssql.Server + @";uid=" + this.mssql.Login + @";
-                        pwd=" + this.mssql.Pass + @";database=AlarmSuite";
+            var connStr = $"server={this.mssql.Server};uid={this.mssql.Login};pwd={this.mssql.Pass};database=AlarmSuite";
+
             try
             {
                 using (var connection = new SqlConnection(connStr))

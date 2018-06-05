@@ -17,15 +17,18 @@
     public class MainViewModel
     {
         #region Fields
+        private const string SettingsPath = "Settings.xml";
+        private const string TagPath = "TagList.txt";
+        private const string DataBaseName = "DBTEP.sqlite"; // БД SQLite
+        private const string CoeffPath = "Coeff.txt"; // путь к файлу коэфициентов
+
         private Logger logger = LogManager.GetCurrentClassLogger();
 
-        // конфигурация
-        private string path = @"Settings.xml";
+        // конфигурация        
         private RootElement settingsModel = new RootElement();
 
         // Теги
-        private ReadTextFile rf = new ReadTextFile(); // работа со списками тегов
-        private string tagPath = @"TagList.txt";
+        private ReadTextFile rf = new ReadTextFile(); // работа со списками тегов        
         private string tags;
 
         // БД
@@ -41,10 +44,8 @@
         private DispatcherTimer timerSlaveWrite = new DispatcherTimer();
         private DispatcherTimer timerAccessReport = new DispatcherTimer();
 
-        private bool reportFlag = false;
-        private string dataBaseName = "DBTEP.sqlite"; // БД SQLite
-        private ObservableCollection<RuntimeModel> runtimeModels; // коллекция значений тегов из файла
-        private string tagPathCoeff = @"Coeff.txt"; // путь к файлу коэфициентов
+        private bool reportFlag = false;        
+        private ObservableCollection<RuntimeModel> runtimeModels; // коллекция значений тегов из файла        
 
         #endregion
 
@@ -64,14 +65,14 @@
 
             // Вычитывание параметров из XML
             // Инициализация модели настроек
-            var settingsXML = new SettingsXML<RootElement>(this.path);
+            var settingsXML = new SettingsXML<RootElement>(SettingsPath);
             this.settingsModel.MSSQL = new MSSQL();
             this.settingsModel.SQLite = new SQLite();
             this.settingsModel.Mail = new Mail();
             this.settingsModel.Mail.To = new List<string>();
             this.settingsModel.Reserv = new Reserv();
 
-            if (!File.Exists(this.path))
+            if (!File.Exists(SettingsPath))
             {
                 this.settingsModel = this.SetDefaultValue(this.settingsModel); // значения по умолчанию
                 settingsXML.WriteXml(this.settingsModel);
@@ -93,11 +94,11 @@
             }
 
             // вычитывание списка тегов из файла
-            this.tags = this.rf.ReadFile(this.tagPath);
+            this.tags = this.rf.ReadFile(TagPath);
 
             // Коэффициенты  
             this.CoeffModels = new ObservableCollection<CoeffModel> { };
-            this.CoeffModels = this.rf.ReadCoeff(this.tagPathCoeff);
+            this.CoeffModels = this.rf.ReadCoeff(CoeffPath);
 
             // таймер вычитывания значений из БД
             this.timer1.Interval = new TimeSpan(0, 0, 2);
@@ -266,7 +267,7 @@
                 if (hour == (Math.Floor(hour / 2) * 2) + 1 && this.reportFlag == true)
                 {
                     var sqliteDB = new SQLiteDB(this.settingsModel.SQLite);
-                    if (!File.Exists(this.dataBaseName))
+                    if (!File.Exists(DataBaseName))
                     {
                         sqliteDB.CreateBase();
                     }
@@ -597,7 +598,6 @@
             Filters.Day = true;
             this.ApplyFilter();
 
-            // TEPToCSV tepToCSV = new TEPToCSV();
             var tepToExcel = new TEPToExcel();
             tepToExcel.SaveData(this.HistTEP);
         }

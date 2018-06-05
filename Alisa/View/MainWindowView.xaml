@@ -132,7 +132,7 @@
             <TabItem Header="О программе">
                 <Grid Background="White">
                     <Image HorizontalAlignment="Left" Height="100" Margin="332,31,0,0" VerticalAlignment="Top" Width="365" Source="/Resources/logo.png"/>
-                    <Label Content="Alisa v1.2.16.0" HorizontalAlignment="Left" Margin="363,117,0,0" VerticalAlignment="Top" FontSize="48"/>
+                    <Label Content="Alisa v1.2.16.1" HorizontalAlignment="Left" Margin="363,117,0,0" VerticalAlignment="Top" FontSize="48"/>
                     <Label Content="Самойкин Андрей" HorizontalAlignment="Left" Margin="434,214,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="тел./факс (3822) 522-511" HorizontalAlignment="Left" Margin="409,253,0,0" VerticalAlignment="Top" FontSize="18"/>
                     <Label Content="634021 г. Томск, пр. Фрунзе 130а" HorizontalAlignment="Left" Margin="374,290,0,0" VerticalAlignment="Top" FontSize="18"/>

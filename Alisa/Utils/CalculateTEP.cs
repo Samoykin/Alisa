@@ -24,37 +24,23 @@
 
                 // -1---------------------------------------------------------------------------
                 // К1 - Fгаза [м3] 1-FI501
-                indx = this.IndexCalc("K4_Qg", runtimeModel);
-                double paramQ_5 = runtimeModel[indx].Value * 60;
-                var data1 = paramQ_5 / 600;
-                liveTEP.SQLw_Data1 = liveTEP.SQLw_Data1 + data1;                
+                liveTEP.SQLw_Data1 += runtimeModel[this.IndexCalc("K4_Qg", runtimeModel)].Value * 0.1;                
 
                 // -2---------------------------------------------------------------------------
                 // К2 - Fгаза [м3] 2-FI501
-                indx = this.IndexCalc("K5_Qg", runtimeModel);
-                double paramQ_6 = runtimeModel[indx].Value * 60;
-                var data2 = paramQ_6 / 600;
-                liveTEP.SQLw_Data2 = liveTEP.SQLw_Data2 + data2;
+                liveTEP.SQLw_Data2 += runtimeModel[this.IndexCalc("K5_Qg", runtimeModel)].Value * 0.1;
 
                 // -3---------------------------------------------------------------------------
                 // К3 - Fгаза [м3] 3-FI501
-                indx = this.IndexCalc("K1_V10040", runtimeModel);
-                double paramQ_4 = runtimeModel[indx].Value * 60;
-                var data3 = paramQ_4 / 600;
-                liveTEP.SQLw_Data3 = liveTEP.SQLw_Data3 + data3;
+                liveTEP.SQLw_Data3 += runtimeModel[this.IndexCalc("K1_V10040", runtimeModel)].Value * 0.1;
 
                 // -4---------------------------------------------------------------------------
                 // К3 - Fводы [нм3] 3-FI502
-                indx = this.IndexCalc("K1_Fsv", runtimeModel);
-                double paramQ_3 = runtimeModel[indx].Value;
-                var data4 = paramQ_3 / 600;
-                liveTEP.SQLw_Data4 = liveTEP.SQLw_Data4 + data4;
+                liveTEP.SQLw_Data4 += runtimeModel[this.IndexCalc("K1_Fsv", runtimeModel)].Value / 600;
 
                 // -5---------------------------------------------------------------------------
                 // Fпара от котлов [т/ч] FI502
-                indx = this.IndexCalc("OK_AI1004", runtimeModel);
-                indx2 = this.IndexCalc2("Pbar", coeffModel);
-                double paramFI502_P = runtimeModel[indx].Value + coeffModel[indx2].Value;
+                double paramFI502_P = runtimeModel[this.IndexCalc("OK_AI1004", runtimeModel)].Value + coeffModel[this.IndexCalc2("Pbar", coeffModel)].Value;
 
                 // { Плотность насыщенного водяного пара в кг/м3 }
                 var paramFI502_Ro = (1.6585 * Math.Pow(10, -7) * Math.Pow(paramFI502_P, 5)) +
@@ -64,9 +50,7 @@
                     (0.5382 * paramFI502_P) + 0.0567;
 
                 // { Коэф. расширения }
-                indx = this.IndexCalc2("FI502_d", coeffModel);
-                indx2 = this.IndexCalc2("FI502_Dt", coeffModel);
-                double paramFI502_Betta = coeffModel[indx].Value / coeffModel[indx2].Value;
+                double paramFI502_Betta = coeffModel[this.IndexCalc2("FI502_d", coeffModel)].Value / coeffModel[this.IndexCalc2("FI502_Dt", coeffModel)].Value;
 
                 indx = this.IndexCalc("OK_AI1102", runtimeModel);
                 indx2 = this.IndexCalc2("FI502_Ksi", coeffModel);
@@ -83,8 +67,7 @@
                 var paramFI502_Qm = 0.012522 * coeffModel[indx].Value * paramFI502_Eps * Math.Pow(coeffModel[indx2].Value, 2) * Math.Pow(coeffModel[indx3].Value, 2) *
                     coeffModel[indx4].Value * coeffModel[indx5].Value * Math.Sqrt(runtimeModel[indx6].Value * 100 * paramFI502_Ro) / 1000;
 
-                var data5 = paramFI502_Qm / 600;
-                liveTEP.SQLw_Data5 = liveTEP.SQLw_Data5 + data5;
+                liveTEP.SQLw_Data5 += paramFI502_Qm / 600;
 
                 // -6---------------------------------------------------------------------------
                 // Eтепла от котлов [Гкал]
@@ -130,8 +113,7 @@
                 var paramFI507_Qm = 0.012522 * coeffModel[indx].Value * paramFI507_Eps * Math.Pow(coeffModel[indx2].Value, 2) * Math.Pow(coeffModel[indx3].Value, 2) *
                     coeffModel[indx4].Value * coeffModel[indx5].Value * Math.Sqrt(runtimeModel[indx6].Value * 100 * paramFI507_Ro) / 1000;
 
-                var data7 = paramFI507_Qm / 600;
-                liveTEP.SQLw_Data7 = liveTEP.SQLw_Data7 + data7;
+                liveTEP.SQLw_Data7 += paramFI507_Qm / 600;
 
                 // -8---------------------------------------------------------------------------
                 // Eтепла на установку [Гкал]
@@ -141,8 +123,7 @@
                 // { Тепловая энергия в Гкал/ч }
                 var paramFI507_Etta = 0.23885 * Math.Pow(10, -6) * paramFI507_Qm * 1000 * paramFI507_h;
 
-                var data8 = paramFI507_Etta / 600;
-                liveTEP.SQLw_Data8 = liveTEP.SQLw_Data8 + data8;
+                liveTEP.SQLw_Data8 += paramFI507_Etta / 600;
 
                 // -9---------------------------------------------------------------------------
                 // Fводы на подпитку [нм3] FI503
@@ -162,8 +143,7 @@
                 var paramFI503_Qm = 0.012522 * coeffModel[indx].Value * Math.Pow(coeffModel[indx2].Value, 2) * Math.Pow(coeffModel[indx3].Value, 2) *
                     coeffModel[indx4].Value * coeffModel[indx5].Value * Math.Sqrt(runtimeModel[indx6].Value * 100 * paramFI503_Ro) / 1000;
 
-                var data9 = paramFI503_Qm / 600;
-                liveTEP.SQLw_Data9 = liveTEP.SQLw_Data9 + data9;
+                liveTEP.SQLw_Data9 += paramFI503_Qm / 600;
 
                 // -10--------------------------------------------------------------------------
                 // Fводы прямой сетевой [нм3] FI504
@@ -183,8 +163,7 @@
                 var paramFI504_Qm = 0.012522 * coeffModel[indx].Value * Math.Pow(coeffModel[indx2].Value, 2) * Math.Pow(coeffModel[indx3].Value, 2) *
                     coeffModel[indx4].Value * coeffModel[indx5].Value * Math.Sqrt(runtimeModel[indx6].Value * 100 * paramFI504_Ro) / 1000;
 
-                var data10 = paramFI504_Qm / 600;
-                liveTEP.SQLw_Data10 = liveTEP.SQLw_Data10 + data10;
+                liveTEP.SQLw_Data10 += paramFI504_Qm / 600;
 
                 // -11--------------------------------------------------------------------------
                 // Fгаза на вх. в котельн. [нм3] FI505
@@ -219,8 +198,7 @@
                 var paramFI505_Qc = 0.012522 * coeffModel[indx].Value * paramFI505_Eps * Math.Pow(coeffModel[indx2].Value, 2) * Math.Pow(coeffModel[indx3].Value, 2) *
                     coeffModel[indx4].Value * coeffModel[indx5].Value * Math.Sqrt(runtimeModel[indx6].Value * 100 * paramFI505_Ro) / coeffModel[indx7].Value;
 
-                var data11 = paramFI505_Qc / 600;
-                liveTEP.SQLw_Data11 = liveTEP.SQLw_Data11 + data11;
+                liveTEP.SQLw_Data11 += paramFI505_Qc / 600;
 
                 // -12--------------------------------------------------------------------------
                 // Eтепла 3-го котла
@@ -229,8 +207,7 @@
                 indx3 = this.IndexCalc("K1_Tsv_in", runtimeModel);
                 double paramEt_K3 = runtimeModel[indx].Value * (runtimeModel[indx2].Value - runtimeModel[indx3].Value) / 1000;
 
-                var data12 = paramEt_K3 / 600;
-                liveTEP.SQLw_Data12 = liveTEP.SQLw_Data12 + data12;
+                liveTEP.SQLw_Data12 += paramEt_K3 / 600;
 
                 // -13--------------------------------------------------------------------------
                 // Количество газа УВП [тыс. нм3]
@@ -246,10 +223,7 @@
                     liveTEP.OK_UVP_Q_old = runtimeModel[indx].Value;
                 }
 
-                var deltaQ2 = runtimeModel[indx].Value - liveTEP.OK_UVP_Q_old;
-
-                var data13 = deltaQ2;
-                liveTEP.SQLw_Data13 = liveTEP.SQLw_Data13 + data13;                
+                liveTEP.SQLw_Data13 += runtimeModel[indx].Value - liveTEP.OK_UVP_Q_old;                
             }
             catch (Exception ex)
             {

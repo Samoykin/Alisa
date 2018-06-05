@@ -69,7 +69,7 @@
                 {
                     connection.Open();
                     var format_date = "yyyy-MM-dd HH:mm:ss.fff";
-                    var command = new SQLiteCommand("INSERT INTO 'TEP' ('DateTime', 'SQLw_Data1', 'SQLw_Data2', 'SQLw_Data3', 'SQLw_Data4', 'SQLw_Data5', 'SQLw_Data6', 'SQLw_Data7', 'SQLw_Data8', 'SQLw_Data9', 'SQLw_Data10', 'SQLw_Data11', 'SQLw_Data12', 'SQLw_Data13') VALUES ('" + DateTime.Now.ToString(format_date) + "', '" + Convert.ToString(liveTEP.SQLw_Data1) + "', '" + Convert.ToString(liveTEP.SQLw_Data2) + "', '" + Convert.ToString(liveTEP.SQLw_Data3) + "', '" + Convert.ToString(liveTEP.SQLw_Data4) + "', '" + Convert.ToString(liveTEP.SQLw_Data5) + "', '" + Convert.ToString(liveTEP.SQLw_Data6) + "', '" + Convert.ToString(liveTEP.SQLw_Data7) + "', '" + Convert.ToString(liveTEP.SQLw_Data8) + "', '" + Convert.ToString(liveTEP.SQLw_Data9) + "', '" + Convert.ToString(liveTEP.SQLw_Data10) + "', '" + Convert.ToString(liveTEP.SQLw_Data11) + "', '" + Convert.ToString(liveTEP.SQLw_Data12) + "', '" + Convert.ToString(liveTEP.SQLw_Data13) + "');", connection);
+                    var command = new SQLiteCommand($"INSERT INTO 'TEP' ('DateTime', 'SQLw_Data1', 'SQLw_Data2', 'SQLw_Data3', 'SQLw_Data4', 'SQLw_Data5', 'SQLw_Data6', 'SQLw_Data7', 'SQLw_Data8', 'SQLw_Data9', 'SQLw_Data10', 'SQLw_Data11', 'SQLw_Data12', 'SQLw_Data13') VALUES ('{DateTime.Now.ToString(format_date)}', '{Convert.ToString(liveTEP.SQLw_Data1)}', '{Convert.ToString(liveTEP.SQLw_Data2)}', '{Convert.ToString(liveTEP.SQLw_Data3)}', '{Convert.ToString(liveTEP.SQLw_Data4)}', '{Convert.ToString(liveTEP.SQLw_Data5)}', '{Convert.ToString(liveTEP.SQLw_Data6)}', '{Convert.ToString(liveTEP.SQLw_Data7)}', '{Convert.ToString(liveTEP.SQLw_Data8)}', '{Convert.ToString(liveTEP.SQLw_Data9)}', '{Convert.ToString(liveTEP.SQLw_Data10)}', '{Convert.ToString(liveTEP.SQLw_Data11)}', '{Convert.ToString(liveTEP.SQLw_Data12)}', '{Convert.ToString(liveTEP.SQLw_Data13)}');", connection);
                     
                     command.ExecuteNonQuery();
                     connection.Close();
@@ -99,7 +99,7 @@
                 using (var connection = new SQLiteConnection(this.Connstring()))
                 {
                     connection.Open();
-                    var command = new SQLiteCommand("SELECT * FROM TEP WHERE DateTime >= '" + startDate.ToString(format_date) + "' and DateTime <= '" + endDate.ToString(format_date) + "'  ;", connection);
+                    var command = new SQLiteCommand($"SELECT * FROM TEP WHERE DateTime >= '{startDate.ToString(format_date)}' and DateTime <= '{endDate.ToString(format_date)}';", connection);
 
                     var reader = command.ExecuteReader();
                     foreach (DbDataRecord record in reader)
@@ -125,7 +125,7 @@
                     connection.Close(); 
                 }
 
-                this.logger.Info("Выбран отчет TEP за период с " + startDate.ToString(format_date_small) + " по " + endDate.ToString(format_date_small));
+                this.logger.Info($"Выбран отчет TEP за период с {startDate.ToString(format_date_small)} по {endDate.ToString(format_date_small)}");
             }            
             catch (Exception ex)
             {
