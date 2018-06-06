@@ -4,13 +4,10 @@
     using System.Collections.ObjectModel;
     using System.Linq;    
     using Model;
-    using NLog;
 
     /// <summary>Расчет ТЭП.</summary>
     public class CalculateTEP
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
-
         /// <summary>Расчет.</summary>
         /// <param name="liveTEP">Текущие значения.</param>
         /// <param name="runtimeModel">Модель параметров.</param>
@@ -18,8 +15,6 @@
         /// <returns>Расчитанные значения.</returns>
         public LiveTEP Calculate(LiveTEP liveTEP, ObservableCollection<RuntimeModel> runtimeModel, ObservableCollection<CoeffModel> coeffModel)
         {
-            try
-            {
                 int indx, indx2, indx3, indx4, indx5, indx6, indx7;
 
                 // -1---------------------------------------------------------------------------
@@ -224,11 +219,6 @@
                 }
 
                 liveTEP.SQLw_Data13 += runtimeModel[indx].Value - liveTEP.OK_UVP_Q_old;                
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
 
             return liveTEP;
         }

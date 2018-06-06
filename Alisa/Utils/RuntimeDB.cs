@@ -68,8 +68,6 @@
         {
             runtimeModels.Clear();
             
-            try
-            {
                 using (var conn = new SqlConnection(this.connStr))
                 {
                     conn.Open();
@@ -102,11 +100,6 @@
                     reader.Close();
                     conn.Close();
                 }
-            }
-            catch (SqlException ex)
-            {
-                this.logger.Error(ex.Message);
-            }
 
             return runtimeModels;
         }
@@ -119,8 +112,6 @@
             var connStr = $"server={this.mssql.Server};uid={this.mssql.Login};pwd={this.mssql.Pass};database=AlarmSuite";
             var lastReport = true;
 
-            try
-            {
                 using (var connection = new SqlConnection(connStr))
                 {
                     connection.Open();
@@ -145,11 +136,6 @@
                     reader.Close();
                     connection.Close();
                 }
-            }
-            catch (SqlException ex)
-            {
-                this.logger.Error(ex.Message);
-            }
 
             return lastReport;
         }
@@ -160,8 +146,6 @@
         {
             var connStr = $"server={this.mssql.Server};uid={this.mssql.Login};pwd={this.mssql.Pass};database=AlarmSuite";
 
-            try
-            {
                 using (var connection = new SqlConnection(connStr))
                 {
                     var format_date = "yyyyMMdd HH:mm:ss";
@@ -193,11 +177,6 @@
                 }
 
                 this.logger.Info("Записан 2-х часовой отчет TEP");
-            }
-            catch (SqlException ex)
-            {
-                this.logger.Error(ex.Message);
-            }
         }
 
         /// <summary>Проверить связь.</summary>

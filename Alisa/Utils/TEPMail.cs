@@ -1,6 +1,5 @@
 ﻿namespace Alisa.ViewModel
 {
-    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Mail;
@@ -20,8 +19,6 @@
         /// <param name="service">Состояние.</param>
         public void SendMail(Mail mail, string sibject, string body, string att, bool service)
         {
-            try
-            {
                 using (var mailMessage = new MailMessage())
                 {
                     mailMessage.From = new MailAddress(mail.From);
@@ -57,11 +54,6 @@
                         this.logger.Info("Письмо отправлено");
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
         }
     }
 }

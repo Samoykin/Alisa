@@ -43,19 +43,12 @@
         /// <summary>Создать таблицу ТЭП.</summary>
         public void TEPCreateTable()
         {  
-            try
+            using (var connection = new SQLiteConnection(this.Connstring()))
             {
-                using (var connection = new SQLiteConnection(this.Connstring()))
-                {
-                    connection.Open();
-                    var command = new SQLiteCommand("CREATE TABLE IF NOT EXISTS TEP (id INTEGER PRIMARY KEY UNIQUE, DateTime DATETIME, SQLw_Data1 string, SQLw_Data2 string, SQLw_Data3 string, SQLw_Data4 string, SQLw_Data5 string, SQLw_Data6 string, SQLw_Data7 string, SQLw_Data8 string, SQLw_Data9 string, SQLw_Data10 string, SQLw_Data11 string, SQLw_Data12 string, SQLw_Data13 string);", connection);
-                    command.ExecuteNonQuery();
-                    connection.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
+                connection.Open();
+                var command = new SQLiteCommand("CREATE TABLE IF NOT EXISTS TEP (id INTEGER PRIMARY KEY UNIQUE, DateTime DATETIME, SQLw_Data1 string, SQLw_Data2 string, SQLw_Data3 string, SQLw_Data4 string, SQLw_Data5 string, SQLw_Data6 string, SQLw_Data7 string, SQLw_Data8 string, SQLw_Data9 string, SQLw_Data10 string, SQLw_Data11 string, SQLw_Data12 string, SQLw_Data13 string);", connection);
+                command.ExecuteNonQuery();
+                connection.Close();
             }
         }
 
@@ -63,8 +56,6 @@
         /// <param name="liveTEP">Текущие значения.</param>
         public void TEPWrite(LiveTEP liveTEP)
         {
-            try
-            {
                 using (var connection = new SQLiteConnection(this.Connstring()))
                 {
                     connection.Open();
@@ -76,11 +67,6 @@
                 }
 
                 this.logger.Info("Записан 2-х часовой отчет TEP");
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
         }
 
         /// <summary>Прочитать отчет ТЭП.</summary>
@@ -94,8 +80,6 @@
 
             this.HistTEP = new ObservableCollection<HistTEP>();
 
-            try
-            {
                 using (var connection = new SQLiteConnection(this.Connstring()))
                 {
                     connection.Open();
@@ -126,11 +110,6 @@
                 }
 
                 this.logger.Info($"Выбран отчет TEP за период с {startDate.ToString(format_date_small)} по {endDate.ToString(format_date_small)}");
-            }            
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
 
             return this.HistTEP;
         }

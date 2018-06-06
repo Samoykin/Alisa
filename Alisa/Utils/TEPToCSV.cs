@@ -22,8 +22,6 @@
                 File.Delete(this.filePath);
             }
 
-            try
-            {
                 var sw = new StreamWriter(this.filePath, false, Encoding.Unicode);
 
                 sw.WriteLine("Дата/Время; K1 - Fгаза[м3], 1-FI501; K2 - Fгаза[м3], 2-FI501;" +
@@ -45,11 +43,6 @@
                 sw.Close();
 
                 this.logger.Info("Отчет сохранен в csv " + this.filePath);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
         }
     }
 }

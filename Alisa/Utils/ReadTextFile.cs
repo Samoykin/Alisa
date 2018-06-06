@@ -19,8 +19,6 @@
         {
             var text = string.Empty;
 
-            try
-            {
                 using (var sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
                     string s = string.Empty;
@@ -33,11 +31,6 @@
                 }
 
                 this.logger.Info("Считан список из файла " + path);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
 
             return text;
         }
@@ -47,8 +40,6 @@
         /// <returns>Коэффициенты.</returns>
         public ObservableCollection<CoeffModel> ReadCoeff(string path)
         {
-            try
-            {
                 using (var sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
                     string s = string.Empty;
@@ -67,11 +58,6 @@
                 }
 
                 this.logger.Info("Считаны коэффициенты из файла " + path);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
 
             return this.coeffModels;
         }        

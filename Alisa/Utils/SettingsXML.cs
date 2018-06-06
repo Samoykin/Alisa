@@ -1,6 +1,5 @@
 ﻿namespace Alisa.Utils
 {
-    using System;
     using System.IO;
     using System.Xml.Serialization;
     using NLog;
@@ -10,8 +9,7 @@
     public class SettingsXML<T>
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
-        private string path;        
-        private string logText;
+        private string path;
 
         /// <summary>Initializes a new instance of the <see cref="SettingsXML{T}" /> class.</summary>
         /// <param name="path">Путь к файлу.</param>
@@ -24,18 +22,11 @@
         /// <param name="data">Данные.</param>
         public void WriteXml(T data)
         {
-            try
-            {
-                var serializer_obj = new XmlSerializer(typeof(T));
+            var serializer_obj = new XmlSerializer(typeof(T));
 
-                TextWriter stream = new StreamWriter(this.path);
-                serializer_obj.Serialize(stream, data);
-                stream.Close();
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
+            TextWriter stream = new StreamWriter(this.path);
+            serializer_obj.Serialize(stream, data);
+            stream.Close();
         }
 
         /// <summary>Прочитать из XML.</summary>
@@ -43,18 +34,11 @@
         /// <returns>Набор значений.</returns>
         public T ReadXml(T data)
         {
-            try
-            {
-                var serializer_obj = new XmlSerializer(typeof(T));
+            var serializer_obj = new XmlSerializer(typeof(T));
 
-                TextReader stream = new StreamReader(this.path);
-                data = (T)serializer_obj.Deserialize(stream);
-                stream.Close();                
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
+            TextReader stream = new StreamReader(this.path);
+            data = (T)serializer_obj.Deserialize(stream);
+            stream.Close();                
 
             return data;
         }

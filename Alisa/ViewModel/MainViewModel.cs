@@ -54,94 +54,101 @@
         {
             this.logger.Info("Запуск приложения Alisa");
 
-            this.ClickCommand = new Command(arg => this.ClickMethod());
-            this.ClickCommand2 = new Command(arg => this.ClickMethod2());
-            this.ClickApplyFilter = new Command(arg => this.ApplyFilter());
-            this.ClickCommand4 = new Command(arg => this.ClickMethod4());
-            this.ClickCommand5 = new Command(arg => this.ClickMethod5());
-
-            this.TEP = new TEPModel { };
-            this.Misc = new Misc { };
-
-            // Вычитывание параметров из XML
-            // Инициализация модели настроек
-            var settingsXML = new SettingsXML<RootElement>(SettingsPath);
-            this.settingsModel.MSSQL = new MSSQL();
-            this.settingsModel.SQLite = new SQLite();
-            this.settingsModel.Mail = new Mail();
-            this.settingsModel.Mail.To = new List<string>();
-            this.settingsModel.Reserv = new Reserv();
-
-            if (!File.Exists(SettingsPath))
+            try
             {
-                this.settingsModel = this.SetDefaultValue(this.settingsModel); // значения по умолчанию
-                settingsXML.WriteXml(this.settingsModel);
+                this.ClickCommand = new Command(arg => this.ClickMethod());
+                this.ClickCommand2 = new Command(arg => this.ClickMethod2());
+                this.ClickApplyFilter = new Command(arg => this.ApplyFilter());
+                this.ClickCommand4 = new Command(arg => this.ClickMethod4());
+                this.ClickCommand5 = new Command(arg => this.ClickMethod5());
+
+                this.TEP = new TEPModel { };
+                this.Misc = new Misc { };
+
+                // Вычитывание параметров из XML
+                // Инициализация модели настроек
+                var settingsXML = new SettingsXML<RootElement>(SettingsPath);
+                this.settingsModel.MSSQL = new MSSQL();
+                this.settingsModel.SQLite = new SQLite();
+                this.settingsModel.Mail = new Mail();
+                this.settingsModel.Mail.To = new List<string>();
+                this.settingsModel.Reserv = new Reserv();
+
+                if (!File.Exists(SettingsPath))
+                {
+                    this.settingsModel = this.SetDefaultValue(this.settingsModel); // значения по умолчанию
+                    settingsXML.WriteXml(this.settingsModel);
+                }
+                else
+                {
+                    this.settingsModel = settingsXML.ReadXml(this.settingsModel);
+                }
+
+                this.rDB = new RuntimeDB(this.settingsModel.MSSQL);
+
+                if (this.settingsModel.Reserv.Master)
+                {
+                    Misc.Master = "Master";
+                }
+                else
+                {
+                    Misc.Master = "Slave";
+                }
+
+                // вычитывание списка тегов из файла
+                this.tags = this.rf.ReadFile(TagPath);
+
+                // Коэффициенты  
+                this.CoeffModels = new ObservableCollection<CoeffModel> { };
+                this.CoeffModels = this.rf.ReadCoeff(CoeffPath);
+
+                // таймер вычитывания значений из БД
+                this.timer1.Interval = new TimeSpan(0, 0, 2);
+                this.timer1.Tick += new EventHandler(this.Timer_Tick);
+                this.timer1.Start();
+
+                // расчет ТЭП
+                this.timer11.Interval = new TimeSpan(0, 0, 6);
+                this.timer11.Tick += new EventHandler(this.Timer_Tick_Calc);
+                this.timer11.Start();
+
+                // таймер на вызов метода записи 2-х часовок
+                this.timer2.Interval = new TimeSpan(0, 1, 0);
+                this.timer2.Tick += new EventHandler(this.Timer_Tick2);
+                this.timer2.Start();
+
+                // таймер на отправку писем
+                this.timer3.Interval = new TimeSpan(0, 1, 0);
+                this.timer3.Tick += new EventHandler(this.Timer_Tick3);
+                this.timer3.Start();
+
+                // таймер проверки связи с БД MSSQL
+                this.timerConnStatus.Interval = new TimeSpan(0, 0, 1);
+                this.timerConnStatus.Tick += new EventHandler(this.TimerConnStatus);
+                this.timerConnStatus.Start();
+
+                // таймер на доступ к записи отчета
+                this.timerAccessReport.Interval = new TimeSpan(0, 2, 0);
+                this.timerAccessReport.Tick += new EventHandler(this.TimerAccessReport);
+                this.timerAccessReport.Start();
+
+                this.LiveTEP = new LiveTEP { };
+                this.TEPtoBase = new LiveTEP { };
+                this.Filters = new Filters { };
+
+                this.Filters.StartDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
+                this.Filters.EndDate = DateTime.Now;
+
+                this.HistTEP = new ObservableCollection<HistTEP> { };
+
+                this.Filters.OnCount += this.Filter;
+                this.Filters.Day = true;
+                this.ApplyFilter();
             }
-            else
+            catch (Exception ex)
             {
-                this.settingsModel = settingsXML.ReadXml(this.settingsModel);
+                this.logger.Error(ex.Message);
             }
-
-            this.rDB = new RuntimeDB(this.settingsModel.MSSQL);
-
-            if (this.settingsModel.Reserv.Master)
-            {
-                Misc.Master = "Master";
-            }
-            else
-            {
-                Misc.Master = "Slave";
-            }
-
-            // вычитывание списка тегов из файла
-            this.tags = this.rf.ReadFile(TagPath);
-
-            // Коэффициенты  
-            this.CoeffModels = new ObservableCollection<CoeffModel> { };
-            this.CoeffModels = this.rf.ReadCoeff(CoeffPath);
-
-            // таймер вычитывания значений из БД
-            this.timer1.Interval = new TimeSpan(0, 0, 2);
-            this.timer1.Tick += new EventHandler(this.Timer_Tick);
-            this.timer1.Start();
-
-            // расчет ТЭП
-            this.timer11.Interval = new TimeSpan(0, 0, 6);
-            this.timer11.Tick += new EventHandler(this.Timer_Tick_Calc);
-            this.timer11.Start();
-
-            // таймер на вызов метода записи 2-х часовок
-            this.timer2.Interval = new TimeSpan(0, 1, 0);
-            this.timer2.Tick += new EventHandler(this.Timer_Tick2);
-            this.timer2.Start();
-
-            // таймер на отправку писем
-            this.timer3.Interval = new TimeSpan(0, 1, 0);
-            this.timer3.Tick += new EventHandler(this.Timer_Tick3);
-            this.timer3.Start();
-
-            // таймер проверки связи с БД MSSQL
-            this.timerConnStatus.Interval = new TimeSpan(0, 0, 1);
-            this.timerConnStatus.Tick += new EventHandler(this.TimerConnStatus);
-            this.timerConnStatus.Start();
-
-            // таймер на доступ к записи отчета
-            this.timerAccessReport.Interval = new TimeSpan(0, 2, 0);
-            this.timerAccessReport.Tick += new EventHandler(this.TimerAccessReport);
-            this.timerAccessReport.Start();
-
-            this.LiveTEP = new LiveTEP { };
-            this.TEPtoBase = new LiveTEP { };
-            this.Filters = new Filters { };
-
-            this.Filters.StartDate = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
-            this.Filters.EndDate = DateTime.Now;
-
-            this.HistTEP = new ObservableCollection<HistTEP> { };
-
-            this.Filters.OnCount += this.Filter;
-            this.Filters.Day = true;
-            this.ApplyFilter();
         }
 
         #region Properties
@@ -209,19 +216,12 @@
         
         private async void ReadData()
         {
-            try
-            {
                 this.runtimeModels = new ObservableCollection<RuntimeModel>();
 
                 this.runtimeModels = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() =>
                 {
                     return rDB.DataReadTest(tags, runtimeModels);
                 });                               
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
         }
 
         private void Timer_Tick_Calc(object sender, EventArgs e)
@@ -231,8 +231,6 @@
 
         private void CalcData()
         {
-            try
-            {
                 var clcTEP = new CalculateTEP();
 
                 this.LiveTEP = clcTEP.Calculate(this.LiveTEP, this.runtimeModels, this.CoeffModels);
@@ -240,11 +238,6 @@
                 var indx = this.IndexCalc("OK_UVP_Q", this.runtimeModels);
 
                 this.LiveTEP.OK_UVP_Q_old = this.runtimeModels[indx].Value;
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
         }
 
         private int IndexCalc(string name, ObservableCollection<RuntimeModel> runtimeModels)
@@ -383,8 +376,6 @@
         {
             var dt = Filters.StartDate;
 
-            try
-            {
                 if (Filters.Day)
                 {
                     Filters.StartDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
@@ -408,28 +399,16 @@
                     Filters.StartDate = new DateTime(dt.Year, dt.Month, dt.Day, 5, 00, 00);
                     Filters.EndDate = Filters.StartDate.Subtract(new TimeSpan(-30, 0, 0, 0));
                 }
-            }
-            catch (Exception ex) 
-            {
-                this.logger.Error(ex.Message);
-            }
         }
 
         private async void ConnStatus()
         {
             var status = false;
 
-            try
+            status = await Task<bool>.Factory.StartNew(() =>
             {
-                status = await Task<bool>.Factory.StartNew(() =>
-                {
-                    return rDB.CheckMSSQLConn();
-                });
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
+                return rDB.CheckMSSQLConn();
+            });
 
             if (!status)
             {
@@ -452,8 +431,6 @@
             var histTEP2 = new ObservableCollection<HistTEP> { };
             var sqliteDB = new SQLiteDB(this.settingsModel.SQLite);
 
-            try
-            {
                 histTEP2 = sqliteDB.TEPRead(Filters.StartDate, Filters.EndDate);
 
                 this.HistTEP.Clear();
@@ -478,15 +455,10 @@
                     this.HistTEP.Add(ht);
                 }
 
-                this.HistTEP.Add(this.Htep);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }                          
+                this.HistTEP.Add(this.Htep);                        
         }
 
-        // читает с БД
+        // Читает с БД
         private void ClickMethod()
         {
             var runtimeDB = new RuntimeDB(this.settingsModel.MSSQL);
@@ -525,7 +497,7 @@
             return set;
         }
 
-        // создает БД, таблицу и делает запись
+        // Создает БД, таблицу и делает запись
         private void ClickMethod2()
         {
             // string DataBaseName = "DBTEP.sqlite";
@@ -539,18 +511,18 @@
             // sqliteDB.TEPWrite(LiveTEP);
         }
 
-        // запись в лог и отсылка сообщения с логами
+        // Запись в лог и отсылка сообщения с логами
         private void ClickMethod4()
         {
-            // выбираем данные за сутки
+            // Выбираем данные за сутки
             Filters.Day = true;
             this.ApplyFilter();
 
-            // сохраняем отчет в csv
+            // Сохраняем отчет в csv
             var tepToExcel = new TEPToExcel();
             tepToExcel.SaveData(this.HistTEP);
 
-            // отправка письма
+            // Отправка письма
             var date = DateTime.Now.ToString("yyyy.MM.dd");
             var att = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + date + ".xlsx";
             var subject = "Отчет ТЭП " + date;
@@ -560,7 +532,7 @@
                 "тел./факс (3822) 522-511<br>";
             this.SendMail(subject, body, att, false);
 
-            // отправка письма в Элком с логами
+            // Отправка письма в Элком с логами
             var log = Directory.GetCurrentDirectory() + @"\log.txt";
             var log_temp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
 
@@ -579,22 +551,15 @@
         {
             var tepMail = new TEPMail();
 
-            try
+            await Task.Factory.StartNew(() =>
             {
-                await Task.Factory.StartNew(() =>
-                {
-                    tepMail.SendMail(settingsModel.Mail, subject, body, att, service);
-                });
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message);
-            }
+                tepMail.SendMail(settingsModel.Mail, subject, body, att, service);
+            });
         }
 
         private void ClickMethod5()
         {
-            // выбираем данные за сутки
+            // Выбираем данные за сутки
             Filters.Day = true;
             this.ApplyFilter();
 
