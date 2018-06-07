@@ -26,18 +26,17 @@
             this.mssql = mssql;
         }
 
-        /// <summary>Прочитать данные из тестовой БД.</summary>
+        /// <summary>Прочитать данные из файла.</summary>
         /// <param name="tags">Набор тегов.</param>
-        /// <param name="runtimeModels">Модель данных.</param>
         /// <returns>Набор значений.</returns>
-        public ObservableCollection<RuntimeModel> DataReadTest(string tags, ObservableCollection<RuntimeModel> runtimeModels)
+        public ObservableCollection<RuntimeModel> DataReadTest(string tags)
         {
             var tagList = new List<string>();
             var addresses = tags.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
             var rnd = new Random();
 
-            runtimeModels.Clear();
-            
+            var runtimeModels = new ObservableCollection<RuntimeModel>();
+
             using (var sr = new StreamReader(TagPath, System.Text.Encoding.Default))
             {
                 var s = string.Empty;

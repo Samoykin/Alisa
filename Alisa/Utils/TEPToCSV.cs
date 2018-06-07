@@ -11,7 +11,7 @@
     public class TEPToCSV
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
-        private string filePath = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + DateTime.Now.ToString("yyyy.MM.dd") + ".csv";
+        private string filePath = $@"{Directory.GetCurrentDirectory()}\TEP\TEP_{DateTime.Now.ToString("yyyy.MM.dd")}.csv";
 
         /// <summary>Сохранить.</summary>
         /// <param name="histTEP">Отчет ТЭП.</param>
@@ -42,7 +42,7 @@
 
                 sw.Close();
 
-                this.logger.Info("Отчет сохранен в csv " + this.filePath);
+                this.logger.Info($"Отчет сохранен в csv {this.filePath}");
         }
     }
 }

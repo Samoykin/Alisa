@@ -20,19 +20,19 @@
         private const string SettingsPath = "Settings.xml";
         private const string TagPath = "TagList.txt";
         private const string DataBaseName = "DBTEP.sqlite"; // БД SQLite
-        private const string CoeffPath = "Coeff.txt"; // путь к файлу коэфициентов
+        private const string CoeffPath = "Coeff.txt"; // Путь к файлу коэфициентов
 
         private Logger logger = LogManager.GetCurrentClassLogger();
 
-        // конфигурация        
+        // Конфигурация        
         private RootElement settingsModel = new RootElement();
 
         // Теги
-        private ReadTextFile rf = new ReadTextFile(); // работа со списками тегов        
+        private ReadTextFile rf = new ReadTextFile(); // Работа со списками тегов        
         private string tags;
 
         // БД
-        private List<float> tagValue = new List<float>(); // теги в MSSQL Runtime
+        private List<float> tagValue = new List<float>(); // Теги в MSSQL Runtime
         private RuntimeDB rDB;
 
         // Таймер
@@ -45,7 +45,7 @@
         private DispatcherTimer timerAccessReport = new DispatcherTimer();
 
         private bool reportFlag = false;        
-        private ObservableCollection<RuntimeModel> runtimeModels; // коллекция значений тегов из файла        
+        private ObservableCollection<RuntimeModel> runtimeModels; // Коллекция значений тегов из файла        
 
         #endregion
 
@@ -56,11 +56,13 @@
 
             try
             {
-                this.ClickCommand = new Command(arg => this.ClickMethod());
-                this.ClickCommand2 = new Command(arg => this.ClickMethod2());
-                this.ClickApplyFilter = new Command(arg => this.ApplyFilter());
-                this.ClickCommand4 = new Command(arg => this.ClickMethod4());
-                this.ClickCommand5 = new Command(arg => this.ClickMethod5());
+                this.FilteredTEPCmd = new Command(arg => this.ApplyFilter());
+
+                // Сервисные
+                this.WriteTEPCmd = new Command(arg => this.WriteTEP());
+                this.DBCreateCmd = new Command(arg => this.DBCreate());                
+                this.LogMailCmd = new Command(arg => this.LogMail());
+                this.FilterAndSaveCmd = new Command(arg => this.FilterAndSave());
 
                 this.TEP = new TEPModel { };
                 this.Misc = new Misc { };
@@ -183,28 +185,25 @@
         /// <summary>Доп настройки.</summary>
         public Misc Misc { get; set; }
 
-        #endregion     
+        #endregion
 
         #region Commands
 
+        /// <summary>Команда - применить фильтр.</summary>
+        public ICommand FilteredTEPCmd { get; set; }
+
         /// <summary>Команда 1.</summary>
-        public ICommand ClickCommand { get; set; }
+        public ICommand WriteTEPCmd { get; set; }
 
         /// <summary>Команда 2.</summary>
-        public ICommand ClickCommand2 { get; set; }
-
-        /// <summary>Команда - применить фильтр.</summary>
-        public ICommand ClickApplyFilter { get; set; }
+        public ICommand DBCreateCmd { get; set; }
 
         /// <summary>Команда 4.</summary>
-        public ICommand ClickCommand4 { get; set; }
+        public ICommand LogMailCmd { get; set; }
 
         /// <summary>Команда 5.</summary>
-        public ICommand ClickCommand5 { get; set; }
+        public ICommand FilterAndSaveCmd { get; set; }
 
-        /// <summary>Команда 6.</summary>
-        public ICommand ClickCommand6 { get; set; }
-        
         #endregion
 
         #region Methods
@@ -220,7 +219,7 @@
 
                 this.runtimeModels = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() =>
                 {
-                    return rDB.DataReadTest(tags, runtimeModels);
+                    return rDB.DataReadTest(tags);
                 });                               
         }
 
@@ -458,8 +457,8 @@
                 this.HistTEP.Add(this.Htep);                        
         }
 
-        // Читает с БД
-        private void ClickMethod()
+        // Запись в БД
+        private void WriteTEP()
         {
             var runtimeDB = new RuntimeDB(this.settingsModel.MSSQL);
             decimal hour = 7;
@@ -497,8 +496,8 @@
             return set;
         }
 
-        // Создает БД, таблицу и делает запись
-        private void ClickMethod2()
+        // Создание БД, таблицы и сделать запись
+        private void DBCreate()
         {
             // string DataBaseName = "DBTEP.sqlite";
             // SQLiteDB sqliteDB = new SQLiteDB(xmlFields);
@@ -512,7 +511,7 @@
         }
 
         // Запись в лог и отсылка сообщения с логами
-        private void ClickMethod4()
+        private void LogMail()
         {
             // Выбираем данные за сутки
             Filters.Day = true;
@@ -557,7 +556,8 @@
             });
         }
 
-        private void ClickMethod5()
+        // Отфильтровать и сохранить
+        private void FilterAndSave()
         {
             // Выбираем данные за сутки
             Filters.Day = true;

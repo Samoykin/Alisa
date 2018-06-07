@@ -30,7 +30,7 @@
                     text = text.Trim(new char[] { ',' });
                 }
 
-                this.logger.Info("Считан список из файла " + path);
+                this.logger.Info($"Считан список из файла {path}");
 
             return text;
         }
@@ -57,7 +57,7 @@
                     }
                 }
 
-                this.logger.Info("Считаны коэффициенты из файла " + path);
+                this.logger.Info($"Считаны коэффициенты из файла {path}");
 
             return this.coeffModels;
         }        

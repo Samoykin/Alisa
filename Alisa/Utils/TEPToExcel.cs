@@ -12,7 +12,7 @@
     public class TEPToExcel
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
-        private string filePath = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + DateTime.Now.ToString("yyyy.MM.dd") + ".xlsx";
+        private string filePath = $@"{Directory.GetCurrentDirectory()}\TEP\TEP_{DateTime.Now.ToString("yyyy.MM.dd")}.xlsx";
 
         private Excel.Application excelApp;
         private Excel.Worksheet workSheetExcel;
@@ -133,7 +133,7 @@
                 this.excelApp.Quit();
                 GC.Collect();
 
-                this.logger.Info("Отчет сохранен в Excel " + this.filePath);
+                this.logger.Info($"Отчет сохранен в Excel {this.filePath}");
             }
             catch (Exception ex)
             {
