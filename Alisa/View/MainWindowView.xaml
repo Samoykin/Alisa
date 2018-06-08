@@ -128,28 +128,13 @@
                     <RadioButton Content="Месяц" HorizontalAlignment="Left" Margin="242,27,0,0" VerticalAlignment="Top" IsChecked="{Binding Filters.Month, Mode=TwoWay}"/>
                 </Grid>
             </TabItem>
-            
-            <TabItem Header="О программе">
-                <Grid Background="White">
-                    <Image HorizontalAlignment="Left" Height="100" Margin="332,31,0,0" VerticalAlignment="Top" Width="365" Source="/Resources/logo.png"/>
-                    <Label Content="Alisa v1.2.18.0" HorizontalAlignment="Left" Margin="363,117,0,0" VerticalAlignment="Top" FontSize="48"/>
-                    <Label Content="Самойкин Андрей" HorizontalAlignment="Left" Margin="434,214,0,0" VerticalAlignment="Top" FontSize="18"/>
-                    <Label Content="тел./факс (3822) 522-511" HorizontalAlignment="Left" Margin="409,253,0,0" VerticalAlignment="Top" FontSize="18"/>
-                    <Label Content="634021 г. Томск, пр. Фрунзе 130а" HorizontalAlignment="Left" Margin="374,290,0,0" VerticalAlignment="Top" FontSize="18"/>
-                    <Label Content="2016" HorizontalAlignment="Left" Margin="490,183,0,0" VerticalAlignment="Top" FontSize="18"/>
-                    <StackPanel HorizontalAlignment="Left" Height="247" Margin="10,10,0,0" VerticalAlignment="Top" Width="146" Visibility="Hidden">
-                        <Button Content="Click me Write" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding DBCreateCmd}"/>
-                        <Button Content="Click me4Mail" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding LogMailCmd}"/>
-                        <Button Content="Click me5Excel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding FilterAndSaveCmd}"/>
-                        <Button Content="Click me Read" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding WriteTEPCmd}"/>
-                        <TextBox x:Name="tb2" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Filters.StartDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
-                        <TextBox x:Name="tb1" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Filters.EndDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
-                    </StackPanel>
-                </Grid>
-            </TabItem>
-            
+                        
             <TabItem Header="Коэффициенты">
                 <Grid Background="White">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
                     <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="653" Width="500"  ItemsSource="{Binding CoeffModels, Mode=OneWay}" AutoGenerateColumns="false">
                         <DataGrid.Columns>
                             <DataGridTextColumn Width="110" Binding="{Binding TagName, Mode=OneWay}" ElementStyle="{StaticResource RightAlignedCell}" CanUserResize="False">
@@ -169,6 +154,20 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <Grid Grid.Column="1" Background="White">
+                        <Label Content="Alisa v1.2.19.0" HorizontalAlignment="Left" Margin="40,20,0,0" VerticalAlignment="Top" FontSize="14"/>
+                        <Label Content="Самойкин Андрей" HorizontalAlignment="Left" Margin="40,40,0,0" VerticalAlignment="Top" FontSize="12"/>
+                        <Label Content="E-mail: samoykin@gmail.com" HorizontalAlignment="Left" Margin="40,60,0,0" VerticalAlignment="Top" FontSize="12"/>                        
+                        <Label Content="2018" HorizontalAlignment="Left" Margin="40,80,0,0" VerticalAlignment="Top" FontSize="12"/>
+                        <StackPanel HorizontalAlignment="Left" Height="247" Margin="10,180,0,0" VerticalAlignment="Top" Width="146" Visibility="Hidden">
+                            <Button Content="DBCreate" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding DBCreateCmd}"/>
+                            <Button Content="LogMail" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding LogMailCmd}"/>
+                            <Button Content="FilterAndSave" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding FilterAndSaveCmd}"/>
+                            <Button Content="WriteTEP" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Command="{Binding WriteTEPCmd}"/>
+                            <TextBox x:Name="tbStartDate" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Filters.StartDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
+                            <TextBox x:Name="tbEndDate" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Filters.EndDate, Mode=TwoWay, StringFormat=\{0:yyyy.MM.dd HH:mm\}}"/>
+                        </StackPanel>
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>

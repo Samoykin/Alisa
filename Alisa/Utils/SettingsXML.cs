@@ -6,14 +6,14 @@
 
     /// <summary>Параметры XML.</summary>
     /// <typeparam name="T">Тип.</typeparam>
-    public class SettingsXML<T>
+    public class SettingsXml<T>
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
         private string path;
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsXML{T}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsXml{T}" /> class.</summary>
         /// <param name="path">Путь к файлу.</param>
-        public SettingsXML(string path)
+        public SettingsXml(string path)
         {
             this.path = path;
         }

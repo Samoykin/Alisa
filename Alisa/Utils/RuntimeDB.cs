@@ -182,21 +182,18 @@
         /// <returns>Состояние связи с MSSQL.</returns>
         public bool CheckMSSQLConn()
         {
-            var connection = new SqlConnection(this.connStr);
-
             try
             {
-                connection.Open();
-                return true;
+                using (var connection = new SqlConnection(this.connStr))
+                {
+                    connection.Open();
+                    return true;
+                }
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
                 this.logger.Error(ex.Message);
-                return false;                
-            }
-            finally
-            {
-                connection.Dispose();
+                return false;
             }
         }
     }

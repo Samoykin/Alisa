@@ -100,7 +100,7 @@
     <Compile Include="Model\LiveTEP.cs" />
     <Compile Include="Model\RuntimeModel.cs" />
     <Compile Include="Utils\CalculateTEP.cs" />
-    <Compile Include="Utils\SettingsXML.cs" />
+    <Compile Include="Utils\SettingsXml.cs" />
     <Compile Include="Utils\ReadTextFile.cs" />
     <Compile Include="Utils\SQLiteDB.cs" />
     <Compile Include="Utils\TEPToCSV.cs" />
