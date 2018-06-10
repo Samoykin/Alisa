@@ -12,7 +12,7 @@
     public class TEPToExcel
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
-        private string filePath = $@"{Directory.GetCurrentDirectory()}\TEP\TEP_{DateTime.Now.ToString("yyyy.MM.dd")}.xlsx";
+        private string filePath = $@"{Directory.GetCurrentDirectory()}\TEP\TEP_{DateTime.Now:yyyy.MM.dd}.xlsx";
 
         private Excel.Application excelApp;
         private Excel.Worksheet workSheetExcel;
@@ -28,8 +28,11 @@
                     File.Delete(this.filePath);
                 }
 
-                this.excelApp = new Excel.Application();
-                this.excelApp.Visible = true;
+                this.excelApp = new Excel.Application
+                {
+                    Visible = true
+                };
+
                 this.excelApp.Workbooks.Add();
                 this.workSheetExcel = (Excel.Worksheet)this.excelApp.ActiveSheet;
 
@@ -48,52 +51,51 @@
                 this.workSheetExcel.Cells[1, 13] = "Етепла 3-го котла [Гкал]";
                 this.workSheetExcel.Cells[1, 14] = "Кол-во газа (УВП)[тыс. нм3]";
 
-                (this.workSheetExcel.Cells[1, 1] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 2] as Excel.Range).EntireColumn.ColumnWidth = 14;
-                (this.workSheetExcel.Cells[1, 3] as Excel.Range).EntireColumn.ColumnWidth = 14;
-                (this.workSheetExcel.Cells[1, 4] as Excel.Range).EntireColumn.ColumnWidth = 14;
-                (this.workSheetExcel.Cells[1, 5] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 6] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 7] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 8] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 9] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 10] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 11] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 12] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 13] as Excel.Range).EntireColumn.ColumnWidth = 15;
-                (this.workSheetExcel.Cells[1, 14] as Excel.Range).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 1]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 2]).EntireColumn.ColumnWidth = 14;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 3]).EntireColumn.ColumnWidth = 14;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 4]).EntireColumn.ColumnWidth = 14;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 5]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 6]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 7]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 8]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 9]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 10]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 11]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 12]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 13]).EntireColumn.ColumnWidth = 15;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 14]).EntireColumn.ColumnWidth = 15;
 
-                (this.workSheetExcel.Cells[1, 2] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 3] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 4] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 5] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 6] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 7] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 8] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 9] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 10] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 11] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 12] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 13] as Excel.Range).WrapText = true;
-                (this.workSheetExcel.Cells[1, 14] as Excel.Range).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 2]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 3]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 4]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 5]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 6]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 7]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 8]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 9]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 10]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 11]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 12]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 13]).WrapText = true;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 14]).WrapText = true;
 
                 var k = 1;
                 while (k < 15)
                 {
-                    (this.workSheetExcel.Cells[1, k] as Excel.Range).Interior.ColorIndex = 45;
+                    ((Excel.Range)this.workSheetExcel.Cells[1, k]).Interior.ColorIndex = 45;
                     k++;
                 }
 
-                (this.workSheetExcel.Cells[1, 1] as Excel.Range).EntireRow.RowHeight = 33;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 1]).EntireRow.RowHeight = 33;
 
-                (this.workSheetExcel.Cells[1, 1] as Excel.Range).EntireColumn.VerticalAlignment = Excel.XlVAlign.xlVAlignTop;
+                ((Excel.Range)this.workSheetExcel.Cells[1, 1]).EntireColumn.VerticalAlignment = Excel.XlVAlign.xlVAlignTop;
 
                 var i = 0;
 
-                object firstCol = 0;
-
                 foreach (var record in histTEP)
                 {
+                    object firstCol = 0;
                     if (i == histTEP.Count() - 1)
                     {
                         firstCol = "Итого:";
@@ -101,7 +103,7 @@
                         var j = 1;
                         while (j < 15)
                         {
-                            (this.workSheetExcel.Cells[i + 2, j] as Excel.Range).Interior.ColorIndex = 15;
+                            ((Excel.Range)this.workSheetExcel.Cells[i + 2, j]).Interior.ColorIndex = 15;
                             j++;
                         }
                     }

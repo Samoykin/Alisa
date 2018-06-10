@@ -1,10 +1,10 @@
-﻿namespace Alisa.ViewModel
+﻿namespace Alisa.Utils
 {
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Mail;
     using NLog;
-    using static Model.Shell;
+    using static Model.SettingsShell;
 
     /// <summary>Письиа с отчетом ТЭП.</summary>
     public class TEPMail
@@ -23,8 +23,6 @@
                 {
                     mailMessage.From = new MailAddress(mail.From);
 
-                    var mailToList = new List<string>();
-                    
                     if (service)
                     {
                         mailMessage.To.Add(mail.ServiceTo);
@@ -37,9 +35,9 @@
                         }
                     }                    
                     
-                    mailMessage.Subject = sibject; // тема письма                    
-                    mailMessage.Body = body; // письмо                    
-                    mailMessage.IsBodyHtml = true; // без html, но можно включить
+                    mailMessage.Subject = sibject; // Тема письма                    
+                    mailMessage.Body = body; // Письмо                    
+                    mailMessage.IsBodyHtml = true; // Без html, но можно включить
                     mailMessage.Attachments.Add(new Attachment(att));
 
                     using (var sc = new SmtpClient(mail.SmtpServer, mail.Port))

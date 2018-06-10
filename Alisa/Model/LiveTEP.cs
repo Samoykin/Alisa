@@ -4,7 +4,7 @@
     using System.ComponentModel;
 
     /// <summary>Текущие значения ТЭП.</summary>
-    public class LiveTEP : INotifyPropertyChanged
+    public sealed class LiveTEP : INotifyPropertyChanged
     {     
         #region Fields
 
@@ -288,12 +288,9 @@
         
         /// <summary>Изменения свойства.</summary>
         /// <param name="propertyName">Имя свойства.</param>
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion

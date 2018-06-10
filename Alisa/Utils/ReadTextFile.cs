@@ -21,7 +21,7 @@
 
                 using (var sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
-                    string s = string.Empty;
+                    string s;
                     while ((s = sr.ReadLine()) != null)
                     {
                         text += $"'{s}',";
@@ -42,7 +42,7 @@
         {
                 using (var sr = new StreamReader(path, System.Text.Encoding.Default))
                 {
-                    string s = string.Empty;
+                    string s;
 
                     while ((s = sr.ReadLine()) != null)
                     {

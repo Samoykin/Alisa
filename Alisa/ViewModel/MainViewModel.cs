@@ -7,11 +7,11 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
-    using System.Windows.Threading;    
+    using System.Windows.Threading;
     using Model;
     using NLog;
     using Utils;
-    using static Model.Shell;    
+    using static Model.SettingsShell;
 
     /// <summary>Главная ViewModel.</summary>
     public class MainViewModel
@@ -22,12 +22,11 @@
         private const string DataBaseName = "DBTEP.sqlite"; // БД SQLite
         private const string CoeffPath = "Coeff.txt"; // Путь к файлу коэфициентов
 
-        private Logger logger = LogManager.GetCurrentClassLogger();               
-        private RootElement settings = new RootElement(); // Конфигурация         
-        private ReadTextFile rf = new ReadTextFile(); // Работа со списками тегов        
-        private string tags; // Теги        
-        private List<float> tagValue = new List<float>(); // Теги в MSSQL Runtime
-        private RuntimeDB rDB; // БД
+        private Logger logger = LogManager.GetCurrentClassLogger();
+        private RootElement settings = new RootElement(); // Конфигурация
+        private ReadTextFile rf = new ReadTextFile(); // Работа со списками тегов
+        private string tags; // Теги
+        private RuntimeDb rDB; // БД
 
         // Таймеры
         private DispatcherTimer readTEPTimer = new DispatcherTimer();
@@ -66,66 +65,62 @@
                 var settingsXml = new SettingsXml<RootElement>(SettingsPath);
                 this.settings.MSSQL = new MSSQL();
                 this.settings.SQLite = new SQLite();
-                this.settings.Mail = new Mail();
-                this.settings.Mail.To = new List<string>();
+                this.settings.Mail = new Mail
+                {
+                    To = new List<string>()
+                };
+
                 this.settings.Reserv = new Reserv();
 
-                if (!File.Exists(SettingsPath))
-                {
-                    this.settings = this.SetDefaultValue(this.settings); // значения по умолчанию
-                    settingsXml.WriteXml(this.settings);
-                }
-                else
+                if (File.Exists(SettingsPath))
                 {
                     this.settings = settingsXml.ReadXml(this.settings);
                 }
-
-                this.rDB = new RuntimeDB(this.settings.MSSQL);
-
-                if (this.settings.Reserv.Master)
-                {
-                    Misc.Master = "Master";
-                }
                 else
                 {
-                    Misc.Master = "Slave";
+                    this.settings = this.SetDefaultValue(this.settings); // Значения по умолчанию
+                    settingsXml.WriteXml(this.settings);
                 }
 
-                // вычитывание списка тегов из файла
+                this.rDB = new RuntimeDb(this.settings.MSSQL);
+
+                Misc.Master = this.settings.Reserv.Master ? "Master" : "Slave";
+
+                // Вычитывание списка тегов из файла
                 this.tags = this.rf.ReadFile(TagPath);
 
                 // Коэффициенты  
                 this.CoeffModels = new ObservableCollection<CoeffModel> { };
                 this.CoeffModels = this.rf.ReadCoeff(CoeffPath);
 
-                // таймер вычитывания значений из БД
+                // Таймер вычитывания значений из БД
                 this.readTEPTimer.Interval = new TimeSpan(0, 0, 2);
-                this.readTEPTimer.Tick += new EventHandler(this.ReadTEP);
+                this.readTEPTimer.Tick += this.ReadTEP;
                 this.readTEPTimer.Start();
 
-                // расчет ТЭП
+                // Расчет ТЭП
                 this.calculateTEPTimer.Interval = new TimeSpan(0, 0, 6);
-                this.calculateTEPTimer.Tick += new EventHandler(this.CalculateTEP);
+                this.calculateTEPTimer.Tick += this.CalculateTEP;
                 this.calculateTEPTimer.Start();
 
-                // таймер на вызов метода записи 2-х часовок
+                // Таймер на вызов метода записи 2-х часовок
                 this.write2HourTEPTimer.Interval = new TimeSpan(0, 1, 0);
                 this.write2HourTEPTimer.Tick += new EventHandler(this.Write2HourTEP);
                 this.write2HourTEPTimer.Start();
 
-                // таймер на отправку писем
+                // Таймер на отправку писем
                 this.sendMailTimer.Interval = new TimeSpan(0, 1, 0);
-                this.sendMailTimer.Tick += new EventHandler(this.SendMail);
+                this.sendMailTimer.Tick += this.SendMail;
                 this.sendMailTimer.Start();
 
                 // Таймер проверки связи с БД MSSQL
                 this.checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
-                this.checkConnectionTimer.Tick += new EventHandler(this.CheckConnection);
+                this.checkConnectionTimer.Tick += this.CheckConnection;
                 this.checkConnectionTimer.Start();
 
                 // Таймер на доступ к записи отчета
                 this.accessReportTimer.Interval = new TimeSpan(0, 2, 0);
-                this.accessReportTimer.Tick += new EventHandler(this.AccessReport);
+                this.accessReportTimer.Tick += this.AccessReport;
                 this.accessReportTimer.Start();
 
                 this.LiveTEP = new LiveTEP { };
@@ -219,50 +214,52 @@
             decimal hour = DateTime.Now.Hour;
             decimal minute = DateTime.Now.Minute;
 
-            if (minute == 0)
+            if (minute != 0)
             {
-                if (hour == (Math.Floor(hour / 2) * 2) + 1 && this.reportFlag == true)
+                return;
+            }
+
+            if (hour == (Math.Floor(hour / 2) * 2) + 1 && this.reportFlag == true)
+            {
+                var sqliteDb = new SqLiteDb(this.settings.SQLite);
+                if (!File.Exists(DataBaseName))
                 {
-                    var sqliteDB = new SQLiteDB(this.settings.SQLite);
-                    if (!File.Exists(DataBaseName))
-                    {
-                        sqliteDB.CreateBase();
-                    }
-
-                    sqliteDB.TEPCreateTable();
-                    sqliteDB.TEPWrite(this.LiveTEP);
-
-                    this.TEPtoBase = this.LiveTEP;
-
-                    if (Misc.Master == "Master" && Misc.MSSQLStatus == string.Empty)
-                    {
-                        if (this.rDB.DataReadLastReport(hour) == false)
-                        {
-                            this.rDB.DataWrite(this.TEPtoBase);
-                        }
-                    }
-                    else if (Misc.Master == "Slave")
-                    {
-                        // таймер проверки записи отчета Masterom
-                        this.slaveWriteTimer.Interval = new TimeSpan(0, 0, 2);
-                        this.slaveWriteTimer.Tick += new EventHandler(this.SlaveWrite);
-                        this.slaveWriteTimer.Start();
-                    }
-
-                    this.LiveTEP.SQLw_Data1 = 0;
-                    this.LiveTEP.SQLw_Data2 = 0;
-                    this.LiveTEP.SQLw_Data3 = 0;
-                    this.LiveTEP.SQLw_Data4 = 0;
-                    this.LiveTEP.SQLw_Data5 = 0;
-                    this.LiveTEP.SQLw_Data6 = 0;
-                    this.LiveTEP.SQLw_Data7 = 0;
-                    this.LiveTEP.SQLw_Data8 = 0;
-                    this.LiveTEP.SQLw_Data9 = 0;
-                    this.LiveTEP.SQLw_Data10 = 0;
-                    this.LiveTEP.SQLw_Data11 = 0;
-                    this.LiveTEP.SQLw_Data12 = 0;
-                    this.LiveTEP.SQLw_Data13 = 0;
+                    sqliteDb.CreateBase();
                 }
+
+                sqliteDb.TEPCreateTable();
+                sqliteDb.TEPWrite(this.LiveTEP);
+
+                this.TEPtoBase = this.LiveTEP;
+
+                if (Misc.Master == "Master" && Misc.MSSQLStatus == string.Empty)
+                {
+                    if (this.rDB.DataReadLastReport(hour) == false)
+                    {
+                        this.rDB.DataWrite(this.TEPtoBase);
+                    }
+                }
+                else if (Misc.Master == "Slave")
+                {
+                    // Таймер проверки записи отчета Masterom
+                    this.slaveWriteTimer.Interval = new TimeSpan(0, 0, 2);
+                    this.slaveWriteTimer.Tick += this.SlaveWrite;
+                    this.slaveWriteTimer.Start();
+                }
+
+                this.LiveTEP.SQLw_Data1 = 0;
+                this.LiveTEP.SQLw_Data2 = 0;
+                this.LiveTEP.SQLw_Data3 = 0;
+                this.LiveTEP.SQLw_Data4 = 0;
+                this.LiveTEP.SQLw_Data5 = 0;
+                this.LiveTEP.SQLw_Data6 = 0;
+                this.LiveTEP.SQLw_Data7 = 0;
+                this.LiveTEP.SQLw_Data8 = 0;
+                this.LiveTEP.SQLw_Data9 = 0;
+                this.LiveTEP.SQLw_Data10 = 0;
+                this.LiveTEP.SQLw_Data11 = 0;
+                this.LiveTEP.SQLw_Data12 = 0;
+                this.LiveTEP.SQLw_Data13 = 0;
             }
         }
 
@@ -271,43 +268,42 @@
             decimal hour = DateTime.Now.Hour;
             decimal minute = DateTime.Now.Minute;
 
-            if (minute == 0)
+            if (minute != 0 && hour != 6)
             {
-                if (hour == 6)
-                {
-                    // выбираем данные за сутки
-                    Filters.Day = true;
-                    this.ApplyFilter();
-
-                    // сохраняем отчет в csv
-                    var tepToExcel = new TEPToExcel();
-                    tepToExcel.SaveData(this.HistTEP);
-
-                    // отправка письма
-                    var date = DateTime.Now.ToString("yyyy.MM.dd");
-                    var att = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + date + ".xlsx";
-                    var subject = "Отчет ТЭП " + date;
-                    var body = "<h3>Суточный отчет ТЭП Котельной, площадка СБНПУ " + date + "</h3><br>" +
-                        "---------------------------------------<br>" +
-                        "Элком+, Алиса<br>" +
-                        "тел./факс (3822) 522-511<br>";
-                    this.SendMail(subject, body, att, false);
-
-                    // отправка письма в Элком с логами
-                    var log = Directory.GetCurrentDirectory() + @"\log.txt";
-                    var log_temp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
-
-                    File.Delete(log_temp);
-                    File.Copy(log, log_temp);
-
-                    att = Directory.GetCurrentDirectory() + @"\log_temp.txt";
-                    subject = "Логи " + date;
-                    body = "<h3>Логи " + date + "</h3><br>" +
-                        "---------------------------------------<br>" +
-                        "Элком+, Алиса<br>";
-                    this.SendMail(subject, body, att, true);
-                }
+                return;
             }
+
+            // Выбираем данные за сутки
+            Filters.Day = true;
+            this.ApplyFilter();
+
+            // Сохраняем отчет в csv
+            var tepToExcel = new TEPToExcel();
+            tepToExcel.SaveData(this.HistTEP);
+
+            // Отправка письма
+            var date = DateTime.Now.ToString("yyyy.MM.dd");
+            var att = Directory.GetCurrentDirectory() + @"\TEP\TEP_" + date + ".xlsx";
+            var subject = "Отчет ТЭП " + date;
+            var body = "<h3>Суточный отчет ТЭП Котельной, площадка СБНПУ " + date + "</h3><br>" +
+                       "---------------------------------------<br>" +
+                       "Элком+, Алиса<br>" +
+                       "тел./факс (3822) 522-511<br>";
+            this.SendMail(subject, body, att, false);
+
+            // Отправка письма в Элком с логами
+            var log = Directory.GetCurrentDirectory() + @"\log.txt";
+            var logTemp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
+
+            File.Delete(logTemp);
+            File.Copy(log, logTemp);
+
+            att = Directory.GetCurrentDirectory() + @"\log_temp.txt";
+            subject = "Логи " + date;
+            body = "<h3>Логи " + date + "</h3><br>" +
+                   "---------------------------------------<br>" +
+                   "Элком+, Алиса<br>";
+            this.SendMail(subject, body, att, true);
         }
 
         private void CheckConnection(object sender, EventArgs e)
@@ -319,15 +315,17 @@
         {
             decimal hour = DateTime.Now.Hour;
 
-            if (Misc.MSSQLStatus == string.Empty)
+            if (Misc.MSSQLStatus != string.Empty)
             {
-                if (this.rDB.DataReadLastReport(hour) == false)
-                {
-                    this.rDB.DataWrite(this.TEPtoBase);
-                }
-
-                this.slaveWriteTimer.Stop();
+                return;
             }
+
+            if (this.rDB.DataReadLastReport(hour) == false)
+            {
+                this.rDB.DataWrite(this.TEPtoBase);
+            }
+
+            this.slaveWriteTimer.Stop();
         }
 
         // Доступ к отчету
@@ -346,15 +344,14 @@
         {
             this.Filter();
 
-            var histTEP2 = new ObservableCollection<HistTEP> { };
-            var sqliteDB = new SQLiteDB(this.settings.SQLite);
+            var sqliteDb = new SqLiteDb(this.settings.SQLite);
 
-                histTEP2 = sqliteDB.TEPRead(Filters.StartDate, Filters.EndDate);
+                var histTEP = sqliteDb.TEPRead(Filters.StartDate, Filters.EndDate);
 
                 this.HistTEP.Clear();
                 this.Htep = new HistTEP { };
 
-                foreach (var ht in histTEP2)
+                foreach (var ht in histTEP)
                 {
                     this.Htep.DateTimeTEP = DateTime.Now;
                     this.Htep.SQLw_Data1 += ht.SQLw_Data1;
@@ -379,13 +376,12 @@
         // Запись в БД
         private void WriteTEP()
         {
-            var runtimeDB = new RuntimeDB(this.settings.MSSQL);
-            decimal hour = 7;
+            const decimal Hour = 7;
 
             if (Misc.Master == "Master" && Misc.MSSQLStatus == string.Empty)
             {
-                bool lastReport = this.rDB.DataReadLastReport(hour);
-                if (lastReport == false)
+                var lastReport = this.rDB.DataReadLastReport(Hour);
+                if (!lastReport)
                 {
                     this.rDB.DataWrite(this.LiveTEP);
                 }
@@ -395,15 +391,15 @@
         // Создание БД, таблицы и сделать запись
         private void DBCreate()
         {
-            var sqliteDB = new SQLiteDB(this.settings.SQLite);
+            var sqliteDb = new SqLiteDb(this.settings.SQLite);
 
             if (!File.Exists(DataBaseName))
             {
-                sqliteDB.CreateBase();
+                sqliteDb.CreateBase();
             }
 
-            sqliteDB.TEPCreateTable();
-            sqliteDB.TEPWrite(LiveTEP);
+            sqliteDb.TEPCreateTable();
+            sqliteDb.TEPWrite(LiveTEP);
         }
 
         // Запись в лог и отсылка сообщения с логами
@@ -429,10 +425,10 @@
 
             // Отправка письма в Элком с логами
             var log = Directory.GetCurrentDirectory() + @"\log.txt";
-            var log_temp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
+            var logTemp = Directory.GetCurrentDirectory() + @"\log_temp.txt";
 
-            File.Delete(log_temp);
-            File.Copy(log, log_temp);
+            File.Delete(logTemp);
+            File.Copy(log, logTemp);
 
             att = Directory.GetCurrentDirectory() + @"\log_temp.txt";
             subject = "Логи " + date;
@@ -458,11 +454,7 @@
         private async void ReadData()
         {
             this.runtimeModels = new ObservableCollection<RuntimeModel>();
-
-            this.runtimeModels = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() =>
-            {
-                return rDB.DataReadTest(tags);
-            });
+            this.runtimeModels = await Task<ObservableCollection<RuntimeModel>>.Factory.StartNew(() => this.rDB.DataReadTest(this.tags));
         }
 
         private void CalcData()
@@ -476,14 +468,9 @@
             this.LiveTEP.OK_UVP_Q_old = this.runtimeModels[indx].Value;
         }
 
-        private int IndexCalc(string name, ObservableCollection<RuntimeModel> runtimeModels)
+        private int IndexCalc(string name, IList<RuntimeModel> runtimeModelList)
         {
-            return runtimeModels.IndexOf(runtimeModels.Where(X => X.TagName == name).FirstOrDefault());
-        }
-
-        private int IndexCalc(string name)
-        {
-            return this.runtimeModels.IndexOf(this.runtimeModels.Where(X => X.TagName == name).FirstOrDefault());
+            return runtimeModelList.IndexOf(this.runtimeModels.FirstOrDefault(x => x.TagName == name));
         }
 
         private void Filter()
@@ -517,21 +504,9 @@
 
         private async void ConnStatus()
         {
-            var status = false;
+            var status = await Task<bool>.Factory.StartNew(() => this.rDB.CheckMSSQLConn());
 
-            status = await Task<bool>.Factory.StartNew(() =>
-            {
-                return rDB.CheckMSSQLConn();
-            });
-
-            if (!status)
-            {
-                Misc.MSSQLStatus = "| MSSQL - нет связи";
-            }
-            else
-            {
-                Misc.MSSQLStatus = string.Empty;
-            }
+            Misc.MSSQLStatus = !status ? "| MSSQL - нет связи" : string.Empty;
         }
 
         private async void SendMail(string subject, string body, string att, bool service)

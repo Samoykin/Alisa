@@ -1,29 +1,30 @@
-﻿namespace Alisa.ViewModel
+﻿namespace Alisa.Utils
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Data.Common;
     using System.Data.SqlClient;
+    using System.Globalization;
     using System.IO;    
     using Model;
     using NLog;
-    using static Model.Shell;
+    using static Model.SettingsShell;
 
     /// <summary>База данных MSSQL.</summary>
-    public class RuntimeDB
+    public class RuntimeDb
     {
         private const string TagPath = "TagList.txt";
         private Logger logger = LogManager.GetCurrentClassLogger();
         private string connStr;
-        private MSSQL mssql;
+        private string connStrAlSuite;
 
-        /// <summary>Initializes a new instance of the <see cref="RuntimeDB" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="RuntimeDb" /> class.</summary>
         /// <param name="mssql">Модель подключения к БД.</param>
-        public RuntimeDB(MSSQL mssql)
+        public RuntimeDb(MSSQL mssql)
         {
             this.connStr = $"server={mssql.Server};uid={mssql.Login};pwd={mssql.Pass};database={mssql.DBName}";
-            this.mssql = mssql;
+            this.connStrAlSuite = $"server={mssql.Server};uid={mssql.Login};pwd={mssql.Pass};database=AlarmSuite";
         }
 
         /// <summary>Прочитать данные из файла.</summary>
@@ -32,14 +33,13 @@
         public ObservableCollection<RuntimeModel> DataReadTest(string tags)
         {
             var tagList = new List<string>();
-            var addresses = tags.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
             var rnd = new Random();
 
             var runtimeModels = new ObservableCollection<RuntimeModel>();
 
             using (var sr = new StreamReader(TagPath, System.Text.Encoding.Default))
             {
-                var s = string.Empty;
+                string s;
                 while ((s = sr.ReadLine()) != null)
                 {
                     tagList.Add(s);
@@ -48,10 +48,11 @@
 
             foreach (var adr in tagList)
             {
-                var runtimeModel = new RuntimeModel();
-                var name = adr.Replace("'", string.Empty);
-                runtimeModel.TagName = adr;
-                runtimeModel.Value = rnd.Next(0, 20);
+                var runtimeModel = new RuntimeModel
+                {
+                    TagName = adr,
+                    Value = rnd.Next(0, 20)
+                };
 
                 runtimeModels.Add(runtimeModel);
             }
@@ -75,7 +76,6 @@
                     
                     var cmd = new SqlCommand(query, conn);
                     var reader = cmd.ExecuteReader();
-                    var i = 0;
 
                     foreach (DbDataRecord record in reader)
                     {
@@ -93,7 +93,6 @@
                         runtimeModel.Value = aa;
 
                         runtimeModels.Add(runtimeModel);
-                        i++;
                     }
 
                     reader.Close();
@@ -108,10 +107,9 @@
         /// <returns>Состояние.</returns>
         public bool DataReadLastReport(decimal hour)
         {
-            var connStr = $"server={this.mssql.Server};uid={this.mssql.Login};pwd={this.mssql.Pass};database=AlarmSuite";
             var lastReport = true;
 
-                using (var connection = new SqlConnection(connStr))
+                using (var connection = new SqlConnection(this.connStrAlSuite))
                 {
                     connection.Open();
 
@@ -143,9 +141,7 @@
         /// <param name="liveTEP">Текущие данные.</param>
         public void DataWrite(LiveTEP liveTEP)
         {
-            var connStr = $"server={this.mssql.Server};uid={this.mssql.Login};pwd={this.mssql.Pass};database=AlarmSuite";
-
-                using (var connection = new SqlConnection(connStr))
+                using (var connection = new SqlConnection(this.connStrAlSuite))
                 {
                     var format_date = "yyyyMMdd HH:mm:ss";
 
@@ -154,19 +150,19 @@
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         cmd.Parameters.AddWithValue("@Data", DateTime.Now.ToString(format_date));
-                        cmd.Parameters.AddWithValue("@Data1", Math.Round(liveTEP.SQLw_Data1, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data2", Math.Round(liveTEP.SQLw_Data2, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data3", Math.Round(liveTEP.SQLw_Data3, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data4", Math.Round(liveTEP.SQLw_Data4, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data5", Math.Round(liveTEP.SQLw_Data5, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data6", Math.Round(liveTEP.SQLw_Data6, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data7", Math.Round(liveTEP.SQLw_Data7, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data8", Math.Round(liveTEP.SQLw_Data8, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data9", Math.Round(liveTEP.SQLw_Data9, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data10", Math.Round(liveTEP.SQLw_Data10, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data11", Math.Round(liveTEP.SQLw_Data11, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data12", Math.Round(liveTEP.SQLw_Data12, 7).ToString());
-                        cmd.Parameters.AddWithValue("@Data13", Math.Round(liveTEP.SQLw_Data13, 7).ToString());
+                        cmd.Parameters.AddWithValue("@Data1", Math.Round(liveTEP.SQLw_Data1, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data2", Math.Round(liveTEP.SQLw_Data2, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data3", Math.Round(liveTEP.SQLw_Data3, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data4", Math.Round(liveTEP.SQLw_Data4, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data5", Math.Round(liveTEP.SQLw_Data5, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data6", Math.Round(liveTEP.SQLw_Data6, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data7", Math.Round(liveTEP.SQLw_Data7, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data8", Math.Round(liveTEP.SQLw_Data8, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data9", Math.Round(liveTEP.SQLw_Data9, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data10", Math.Round(liveTEP.SQLw_Data10, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data11", Math.Round(liveTEP.SQLw_Data11, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data12", Math.Round(liveTEP.SQLw_Data12, 7).ToString(CultureInfo.InvariantCulture));
+                        cmd.Parameters.AddWithValue("@Data13", Math.Round(liveTEP.SQLw_Data13, 7).ToString(CultureInfo.InvariantCulture));
 
                         connection.Open();
                         cmd.ExecuteNonQuery();

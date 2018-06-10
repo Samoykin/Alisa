@@ -1,6 +1,7 @@
 ﻿namespace Alisa.Utils
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;    
     using Model;
@@ -223,14 +224,14 @@
             return liveTEP;
         }
 
-        private int IndexCalc(string name, ObservableCollection<RuntimeModel> runtimeModel)
+        private int IndexCalc(string name, IList<RuntimeModel> runtimeModel)
         {
-            return runtimeModel.IndexOf(runtimeModel.Where(X => X.TagName == name).FirstOrDefault());
+            return runtimeModel.IndexOf(runtimeModel.FirstOrDefault(x => x.TagName == name));
         }
 
-        private int IndexCalc2(string name, ObservableCollection<CoeffModel> coeffModel)
+        private int IndexCalc2(string name, IList<CoeffModel> coeffModel)
         {
-            return coeffModel.IndexOf(coeffModel.Where(X => X.TagName == name).FirstOrDefault());
+            return coeffModel.IndexOf(coeffModel.FirstOrDefault(x => x.TagName == name));
         }        
     }
 }

@@ -2,14 +2,12 @@
 {
     using System.IO;
     using System.Xml.Serialization;
-    using NLog;
 
     /// <summary>Параметры XML.</summary>
     /// <typeparam name="T">Тип.</typeparam>
     public class SettingsXml<T>
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
-        private string path;
+        private readonly string path;
 
         /// <summary>Initializes a new instance of the <see cref="SettingsXml{T}" /> class.</summary>
         /// <param name="path">Путь к файлу.</param>
@@ -22,10 +20,10 @@
         /// <param name="data">Данные.</param>
         public void WriteXml(T data)
         {
-            var serializer_obj = new XmlSerializer(typeof(T));
+            var serializerObj = new XmlSerializer(typeof(T));
 
             TextWriter stream = new StreamWriter(this.path);
-            serializer_obj.Serialize(stream, data);
+            serializerObj.Serialize(stream, data);
             stream.Close();
         }
 
@@ -34,10 +32,10 @@
         /// <returns>Набор значений.</returns>
         public T ReadXml(T data)
         {
-            var serializer_obj = new XmlSerializer(typeof(T));
+            var serializerObj = new XmlSerializer(typeof(T));
 
             TextReader stream = new StreamReader(this.path);
-            data = (T)serializer_obj.Deserialize(stream);
+            data = (T)serializerObj.Deserialize(stream);
             stream.Close();                
 
             return data;

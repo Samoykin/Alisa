@@ -7,19 +7,19 @@
     using System.IO;
     using Model;
     using NLog;
-    using static Model.Shell;
+    using static Model.SettingsShell;
 
     /// <summary>База данных SQLite.</summary>
-    public class SQLiteDB
+    public class SqLiteDb
     {
         private Logger logger = LogManager.GetCurrentClassLogger();
         private string dataBaseName;
         private string pass;        
         private HistTEP oneTEP;
 
-        /// <summary>Initializes a new instance of the <see cref="SQLiteDB" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SqLiteDb" /> class.</summary>
         /// <param name="sqlite">Модель подключения к БД.</param>
-        public SQLiteDB(SQLite sqlite)
+        public SqLiteDb(SQLite sqlite)
         {
             this.dataBaseName = sqlite.DBName;
             this.pass = sqlite.Pass;
@@ -56,11 +56,13 @@
         /// <param name="liveTEP">Текущие значения.</param>
         public void TEPWrite(LiveTEP liveTEP)
         {
-                using (var connection = new SQLiteConnection(this.Connstring()))
+            const string FormatDate = "yyyy-MM-dd HH:mm:ss.fff";
+
+            using (var connection = new SQLiteConnection(this.Connstring()))
                 {
                     connection.Open();
-                    var formatDate = "yyyy-MM-dd HH:mm:ss.fff";
-                    var command = new SQLiteCommand($"INSERT INTO 'TEP' ('DateTime', 'SQLw_Data1', 'SQLw_Data2', 'SQLw_Data3', 'SQLw_Data4', 'SQLw_Data5', 'SQLw_Data6', 'SQLw_Data7', 'SQLw_Data8', 'SQLw_Data9', 'SQLw_Data10', 'SQLw_Data11', 'SQLw_Data12', 'SQLw_Data13') VALUES ('{DateTime.Now.ToString(formatDate)}', '{Convert.ToString(liveTEP.SQLw_Data1)}', '{Convert.ToString(liveTEP.SQLw_Data2)}', '{Convert.ToString(liveTEP.SQLw_Data3)}', '{Convert.ToString(liveTEP.SQLw_Data4)}', '{Convert.ToString(liveTEP.SQLw_Data5)}', '{Convert.ToString(liveTEP.SQLw_Data6)}', '{Convert.ToString(liveTEP.SQLw_Data7)}', '{Convert.ToString(liveTEP.SQLw_Data8)}', '{Convert.ToString(liveTEP.SQLw_Data9)}', '{Convert.ToString(liveTEP.SQLw_Data10)}', '{Convert.ToString(liveTEP.SQLw_Data11)}', '{Convert.ToString(liveTEP.SQLw_Data12)}', '{Convert.ToString(liveTEP.SQLw_Data13)}');", connection);
+                    
+                    var command = new SQLiteCommand($"INSERT INTO 'TEP' ('DateTime', 'SQLw_Data1', 'SQLw_Data2', 'SQLw_Data3', 'SQLw_Data4', 'SQLw_Data5', 'SQLw_Data6', 'SQLw_Data7', 'SQLw_Data8', 'SQLw_Data9', 'SQLw_Data10', 'SQLw_Data11', 'SQLw_Data12', 'SQLw_Data13') VALUES ('{DateTime.Now.ToString(FormatDate)}', '{Convert.ToString(liveTEP.SQLw_Data1)}', '{Convert.ToString(liveTEP.SQLw_Data2)}', '{Convert.ToString(liveTEP.SQLw_Data3)}', '{Convert.ToString(liveTEP.SQLw_Data4)}', '{Convert.ToString(liveTEP.SQLw_Data5)}', '{Convert.ToString(liveTEP.SQLw_Data6)}', '{Convert.ToString(liveTEP.SQLw_Data7)}', '{Convert.ToString(liveTEP.SQLw_Data8)}', '{Convert.ToString(liveTEP.SQLw_Data9)}', '{Convert.ToString(liveTEP.SQLw_Data10)}', '{Convert.ToString(liveTEP.SQLw_Data11)}', '{Convert.ToString(liveTEP.SQLw_Data12)}', '{Convert.ToString(liveTEP.SQLw_Data13)}');", connection);
                     
                     command.ExecuteNonQuery();
                     connection.Close();
@@ -75,48 +77,51 @@
         /// <returns>Отчет ТЭП.</returns>
         public ObservableCollection<HistTEP> TEPRead(DateTime startDate, DateTime endDate)
         {
-            var formatDate = "yyyy-MM-dd HH:mm:ss.fff";
-            var formatDateSmall = "yyyy-MM-dd HH:mm";
+            const string FormatDate = "yyyy-MM-dd HH:mm:ss.fff";
+            const string FormatDateSmall = "yyyy-MM-dd HH:mm";
 
             this.HistTEP = new ObservableCollection<HistTEP>();
 
                 using (var connection = new SQLiteConnection(this.Connstring()))
                 {
                     connection.Open();
-                    var command = new SQLiteCommand($"SELECT * FROM TEP WHERE DateTime >= '{startDate.ToString(formatDate)}' and DateTime <= '{endDate.ToString(formatDate)}';", connection);
+                    var command = new SQLiteCommand($"SELECT * FROM TEP WHERE DateTime >= '{startDate.ToString(FormatDate)}' and DateTime <= '{endDate.ToString(FormatDate)}';", connection);
 
                     var reader = command.ExecuteReader();
                     foreach (DbDataRecord record in reader)
                     {
-                        this.oneTEP = new HistTEP();
-                        this.oneTEP.DateTimeTEP = Convert.ToDateTime(record["DateTime"]);
-                        this.oneTEP.SQLw_Data1 = Convert.ToDouble(record["SQLw_Data1"]);
-                        this.oneTEP.SQLw_Data2 = Convert.ToDouble(record["SQLw_Data2"]);
-                        this.oneTEP.SQLw_Data3 = Convert.ToDouble(record["SQLw_Data3"]);
-                        this.oneTEP.SQLw_Data4 = Convert.ToDouble(record["SQLw_Data4"]);
-                        this.oneTEP.SQLw_Data5 = Convert.ToDouble(record["SQLw_Data5"]);
-                        this.oneTEP.SQLw_Data6 = Convert.ToDouble(record["SQLw_Data6"]);
-                        this.oneTEP.SQLw_Data7 = Convert.ToDouble(record["SQLw_Data7"]);
-                        this.oneTEP.SQLw_Data8 = Convert.ToDouble(record["SQLw_Data8"]);
-                        this.oneTEP.SQLw_Data9 = Convert.ToDouble(record["SQLw_Data9"]);
-                        this.oneTEP.SQLw_Data10 = Convert.ToDouble(record["SQLw_Data10"]);
-                        this.oneTEP.SQLw_Data11 = Convert.ToDouble(record["SQLw_Data11"]);
-                        this.oneTEP.SQLw_Data12 = Convert.ToDouble(record["SQLw_Data12"]);
-                        this.oneTEP.SQLw_Data13 = Convert.ToDouble(record["SQLw_Data13"]);
+                        this.oneTEP = new HistTEP
+                        {
+                            DateTimeTEP = Convert.ToDateTime(record["DateTime"]),
+                            SQLw_Data1 = Convert.ToDouble(record["SQLw_Data1"]),
+                            SQLw_Data2 = Convert.ToDouble(record["SQLw_Data2"]),
+                            SQLw_Data3 = Convert.ToDouble(record["SQLw_Data3"]),
+                            SQLw_Data4 = Convert.ToDouble(record["SQLw_Data4"]),
+                            SQLw_Data5 = Convert.ToDouble(record["SQLw_Data5"]),
+                            SQLw_Data6 = Convert.ToDouble(record["SQLw_Data6"]),
+                            SQLw_Data7 = Convert.ToDouble(record["SQLw_Data7"]),
+                            SQLw_Data8 = Convert.ToDouble(record["SQLw_Data8"]),
+                            SQLw_Data9 = Convert.ToDouble(record["SQLw_Data9"]),
+                            SQLw_Data10 = Convert.ToDouble(record["SQLw_Data10"]),
+                            SQLw_Data11 = Convert.ToDouble(record["SQLw_Data11"]),
+                            SQLw_Data12 = Convert.ToDouble(record["SQLw_Data12"]),
+                            SQLw_Data13 = Convert.ToDouble(record["SQLw_Data13"])
+                        };
+
                         this.HistTEP.Add(this.oneTEP);
                     }
 
                     connection.Close(); 
                 }
 
-                this.logger.Info($"Выбран отчет TEP за период с {startDate.ToString(formatDateSmall)} по {endDate.ToString(formatDateSmall)}");
+                this.logger.Info($"Выбран отчет TEP за период с {startDate.ToString(FormatDateSmall)} по {endDate.ToString(FormatDateSmall)}");
 
             return this.HistTEP;
         }
 
         private string Connstring()
         {
-            return string.Format("Data Source={0};Version=3;Password={1};", this.dataBaseName, this.pass);
+            return $"Data Source={this.dataBaseName};Version=3;Password={this.pass};";
         }
     }
 }

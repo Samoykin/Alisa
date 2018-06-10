@@ -155,7 +155,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Grid Grid.Column="1" Background="White">
-                        <Label Content="Alisa v1.2.19.0" HorizontalAlignment="Left" Margin="40,20,0,0" VerticalAlignment="Top" FontSize="14"/>
+                        <Label Content="Alisa v1.2.20.0" HorizontalAlignment="Left" Margin="40,20,0,0" VerticalAlignment="Top" FontSize="14"/>
                         <Label Content="Самойкин Андрей" HorizontalAlignment="Left" Margin="40,40,0,0" VerticalAlignment="Top" FontSize="12"/>
                         <Label Content="E-mail: samoykin@gmail.com" HorizontalAlignment="Left" Margin="40,60,0,0" VerticalAlignment="Top" FontSize="12"/>                        
                         <Label Content="2018" HorizontalAlignment="Left" Margin="40,80,0,0" VerticalAlignment="Top" FontSize="12"/>

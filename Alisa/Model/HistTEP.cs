@@ -4,7 +4,7 @@
     using System.ComponentModel;
 
     /// <summary>Сохраненные значения ТЭП.</summary>
-    public class HistTEP : INotifyPropertyChanged
+    public sealed class HistTEP : INotifyPropertyChanged
     {
         #region Fields
 
@@ -288,12 +288,9 @@
 
         /// <summary>Изменения свойства.</summary>
         /// <param name="propertyName">Имя свойства.</param>
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion
