@@ -40,6 +40,8 @@
         private bool reportFlag = false;        
         private ObservableCollection<RuntimeModel> runtimeModels; // Коллекция значений тегов из файла        
 
+        private SqLiteDb sqliteDb;
+
         #endregion
 
         /// <summary>Initializes a new instance of the <see cref="MainViewModel" /> class.</summary>
@@ -92,6 +94,13 @@
                 // Коэффициенты  
                 this.CoeffModels = new ObservableCollection<CoeffModel> { };
                 this.CoeffModels = this.rf.ReadCoeff(CoeffPath);
+
+                this.sqliteDb = new SqLiteDb(this.settings.SQLite);
+                if (!File.Exists(DataBaseName))
+                {
+                    this.sqliteDb.CreateBase();
+                    this.sqliteDb.TEPCreateTable();
+                }
 
                 // Таймер вычитывания значений из БД
                 this.readTEPTimer.Interval = new TimeSpan(0, 0, 2);
@@ -221,14 +230,7 @@
 
             if (hour == (Math.Floor(hour / 2) * 2) + 1 && this.reportFlag == true)
             {
-                var sqliteDb = new SqLiteDb(this.settings.SQLite);
-                if (!File.Exists(DataBaseName))
-                {
-                    sqliteDb.CreateBase();
-                }
-
-                sqliteDb.TEPCreateTable();
-                sqliteDb.TEPWrite(this.LiveTEP);
+                this.sqliteDb.TEPWrite(this.LiveTEP);
 
                 this.TEPtoBase = this.LiveTEP;
 
@@ -344,9 +346,7 @@
         {
             this.Filter();
 
-            var sqliteDb = new SqLiteDb(this.settings.SQLite);
-
-                var histTEP = sqliteDb.TEPRead(Filters.StartDate, Filters.EndDate);
+                var histTEP = this.sqliteDb.TEPRead(Filters.StartDate, Filters.EndDate);
 
                 this.HistTEP.Clear();
                 this.Htep = new HistTEP { };
@@ -388,18 +388,16 @@
             }
         }
 
-        // Создание БД, таблицы и сделать запись
+        // Сервисная - создание БД, таблицы и сделать запись
         private void DBCreate()
         {
-            var sqliteDb = new SqLiteDb(this.settings.SQLite);
-
             if (!File.Exists(DataBaseName))
             {
-                sqliteDb.CreateBase();
+                this.sqliteDb.CreateBase();
             }
 
-            sqliteDb.TEPCreateTable();
-            sqliteDb.TEPWrite(LiveTEP);
+            this.sqliteDb.TEPCreateTable();
+            this.sqliteDb.TEPWrite(LiveTEP);
         }
 
         // Запись в лог и отсылка сообщения с логами
